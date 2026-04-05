@@ -5,6 +5,17 @@ import thinkingPepe from "@/assets/badges/thinking-pepe.png";
 import smugPepe from "@/assets/badges/smug-pepe.png";
 import surprisedSpongebob from "@/assets/badges/surprised-spongebob.png";
 import smugPepeDark from "@/assets/badges/smug-pepe-dark.png";
+import angryPepe from "@/assets/badges/angry-pepe.png";
+import punchingPepe from "@/assets/badges/punching-pepe.png";
+import kermitGun from "@/assets/badges/kermit-gun.png";
+import trumpMugshot from "@/assets/badges/trump-mugshot.png";
+import trollFace from "@/assets/badges/troll-face.png";
+import sadPepe from "@/assets/badges/sad-pepe.png";
+import trollSunglasses from "@/assets/badges/troll-sunglasses.png";
+import brownPepe from "@/assets/badges/brown-pepe.png";
+import poggersPepe from "@/assets/badges/poggers-pepe.png";
+import surprisedPikachu from "@/assets/badges/surprised-pikachu.png";
+import laughingGuy from "@/assets/badges/laughing-guy.png";
 
 export interface Badge {
   id: string;
@@ -20,6 +31,17 @@ export const AVAILABLE_BADGES: Badge[] = [
   { id: "military-spongebob", name: "Military Spongebob", image: militarySpongebob },
   { id: "clown-pepe", name: "Clown Pepe", image: clownPepe },
   { id: "smug-pepe", name: "Smug Pepe Classic", image: smugPepe },
+  { id: "angry-pepe", name: "Angry Pepe", image: angryPepe },
+  { id: "punching-pepe", name: "Punching Pepe", image: punchingPepe },
+  { id: "kermit-gun", name: "Kermit Gun", image: kermitGun },
+  { id: "trump-mugshot", name: "Trump Mugshot", image: trumpMugshot },
+  { id: "troll-face", name: "Troll Face", image: trollFace },
+  { id: "sad-pepe", name: "Sad Pepe", image: sadPepe },
+  { id: "troll-sunglasses", name: "Troll Sunglasses", image: trollSunglasses },
+  { id: "brown-pepe", name: "Brown Pepe", image: brownPepe },
+  { id: "poggers-pepe", name: "Poggers Pepe", image: poggersPepe },
+  { id: "surprised-pikachu", name: "Surprised Pikachu", image: surprisedPikachu },
+  { id: "laughing-guy", name: "Laughing Guy", image: laughingGuy },
 ];
 
 export interface UserProfile {
