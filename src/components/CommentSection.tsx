@@ -1,42 +1,44 @@
-import { useState, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Comment, generateId, getCurrentUserId, getComments, saveComments } from "@/lib/store";
+import { getCurrentUserId, type UserProfile, type Comment as CommentType } from "@/lib/store";
+import { fetchComments, createComment, deleteComment } from "@/lib/api";
 import UserBadge from "./UserBadge";
 import GiphyPicker from "./GiphyPicker";
-import { ImagePlus, Smile, Trash2 } from "lucide-react";
+import { ImagePlus, Trash2 } from "lucide-react";
 
 interface Props {
   postId: string;
   onNeedSetup: () => void;
-  refresh: number;
+  profiles: Record<string, UserProfile>;
 }
 
-export default function CommentSection({ postId, onNeedSetup, refresh }: Props) {
+export default function CommentSection({ postId, onNeedSetup, profiles }: Props) {
   const [text, setText] = useState("");
   const [mediaUrl, setMediaUrl] = useState("");
   const [mediaType, setMediaType] = useState<"image" | "gif" | undefined>();
   const [showGiphy, setShowGiphy] = useState(false);
-  const [, setTick] = useState(0);
+  const [comments, setComments] = useState<CommentType[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
-
-  const comments = getComments().filter(c => c.postId === postId);
   const currentUser = getCurrentUserId();
 
-  const submit = () => {
+  const loadComments = async () => {
+    const data = await fetchComments(postId);
+    setComments(data);
+  };
+
+  useEffect(() => { loadComments(); }, [postId]);
+
+  const submit = async () => {
     const uid = getCurrentUserId();
     if (!uid) { onNeedSetup(); return; }
     if (!text.trim() && !mediaUrl) return;
-    const c: Comment = {
-      id: generateId(), postId, userId: uid,
-      text: text.trim(), mediaUrl: mediaUrl || undefined, mediaType,
-      createdAt: Date.now(),
-    };
-    const all = getComments();
-    all.push(c);
-    saveComments(all);
+    await createComment({
+      postId, userId: uid, text: text.trim(),
+      mediaUrl: mediaUrl || undefined, mediaType,
+    });
     setText(""); setMediaUrl(""); setMediaType(undefined);
-    setTick(t => t + 1);
+    loadComments();
   };
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,24 +49,23 @@ export default function CommentSection({ postId, onNeedSetup, refresh }: Props) 
     reader.readAsDataURL(f);
   };
 
-  const deleteComment = (id: string) => {
-    const all = getComments().filter(c => c.id !== id);
-    saveComments(all);
-    setTick(t => t + 1);
+  const handleDelete = async (id: string) => {
+    await deleteComment(id);
+    loadComments();
   };
 
-  const isAdmin = currentUser && (currentUser === "PatriotAdmin");
+  const isAdmin = currentUser === "PatriotAdmin";
 
   return (
     <div className="space-y-3">
       {comments.map(c => (
         <div key={c.id} className="bg-muted/50 rounded-lg p-3">
           <div className="flex items-center justify-between mb-1">
-            <UserBadge userId={c.userId} size="sm" />
+            <UserBadge userId={c.userId} size="sm" profiles={profiles} />
             <div className="flex items-center gap-2">
               <span className="text-[10px] text-muted-foreground">{new Date(c.createdAt).toLocaleString()}</span>
               {(c.userId === currentUser || isAdmin) && (
-                <button onClick={() => deleteComment(c.id)}><Trash2 className="w-3 h-3 text-destructive" /></button>
+                <button onClick={() => handleDelete(c.id)}><Trash2 className="w-3 h-3 text-destructive" /></button>
               )}
             </div>
           </div>
@@ -72,8 +73,6 @@ export default function CommentSection({ postId, onNeedSetup, refresh }: Props) 
           {c.mediaUrl && (
             c.mediaType === "gif" || c.mediaUrl.includes("giphy") ? (
               <img src={c.mediaUrl} alt="gif" className="max-h-40 rounded mt-1" />
-            ) : c.mediaType === "video" ? (
-              <video src={c.mediaUrl} controls className="max-h-40 rounded mt-1" />
             ) : (
               <img src={c.mediaUrl} alt="" className="max-h-40 rounded mt-1" />
             )

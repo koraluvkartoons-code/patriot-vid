@@ -1,13 +1,13 @@
-import { UserProfile, AVAILABLE_BADGES, getUsers } from "@/lib/store";
+import { AVAILABLE_BADGES, type UserProfile } from "@/lib/store";
 
 interface Props {
   userId: string;
   size?: "sm" | "md";
+  profiles: Record<string, UserProfile>;
 }
 
-export default function UserBadge({ userId, size = "md" }: Props) {
-  const users = getUsers();
-  const user = users[userId];
+export default function UserBadge({ userId, size = "md", profiles }: Props) {
+  const user = profiles[userId];
   if (!user) return <span className="text-muted-foreground">{userId}</span>;
 
   const avatarSize = size === "sm" ? "w-6 h-6" : "w-8 h-8";

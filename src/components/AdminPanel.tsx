@@ -1,41 +1,34 @@
-import { useState } from "react";
-import { getUsers, saveUsers, AVAILABLE_BADGES, UserProfile } from "@/lib/store";
+import { useState, useEffect } from "react";
+import { AVAILABLE_BADGES, type UserProfile } from "@/lib/store";
+import { fetchProfiles, updateProfileBadges, updateProfileMod } from "@/lib/api";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Shield, X, Star } from "lucide-react";
+import { Shield, X } from "lucide-react";
 import UserBadge from "./UserBadge";
 
 interface Props {
   open: boolean;
   onClose: () => void;
   onRefresh: () => void;
+  profiles: Record<string, UserProfile>;
 }
 
-export default function AdminPanel({ open, onClose, onRefresh }: Props) {
-  const [, setTick] = useState(0);
-  const users = getUsers();
-  const userList = Object.entries(users);
+export default function AdminPanel({ open, onClose, onRefresh, profiles }: Props) {
+  const userList = Object.entries(profiles);
 
-  const toggleBadge = (userId: string, badgeId: string) => {
-    const u = getUsers();
-    const user = u[userId];
+  const toggleBadge = async (userId: string, badgeId: string) => {
+    const user = profiles[userId];
     if (!user) return;
-    if (!user.badges) user.badges = [];
-    if (user.badges.includes(badgeId)) user.badges = user.badges.filter(b => b !== badgeId);
-    else user.badges.push(badgeId);
-    saveUsers(u);
-    setTick(t => t + 1);
+    const badges = user.badges || [];
+    const newBadges = badges.includes(badgeId) ? badges.filter(b => b !== badgeId) : [...badges, badgeId];
+    await updateProfileBadges(userId, newBadges);
     onRefresh();
   };
 
-  const toggleMod = (userId: string) => {
-    const u = getUsers();
-    if (u[userId]) {
-      u[userId].isModerator = !u[userId].isModerator;
-      saveUsers(u);
-      setTick(t => t + 1);
-      onRefresh();
-    }
+  const toggleMod = async (userId: string) => {
+    const user = profiles[userId];
+    if (!user) return;
+    await updateProfileMod(userId, !user.isModerator);
+    onRefresh();
   };
 
   if (!open) return null;
@@ -65,7 +58,7 @@ export default function AdminPanel({ open, onClose, onRefresh }: Props) {
           {userList.map(([id, user]) => (
             <div key={id} className="bg-muted/50 rounded-lg p-3">
               <div className="flex items-center justify-between mb-2">
-                <UserBadge userId={id} />
+                <UserBadge userId={id} profiles={profiles} />
                 {!user.isAdmin && (
                   <Button size="sm" variant="ghost" onClick={() => toggleMod(id)} className={`text-xs h-6 ${user.isModerator ? "text-accent" : "text-muted-foreground"}`}>
                     {user.isModerator ? "Remove Mod" : "Make Mod"}
