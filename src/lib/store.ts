@@ -25,6 +25,8 @@ import sonicLook from "@/assets/badges/sonic-look.png";
 import sonicNo from "@/assets/badges/sonic-no.png";
 import sonicPose from "@/assets/badges/sonic-pose.png";
 import robloxCool from "@/assets/badges/roblox-cool.png";
+import epsteinSmile from "@/assets/badges/epstein-smile.png";
+import shrekLook from "@/assets/badges/shrek-look.png";
 
 export interface Badge {
   id: string;
