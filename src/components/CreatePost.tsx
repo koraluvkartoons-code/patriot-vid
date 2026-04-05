@@ -2,7 +2,8 @@ import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Post, generateId, getCurrentUserId, getPosts, savePosts } from "@/lib/store";
+import { getCurrentUserId } from "@/lib/store";
+import { createPost } from "@/lib/api";
 import { ImagePlus, Video, Link, X } from "lucide-react";
 
 interface Props {
@@ -26,23 +27,17 @@ export default function CreatePost({ onNeedSetup, onCreated }: Props) {
     reader.readAsDataURL(f);
   };
 
-  const submit = () => {
+  const submit = async () => {
     const uid = getCurrentUserId();
     if (!uid) { onNeedSetup(); return; }
     if (!title.trim()) return;
-    const post: Post = {
-      id: generateId(),
+    await createPost({
       userId: uid,
       title: title.trim(),
       description: desc.trim(),
       mediaUrl: mediaUrl || undefined,
       mediaType,
-      likes: [],
-      createdAt: Date.now(),
-    };
-    const posts = getPosts();
-    posts.unshift(post);
-    savePosts(posts);
+    });
     setTitle(""); setDesc(""); setMediaUrl(""); setMediaType(undefined);
     onCreated();
   };

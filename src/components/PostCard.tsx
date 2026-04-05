@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Post, getCurrentUserId, getPosts, savePosts, getUsers } from "@/lib/store";
+import { type Post, type UserProfile, getCurrentUserId } from "@/lib/store";
+import { updatePost, deletePost as apiDeletePost, togglePostLike } from "@/lib/api";
 import UserBadge from "./UserBadge";
 import CommentSection from "./CommentSection";
 import { Heart, MessageCircle, Trash2, Edit, ExternalLink } from "lucide-react";
@@ -11,42 +12,32 @@ interface Props {
   post: Post;
   onNeedSetup: () => void;
   onRefresh: () => void;
+  profiles: Record<string, UserProfile>;
 }
 
-export default function PostCard({ post, onNeedSetup, onRefresh }: Props) {
+export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Props) {
   const [showComments, setShowComments] = useState(false);
   const [editing, setEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(post.title);
   const [editDesc, setEditDesc] = useState(post.description);
   const currentUser = getCurrentUserId();
-  const users = getUsers();
   const isAdmin = currentUser === "PatriotAdmin";
   const isOwner = currentUser === post.userId;
   const liked = currentUser ? post.likes.includes(currentUser) : false;
 
-  const toggleLike = () => {
+  const handleLike = async () => {
     if (!currentUser) { onNeedSetup(); return; }
-    const posts = getPosts();
-    const p = posts.find(x => x.id === post.id);
-    if (!p) return;
-    if (p.likes.includes(currentUser)) p.likes = p.likes.filter(l => l !== currentUser);
-    else p.likes.push(currentUser);
-    savePosts(posts);
+    await togglePostLike(post.id, currentUser);
     onRefresh();
   };
 
-  const deletePost = () => {
-    savePosts(getPosts().filter(p => p.id !== post.id));
+  const handleDelete = async () => {
+    await apiDeletePost(post.id);
     onRefresh();
   };
 
-  const saveEdit = () => {
-    const posts = getPosts();
-    const p = posts.find(x => x.id === post.id);
-    if (!p) return;
-    p.title = editTitle.trim() || p.title;
-    p.description = editDesc.trim();
-    savePosts(posts);
+  const saveEdit = async () => {
+    await updatePost(post.id, editTitle.trim() || post.title, editDesc.trim());
     setEditing(false);
     onRefresh();
   };
@@ -66,12 +57,12 @@ export default function PostCard({ post, onNeedSetup, onRefresh }: Props) {
       )}
       <div className="p-4">
         <div className="flex items-center justify-between mb-2">
-          <UserBadge userId={post.userId} />
+          <UserBadge userId={post.userId} profiles={profiles} />
           <div className="flex items-center gap-1">
             {(isOwner || isAdmin) && (
               <>
                 <button onClick={() => setEditing(!editing)}><Edit className="w-4 h-4 text-muted-foreground hover:text-accent" /></button>
-                <button onClick={deletePost}><Trash2 className="w-4 h-4 text-muted-foreground hover:text-destructive" /></button>
+                <button onClick={handleDelete}><Trash2 className="w-4 h-4 text-muted-foreground hover:text-destructive" /></button>
               </>
             )}
           </div>
@@ -92,7 +83,7 @@ export default function PostCard({ post, onNeedSetup, onRefresh }: Props) {
           </>
         )}
         <div className="flex items-center gap-4 text-sm">
-          <button onClick={toggleLike} className={`flex items-center gap-1 transition-colors ${liked ? "text-primary" : "text-muted-foreground hover:text-primary"}`}>
+          <button onClick={handleLike} className={`flex items-center gap-1 transition-colors ${liked ? "text-primary" : "text-muted-foreground hover:text-primary"}`}>
             <Heart className={`w-4 h-4 ${liked ? "fill-primary" : ""}`} /> {post.likes.length}
           </button>
           <button onClick={() => setShowComments(!showComments)} className="flex items-center gap-1 text-muted-foreground hover:text-accent transition-colors">
@@ -102,7 +93,7 @@ export default function PostCard({ post, onNeedSetup, onRefresh }: Props) {
         </div>
         {showComments && (
           <div className="mt-3 pt-3 border-t border-border">
-            <CommentSection postId={post.id} onNeedSetup={onNeedSetup} refresh={0} />
+            <CommentSection postId={post.id} onNeedSetup={onNeedSetup} profiles={profiles} />
           </div>
         )}
       </div>

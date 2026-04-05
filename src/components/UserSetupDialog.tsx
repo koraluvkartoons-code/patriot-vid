@@ -2,7 +2,8 @@ import { useState, useRef } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { UserProfile, getUsers, saveUsers, setCurrentUserId } from "@/lib/store";
+import { type UserProfile, setCurrentUserId } from "@/lib/store";
+import { upsertProfile } from "@/lib/api";
 import { Camera } from "lucide-react";
 
 interface Props {
@@ -23,13 +24,10 @@ export default function UserSetupDialog({ open, onComplete }: Props) {
     reader.readAsDataURL(f);
   };
 
-  const submit = () => {
+  const submit = async () => {
     const trimmed = name.trim();
     if (!trimmed) return;
-    const users = getUsers();
-    const profile: UserProfile = { displayName: trimmed, avatar, badges: [] };
-    users[trimmed] = profile;
-    saveUsers(users);
+    await upsertProfile({ displayName: trimmed, avatar, badges: [] });
     setCurrentUserId(trimmed);
     onComplete(trimmed);
   };
