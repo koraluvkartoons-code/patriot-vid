@@ -46,20 +46,10 @@ export const AVAILABLE_BADGES: Badge[] = [
 
 export interface UserProfile {
   displayName: string;
-  avatar: string; // base64 or URL
-  badges: string[]; // badge IDs
+  avatar: string;
+  badges: string[];
   isAdmin?: boolean;
   isModerator?: boolean;
-}
-
-export interface Comment {
-  id: string;
-  postId: string;
-  userId: string;
-  text: string;
-  mediaUrl?: string;
-  mediaType?: "image" | "video" | "gif" | "link";
-  createdAt: number;
 }
 
 export interface Post {
@@ -68,89 +58,26 @@ export interface Post {
   title: string;
   description: string;
   mediaUrl?: string;
-  mediaType?: "image" | "video" | "link";
+  mediaType?: string;
   likes: string[];
-  createdAt: number;
+  createdAt: string;
 }
 
-const STORAGE_KEYS = {
-  currentUser: "patriotvid_currentUser",
-  users: "patriotvid_users",
-  posts: "patriotvid_posts",
-  comments: "patriotvid_comments",
-};
-
-function load<T>(key: string, fallback: T): T {
-  try {
-    const d = localStorage.getItem(key);
-    if (!d) return fallback;
-    const parsed = JSON.parse(d);
-    return parsed ?? fallback;
-  } catch (e) {
-    console.error("Failed to load from localStorage:", key, e);
-    return fallback;
-  }
+export interface Comment {
+  id: string;
+  postId: string;
+  userId: string;
+  text: string;
+  mediaUrl?: string;
+  mediaType?: string;
+  createdAt: string;
 }
 
-function save(key: string, data: unknown) {
-  try {
-    localStorage.setItem(key, JSON.stringify(data));
-  } catch (e) {
-    console.error("Failed to save to localStorage:", key, e);
-    // If quota exceeded, try to alert user
-    if (e instanceof DOMException && e.name === "QuotaExceededError") {
-      console.warn("LocalStorage full! Consider removing old posts with large media.");
-    }
-  }
-}
-
-// Initialize admin
-function ensureAdmin(users: Record<string, UserProfile>): Record<string, UserProfile> {
-  if (!users["PatriotAdmin"]) {
-    users["PatriotAdmin"] = {
-      displayName: "PatriotAdmin",
-      avatar: "",
-      badges: [],
-      isAdmin: true,
-    };
-  } else {
-    users["PatriotAdmin"].isAdmin = true;
-  }
-  return users;
-}
-
-export function getUsers(): Record<string, UserProfile> {
-  return ensureAdmin(load(STORAGE_KEYS.users, {}));
-}
-
-export function saveUsers(users: Record<string, UserProfile>) {
-  save(STORAGE_KEYS.users, ensureAdmin(users));
-}
-
+// Current user ID is still stored locally (session identity)
 export function getCurrentUserId(): string | null {
-  return localStorage.getItem(STORAGE_KEYS.currentUser);
+  return localStorage.getItem("patriotvid_currentUser");
 }
 
 export function setCurrentUserId(id: string) {
-  localStorage.setItem(STORAGE_KEYS.currentUser, id);
-}
-
-export function getPosts(): Post[] {
-  return load<Post[]>(STORAGE_KEYS.posts, []);
-}
-
-export function savePosts(posts: Post[]) {
-  save(STORAGE_KEYS.posts, posts);
-}
-
-export function getComments(): Comment[] {
-  return load<Comment[]>(STORAGE_KEYS.comments, []);
-}
-
-export function saveComments(comments: Comment[]) {
-  save(STORAGE_KEYS.comments, comments);
-}
-
-export function generateId(): string {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  localStorage.setItem("patriotvid_currentUser", id);
 }
