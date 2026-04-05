@@ -71,6 +71,9 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
           <div className="flex items-center gap-1">
             {(isOwner || isAdmin) && (
               <>
+                <button onClick={handlePin} title={post.isPinned ? "Unpin" : "Pin"}>
+                  <Pin className={`w-4 h-4 ${post.isPinned ? "text-primary fill-primary" : "text-muted-foreground hover:text-primary"}`} />
+                </button>
                 <button onClick={() => setEditing(!editing)}><Edit className="w-4 h-4 text-muted-foreground hover:text-accent" /></button>
                 <button onClick={handleDelete}><Trash2 className="w-4 h-4 text-muted-foreground hover:text-destructive" /></button>
               </>
