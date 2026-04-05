@@ -1,9 +1,9 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { type UserProfile, setCurrentUserId } from "@/lib/store";
-import { upsertProfile } from "@/lib/api";
+import { type UserProfile, setCurrentUserId, getCurrentUserId } from "@/lib/store";
+import { upsertProfile, fetchProfiles } from "@/lib/api";
 import { Camera } from "lucide-react";
 
 interface Props {
@@ -14,7 +14,25 @@ interface Props {
 export default function UserSetupDialog({ open, onComplete }: Props) {
   const [name, setName] = useState("");
   const [avatar, setAvatar] = useState("");
+  const [existingProfile, setExistingProfile] = useState<UserProfile | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  // Pre-fill with current user data if returning
+  useEffect(() => {
+    if (open) {
+      const current = getCurrentUserId();
+      if (current) {
+        setName(current);
+        fetchProfiles().then(profiles => {
+          const p = profiles[current];
+          if (p) {
+            setAvatar(p.avatar || "");
+            setExistingProfile(p);
+          }
+        });
+      }
+    }
+  }, [open]);
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
@@ -27,9 +45,34 @@ export default function UserSetupDialog({ open, onComplete }: Props) {
   const submit = async () => {
     const trimmed = name.trim();
     if (!trimmed) return;
-    await upsertProfile({ displayName: trimmed, avatar, badges: [] });
+    // Preserve existing badges, admin, and moderator status
+    await upsertProfile({
+      displayName: trimmed,
+      avatar,
+      badges: existingProfile?.badges || [],
+      isAdmin: existingProfile?.isAdmin,
+      isModerator: existingProfile?.isModerator,
+    });
     setCurrentUserId(trimmed);
     onComplete(trimmed);
+  };
+
+  // When name changes, check if that profile already exists to preserve their data
+  const handleNameChange = (val: string) => {
+    setName(val);
+  };
+
+  const handleNameBlur = async () => {
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    const profiles = await fetchProfiles();
+    const p = profiles[trimmed];
+    if (p) {
+      setExistingProfile(p);
+      if (p.avatar && !avatar) setAvatar(p.avatar);
+    } else {
+      setExistingProfile(null);
+    }
   };
 
   return (
@@ -54,7 +97,8 @@ export default function UserSetupDialog({ open, onComplete }: Props) {
           <Input
             placeholder="Display name..."
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => handleNameChange(e.target.value)}
+            onBlur={handleNameBlur}
             maxLength={24}
             className="bg-muted border-border text-foreground placeholder:text-muted-foreground"
             onKeyDown={(e) => e.key === "Enter" && submit()}
