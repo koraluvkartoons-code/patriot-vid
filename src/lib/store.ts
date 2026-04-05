@@ -16,6 +16,15 @@ import brownPepe from "@/assets/badges/brown-pepe.png";
 import poggersPepe from "@/assets/badges/poggers-pepe.png";
 import surprisedPikachu from "@/assets/badges/surprised-pikachu.png";
 import laughingGuy from "@/assets/badges/laughing-guy.png";
+import dabbingSteve from "@/assets/badges/dabbing-steve.png";
+import minecraftPepe from "@/assets/badges/minecraft-pepe.png";
+import animePepe from "@/assets/badges/anime-pepe.png";
+import elonWave from "@/assets/badges/elon-wave.png";
+import gamerPepe from "@/assets/badges/gamer-pepe.png";
+import sonicLook from "@/assets/badges/sonic-look.png";
+import sonicNo from "@/assets/badges/sonic-no.png";
+import sonicPose from "@/assets/badges/sonic-pose.png";
+import robloxCool from "@/assets/badges/roblox-cool.png";
 
 export interface Badge {
   id: string;
@@ -42,6 +51,15 @@ export const AVAILABLE_BADGES: Badge[] = [
   { id: "poggers-pepe", name: "Poggers Pepe", image: poggersPepe },
   { id: "surprised-pikachu", name: "Surprised Pikachu", image: surprisedPikachu },
   { id: "laughing-guy", name: "Laughing Guy", image: laughingGuy },
+  { id: "dabbing-steve", name: "Dabbing Steve", image: dabbingSteve },
+  { id: "minecraft-pepe", name: "Minecraft Pepe", image: minecraftPepe },
+  { id: "anime-pepe", name: "Anime Pepe", image: animePepe },
+  { id: "elon-wave", name: "Elon Wave", image: elonWave },
+  { id: "gamer-pepe", name: "Gamer Pepe", image: gamerPepe },
+  { id: "sonic-look", name: "Sonic Look", image: sonicLook },
+  { id: "sonic-no", name: "Sonic No", image: sonicNo },
+  { id: "sonic-pose", name: "Sonic Pose", image: sonicPose },
+  { id: "roblox-cool", name: "Roblox Cool", image: robloxCool },
 ];
 
 export interface UserProfile {

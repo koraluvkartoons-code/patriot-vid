@@ -1,3 +1,4 @@
+import { Shield } from "lucide-react";
 import { AVAILABLE_BADGES, type UserProfile } from "@/lib/store";
 
 interface Props {
@@ -15,7 +16,7 @@ export default function UserBadge({ userId, size = "md", profiles }: Props) {
   const badgeImgSize = size === "sm" ? "w-4 h-4" : "w-5 h-5";
 
   return (
-    <div className="flex items-center gap-1.5">
+    <div className="flex items-center gap-1.5 flex-wrap">
       {user.avatar ? (
         <img src={user.avatar} alt="" className={`${avatarSize} rounded-full object-cover border border-border`} />
       ) : (
@@ -24,8 +25,10 @@ export default function UserBadge({ userId, size = "md", profiles }: Props) {
         </div>
       )}
       <span className={`font-semibold text-foreground ${textSize}`}>{user.displayName}</span>
-      {user.isAdmin && <span className="gold-badge-lg" title="Admin">✅</span>}
-      {user.isModerator && <span className="text-accent text-xs" title="Moderator">🛡️</span>}
+      {user.isAdmin && <span className="text-xs" title="Admin">✅</span>}
+      {user.isModerator && (
+        <span title="Moderator"><Shield className={`${size === "sm" ? "w-3.5 h-3.5" : "w-4 h-4"} text-accent`} /></span>
+      )}
       {user.badges?.map((bid) => {
         const badge = AVAILABLE_BADGES.find((b) => b.id === bid);
         if (!badge) return null;
