@@ -36,6 +36,11 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
     onRefresh();
   };
 
+  const handlePin = async () => {
+    await togglePinPost(post.id, !post.isPinned);
+    onRefresh();
+  };
+
   const saveEdit = async () => {
     await updatePost(post.id, editTitle.trim() || post.title, editDesc.trim());
     setEditing(false);
