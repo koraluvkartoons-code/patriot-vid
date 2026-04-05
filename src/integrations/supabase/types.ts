@@ -14,7 +14,110 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      comments: {
+        Row: {
+          created_at: string
+          id: string
+          media_type: string | null
+          media_url: string | null
+          post_id: string
+          text: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          media_type?: string | null
+          media_url?: string | null
+          post_id: string
+          text?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          media_type?: string | null
+          media_url?: string | null
+          post_id?: string
+          text?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      posts: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          likes: string[] | null
+          media_type: string | null
+          media_url: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          likes?: string[] | null
+          media_type?: string | null
+          media_url?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          likes?: string[] | null
+          media_type?: string | null
+          media_url?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar: string | null
+          badges: string[] | null
+          created_at: string
+          display_name: string
+          id: string
+          is_admin: boolean | null
+          is_moderator: boolean | null
+        }
+        Insert: {
+          avatar?: string | null
+          badges?: string[] | null
+          created_at?: string
+          display_name: string
+          id?: string
+          is_admin?: boolean | null
+          is_moderator?: boolean | null
+        }
+        Update: {
+          avatar?: string | null
+          badges?: string[] | null
+          created_at?: string
+          display_name?: string
+          id?: string
+          is_admin?: boolean | null
+          is_moderator?: boolean | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
