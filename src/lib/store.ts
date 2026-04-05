@@ -62,6 +62,8 @@ export const AVAILABLE_BADGES: Badge[] = [
   { id: "sonic-no", name: "Sonic No", image: sonicNo },
   { id: "sonic-pose", name: "Sonic Pose", image: sonicPose },
   { id: "roblox-cool", name: "Roblox Cool", image: robloxCool },
+  { id: "epstein-smile", name: "Epstein Smile", image: epsteinSmile },
+  { id: "shrek-look", name: "Shrek Look", image: shrekLook },
 ];
 
 export interface UserProfile {
