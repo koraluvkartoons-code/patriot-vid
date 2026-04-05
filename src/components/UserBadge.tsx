@@ -27,7 +27,7 @@ export default function UserBadge({ userId, size = "md", profiles }: Props) {
       <span className={`font-semibold text-foreground ${textSize}`}>{user.displayName}</span>
       {user.isAdmin && <span className="text-xs" title="Admin">✅</span>}
       {user.isModerator && (
-        <Shield className={`${size === "sm" ? "w-3.5 h-3.5" : "w-4 h-4"} text-accent`} title="Moderator" />
+        <span title="Moderator"><Shield className={`${size === "sm" ? "w-3.5 h-3.5" : "w-4 h-4"} text-accent`} /></span>
       )}
       {user.badges?.map((bid) => {
         const badge = AVAILABLE_BADGES.find((b) => b.id === bid);
