@@ -83,12 +83,25 @@ const STORAGE_KEYS = {
 function load<T>(key: string, fallback: T): T {
   try {
     const d = localStorage.getItem(key);
-    return d ? JSON.parse(d) : fallback;
-  } catch { return fallback; }
+    if (!d) return fallback;
+    const parsed = JSON.parse(d);
+    return parsed ?? fallback;
+  } catch (e) {
+    console.error("Failed to load from localStorage:", key, e);
+    return fallback;
+  }
 }
 
 function save(key: string, data: unknown) {
-  localStorage.setItem(key, JSON.stringify(data));
+  try {
+    localStorage.setItem(key, JSON.stringify(data));
+  } catch (e) {
+    console.error("Failed to save to localStorage:", key, e);
+    // If quota exceeded, try to alert user
+    if (e instanceof DOMException && e.name === "QuotaExceededError") {
+      console.warn("LocalStorage full! Consider removing old posts with large media.");
+    }
+  }
 }
 
 // Initialize admin
