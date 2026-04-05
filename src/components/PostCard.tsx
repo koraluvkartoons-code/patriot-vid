@@ -3,7 +3,7 @@ import { type Post, type UserProfile, getCurrentUserId } from "@/lib/store";
 import { updatePost, deletePost as apiDeletePost, togglePostLike } from "@/lib/api";
 import UserBadge from "./UserBadge";
 import CommentSection from "./CommentSection";
-import { Heart, MessageCircle, Trash2, Edit, ExternalLink } from "lucide-react";
+import { Heart, MessageCircle, Trash2, Edit, ExternalLink, Pin } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
