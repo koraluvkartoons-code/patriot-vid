@@ -45,13 +45,15 @@ export default function UserSetupDialog({ open, onComplete }: Props) {
   const submit = async () => {
     const trimmed = name.trim();
     if (!trimmed) return;
-    // Preserve existing badges, admin, and moderator status
+    // Always fetch latest profile from DB to preserve badges, mod, admin
+    const profiles = await fetchProfiles();
+    const existing = profiles[trimmed];
     await upsertProfile({
       displayName: trimmed,
-      avatar,
-      badges: existingProfile?.badges || [],
-      isAdmin: existingProfile?.isAdmin,
-      isModerator: existingProfile?.isModerator,
+      avatar: avatar || existing?.avatar || "",
+      badges: existing?.badges || [],
+      isAdmin: existing?.isAdmin,
+      isModerator: existing?.isModerator,
     });
     setCurrentUserId(trimmed);
     onComplete(trimmed);
