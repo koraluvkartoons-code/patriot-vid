@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { type Post, type UserProfile, getCurrentUserId } from "@/lib/store";
-import { updatePost, deletePost as apiDeletePost, togglePostLike } from "@/lib/api";
+import { updatePost, deletePost as apiDeletePost, togglePostLike, togglePinPost } from "@/lib/api";
 import UserBadge from "./UserBadge";
 import CommentSection from "./CommentSection";
-import { Heart, MessageCircle, Trash2, Edit, ExternalLink } from "lucide-react";
+import { Heart, MessageCircle, Trash2, Edit, ExternalLink, Pin } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -36,6 +36,11 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
     onRefresh();
   };
 
+  const handlePin = async () => {
+    await togglePinPost(post.id, !post.isPinned);
+    onRefresh();
+  };
+
   const saveEdit = async () => {
     await updatePost(post.id, editTitle.trim() || post.title, editDesc.trim());
     setEditing(false);
@@ -43,7 +48,12 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
   };
 
   return (
-    <div className="gradient-card border border-border rounded-xl overflow-hidden glow-purple transition-all hover:glow-pink">
+    <div className={`gradient-card border rounded-xl overflow-hidden glow-purple transition-all hover:glow-pink ${post.isPinned ? "border-primary ring-1 ring-primary/30" : "border-border"}`}>
+      {post.isPinned && (
+        <div className="flex items-center gap-1 px-3 py-1 bg-primary/10 text-primary text-xs font-semibold">
+          <Pin className="w-3 h-3 fill-primary" /> Pinned Post
+        </div>
+      )}
       {post.mediaUrl && (
         post.mediaType === "video" ? (
           <video src={post.mediaUrl} controls className="w-full max-h-96 object-contain bg-background" />
@@ -61,6 +71,9 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
           <div className="flex items-center gap-1">
             {(isOwner || isAdmin) && (
               <>
+                <button onClick={handlePin} title={post.isPinned ? "Unpin" : "Pin"}>
+                  <Pin className={`w-4 h-4 ${post.isPinned ? "text-primary fill-primary" : "text-muted-foreground hover:text-primary"}`} />
+                </button>
                 <button onClick={() => setEditing(!editing)}><Edit className="w-4 h-4 text-muted-foreground hover:text-accent" /></button>
                 <button onClick={handleDelete}><Trash2 className="w-4 h-4 text-muted-foreground hover:text-destructive" /></button>
               </>
