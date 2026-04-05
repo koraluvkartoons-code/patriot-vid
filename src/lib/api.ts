@@ -41,7 +41,7 @@ export async function updateProfileMod(displayName: string, isMod: boolean) {
 
 // ===== POSTS =====
 export async function fetchPosts(): Promise<Post[]> {
-  const { data } = await supabase.from("posts").select("*").order("created_at", { ascending: false });
+  const { data } = await supabase.from("posts").select("*").order("is_pinned", { ascending: false }).order("created_at", { ascending: false });
   return (data || []).map(p => ({
     id: p.id,
     userId: p.user_id,
@@ -51,7 +51,12 @@ export async function fetchPosts(): Promise<Post[]> {
     mediaType: p.media_type || undefined,
     likes: p.likes || [],
     createdAt: p.created_at,
+    isPinned: p.is_pinned || false,
   }));
+}
+
+export async function togglePinPost(id: string, pinned: boolean) {
+  await supabase.from("posts").update({ is_pinned: pinned }).eq("id", id);
 }
 
 export async function createPost(post: { userId: string; title: string; description: string; mediaUrl?: string; mediaType?: string }) {

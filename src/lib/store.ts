@@ -79,6 +79,7 @@ export interface Post {
   mediaType?: string;
   likes: string[];
   createdAt: string;
+  isPinned?: boolean;
 }
 
 export interface Comment {

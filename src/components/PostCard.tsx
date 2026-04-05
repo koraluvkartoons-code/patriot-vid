@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { type Post, type UserProfile, getCurrentUserId } from "@/lib/store";
-import { updatePost, deletePost as apiDeletePost, togglePostLike } from "@/lib/api";
+import { updatePost, deletePost as apiDeletePost, togglePostLike, togglePinPost } from "@/lib/api";
 import UserBadge from "./UserBadge";
 import CommentSection from "./CommentSection";
 import { Heart, MessageCircle, Trash2, Edit, ExternalLink, Pin } from "lucide-react";
