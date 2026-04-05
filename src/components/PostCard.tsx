@@ -48,7 +48,12 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
   };
 
   return (
-    <div className="gradient-card border border-border rounded-xl overflow-hidden glow-purple transition-all hover:glow-pink">
+    <div className={`gradient-card border rounded-xl overflow-hidden glow-purple transition-all hover:glow-pink ${post.isPinned ? "border-primary ring-1 ring-primary/30" : "border-border"}`}>
+      {post.isPinned && (
+        <div className="flex items-center gap-1 px-3 py-1 bg-primary/10 text-primary text-xs font-semibold">
+          <Pin className="w-3 h-3 fill-primary" /> Pinned Post
+        </div>
+      )}
       {post.mediaUrl && (
         post.mediaType === "video" ? (
           <video src={post.mediaUrl} controls className="w-full max-h-96 object-contain bg-background" />
