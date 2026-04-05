@@ -57,6 +57,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          is_pinned: boolean
           likes: string[] | null
           media_type: string | null
           media_url: string | null
@@ -68,6 +69,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          is_pinned?: boolean
           likes?: string[] | null
           media_type?: string | null
           media_url?: string | null
@@ -79,6 +81,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          is_pinned?: boolean
           likes?: string[] | null
           media_type?: string | null
           media_url?: string | null
