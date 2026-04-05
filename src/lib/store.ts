@@ -25,6 +25,8 @@ import sonicLook from "@/assets/badges/sonic-look.png";
 import sonicNo from "@/assets/badges/sonic-no.png";
 import sonicPose from "@/assets/badges/sonic-pose.png";
 import robloxCool from "@/assets/badges/roblox-cool.png";
+import epsteinSmile from "@/assets/badges/epstein-smile.png";
+import shrekLook from "@/assets/badges/shrek-look.png";
 
 export interface Badge {
   id: string;
@@ -60,6 +62,8 @@ export const AVAILABLE_BADGES: Badge[] = [
   { id: "sonic-no", name: "Sonic No", image: sonicNo },
   { id: "sonic-pose", name: "Sonic Pose", image: sonicPose },
   { id: "roblox-cool", name: "Roblox Cool", image: robloxCool },
+  { id: "epstein-smile", name: "Epstein Smile", image: epsteinSmile },
+  { id: "shrek-look", name: "Shrek Look", image: shrekLook },
 ];
 
 export interface UserProfile {
