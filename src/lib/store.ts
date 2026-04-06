@@ -108,6 +108,14 @@ export const AVAILABLE_BADGES: Badge[] = [
   { id: "minion-stare", name: "Minion Stare", image: minionStare },
   { id: "thousand-yard", name: "Thousand Yard Stare", image: thousandYard },
   { id: "trump-shrek", name: "Trump Shrek", image: trumpShrek },
+  { id: "turtle-shock", name: "Turtle Shock", image: turtleShock },
+  { id: "kanye-laugh", name: "Kanye Laugh", image: kanyeLaugh },
+  { id: "maga-jesus", name: "MAGA Jesus", image: magaJesus },
+  { id: "jesus-mosaic", name: "Jesus Mosaic", image: jesusMosaic },
+  { id: "naruto-fist", name: "Naruto Fist", image: narutoFist },
+  { id: "mario-yoshi", name: "Mario & Yoshi", image: marioYoshi },
+  { id: "kirby-hehe", name: "Kirby Hehe", image: kirbyHehe },
+  { id: "handsome-squidward", name: "Handsome Squidward", image: handsomeSquidward },
 ];
 
 export interface UserProfile {
