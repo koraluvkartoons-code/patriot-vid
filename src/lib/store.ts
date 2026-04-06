@@ -45,6 +45,14 @@ import pepeSalute from "@/assets/badges/pepe-salute.png";
 import minionStare from "@/assets/badges/minion-stare.png";
 import thousandYard from "@/assets/badges/thousand-yard.png";
 import trumpShrek from "@/assets/badges/trump-shrek.png";
+import turtleShock from "@/assets/badges/turtle-shock.png";
+import kanyeLaugh from "@/assets/badges/kanye-laugh.png";
+import magaJesus from "@/assets/badges/maga-jesus.png";
+import jesusMosaic from "@/assets/badges/jesus-mosaic.png";
+import narutoFist from "@/assets/badges/naruto-fist.png";
+import marioYoshi from "@/assets/badges/mario-yoshi.png";
+import kirbyHehe from "@/assets/badges/kirby-hehe.png";
+import handsomeSquidward from "@/assets/badges/handsome-squidward.png";
 
 export interface Badge {
   id: string;
