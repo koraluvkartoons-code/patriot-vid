@@ -37,6 +37,14 @@ import saitamaLook from "@/assets/badges/saitama-look.png";
 import trumpFist from "@/assets/badges/trump-fist.png";
 import trumpPoint from "@/assets/badges/trump-point.png";
 import npcCurrentThing from "@/assets/badges/npc-current-thing.png";
+import pepega from "@/assets/badges/pepega.png";
+import hypersPepe from "@/assets/badges/hypers-pepe.png";
+import emojiComputer from "@/assets/badges/emoji-computer.png";
+import mikeWazowski from "@/assets/badges/mike-wazowski.png";
+import pepeSalute from "@/assets/badges/pepe-salute.png";
+import minionStare from "@/assets/badges/minion-stare.png";
+import thousandYard from "@/assets/badges/thousand-yard.png";
+import trumpShrek from "@/assets/badges/trump-shrek.png";
 
 export interface Badge {
   id: string;
@@ -84,6 +92,14 @@ export const AVAILABLE_BADGES: Badge[] = [
   { id: "trump-fist", name: "Trump Fist", image: trumpFist },
   { id: "trump-point", name: "Trump Point", image: trumpPoint },
   { id: "npc-current-thing", name: "NPC Current Thing", image: npcCurrentThing },
+  { id: "pepega", name: "Pepega", image: pepega },
+  { id: "hypers-pepe", name: "Hypers Pepe", image: hypersPepe },
+  { id: "emoji-computer", name: "Emoji Computer", image: emojiComputer },
+  { id: "mike-wazowski", name: "Mike Wazowski", image: mikeWazowski },
+  { id: "pepe-salute", name: "Pepe Salute", image: pepeSalute },
+  { id: "minion-stare", name: "Minion Stare", image: minionStare },
+  { id: "thousand-yard", name: "Thousand Yard Stare", image: thousandYard },
+  { id: "trump-shrek", name: "Trump Shrek", image: trumpShrek },
 ];
 
 export interface UserProfile {
