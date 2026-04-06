@@ -27,6 +27,16 @@ import sonicPose from "@/assets/badges/sonic-pose.png";
 import robloxCool from "@/assets/badges/roblox-cool.png";
 import epsteinSmile from "@/assets/badges/epstein-smile.png";
 import shrekLook from "@/assets/badges/shrek-look.png";
+import luffyCry from "@/assets/badges/luffy-cry.png";
+import vegetaRain from "@/assets/badges/vegeta-rain.png";
+import comradeDoge from "@/assets/badges/comrade-doge.png";
+import hammerSickle from "@/assets/badges/hammer-sickle.png";
+import patriotLion from "@/assets/badges/patriot-lion.png";
+import amongUsBat from "@/assets/badges/among-us-bat.png";
+import saitamaLook from "@/assets/badges/saitama-look.png";
+import trumpFist from "@/assets/badges/trump-fist.png";
+import trumpPoint from "@/assets/badges/trump-point.png";
+import npcCurrentThing from "@/assets/badges/npc-current-thing.png";
 
 export interface Badge {
   id: string;
