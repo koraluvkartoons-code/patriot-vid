@@ -74,6 +74,16 @@ export const AVAILABLE_BADGES: Badge[] = [
   { id: "roblox-cool", name: "Roblox Cool", image: robloxCool },
   { id: "epstein-smile", name: "Epstein Smile", image: epsteinSmile },
   { id: "shrek-look", name: "Shrek Look", image: shrekLook },
+  { id: "luffy-cry", name: "Luffy Cry", image: luffyCry },
+  { id: "vegeta-rain", name: "Vegeta Rain", image: vegetaRain },
+  { id: "comrade-doge", name: "Comrade Doge", image: comradeDoge },
+  { id: "hammer-sickle", name: "Hammer & Sickle", image: hammerSickle },
+  { id: "patriot-lion", name: "Patriot Lion", image: patriotLion },
+  { id: "among-us-bat", name: "Among Us Bat", image: amongUsBat },
+  { id: "saitama-look", name: "Saitama Look", image: saitamaLook },
+  { id: "trump-fist", name: "Trump Fist", image: trumpFist },
+  { id: "trump-point", name: "Trump Point", image: trumpPoint },
+  { id: "npc-current-thing", name: "NPC Current Thing", image: npcCurrentThing },
 ];
 
 export interface UserProfile {
