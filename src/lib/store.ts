@@ -37,6 +37,14 @@ import saitamaLook from "@/assets/badges/saitama-look.png";
 import trumpFist from "@/assets/badges/trump-fist.png";
 import trumpPoint from "@/assets/badges/trump-point.png";
 import npcCurrentThing from "@/assets/badges/npc-current-thing.png";
+import pepega from "@/assets/badges/pepega.png";
+import hypersPepe from "@/assets/badges/hypers-pepe.png";
+import emojiComputer from "@/assets/badges/emoji-computer.png";
+import mikeWazowski from "@/assets/badges/mike-wazowski.png";
+import pepeSalute from "@/assets/badges/pepe-salute.png";
+import minionStare from "@/assets/badges/minion-stare.png";
+import thousandYard from "@/assets/badges/thousand-yard.png";
+import trumpShrek from "@/assets/badges/trump-shrek.png";
 
 export interface Badge {
   id: string;
