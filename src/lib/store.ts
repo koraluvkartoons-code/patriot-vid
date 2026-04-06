@@ -92,6 +92,14 @@ export const AVAILABLE_BADGES: Badge[] = [
   { id: "trump-fist", name: "Trump Fist", image: trumpFist },
   { id: "trump-point", name: "Trump Point", image: trumpPoint },
   { id: "npc-current-thing", name: "NPC Current Thing", image: npcCurrentThing },
+  { id: "pepega", name: "Pepega", image: pepega },
+  { id: "hypers-pepe", name: "Hypers Pepe", image: hypersPepe },
+  { id: "emoji-computer", name: "Emoji Computer", image: emojiComputer },
+  { id: "mike-wazowski", name: "Mike Wazowski", image: mikeWazowski },
+  { id: "pepe-salute", name: "Pepe Salute", image: pepeSalute },
+  { id: "minion-stare", name: "Minion Stare", image: minionStare },
+  { id: "thousand-yard", name: "Thousand Yard Stare", image: thousandYard },
+  { id: "trump-shrek", name: "Trump Shrek", image: trumpShrek },
 ];
 
 export interface UserProfile {
