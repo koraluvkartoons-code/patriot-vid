@@ -45,6 +45,14 @@ import pepeSalute from "@/assets/badges/pepe-salute.png";
 import minionStare from "@/assets/badges/minion-stare.png";
 import thousandYard from "@/assets/badges/thousand-yard.png";
 import trumpShrek from "@/assets/badges/trump-shrek.png";
+import turtleShock from "@/assets/badges/turtle-shock.png";
+import kanyeLaugh from "@/assets/badges/kanye-laugh.png";
+import magaJesus from "@/assets/badges/maga-jesus.png";
+import jesusMosaic from "@/assets/badges/jesus-mosaic.png";
+import narutoFist from "@/assets/badges/naruto-fist.png";
+import marioYoshi from "@/assets/badges/mario-yoshi.png";
+import kirbyHehe from "@/assets/badges/kirby-hehe.png";
+import handsomeSquidward from "@/assets/badges/handsome-squidward.png";
 
 export interface Badge {
   id: string;
@@ -100,6 +108,14 @@ export const AVAILABLE_BADGES: Badge[] = [
   { id: "minion-stare", name: "Minion Stare", image: minionStare },
   { id: "thousand-yard", name: "Thousand Yard Stare", image: thousandYard },
   { id: "trump-shrek", name: "Trump Shrek", image: trumpShrek },
+  { id: "turtle-shock", name: "Turtle Shock", image: turtleShock },
+  { id: "kanye-laugh", name: "Kanye Laugh", image: kanyeLaugh },
+  { id: "maga-jesus", name: "MAGA Jesus", image: magaJesus },
+  { id: "jesus-mosaic", name: "Jesus Mosaic", image: jesusMosaic },
+  { id: "naruto-fist", name: "Naruto Fist", image: narutoFist },
+  { id: "mario-yoshi", name: "Mario & Yoshi", image: marioYoshi },
+  { id: "kirby-hehe", name: "Kirby Hehe", image: kirbyHehe },
+  { id: "handsome-squidward", name: "Handsome Squidward", image: handsomeSquidward },
 ];
 
 export interface UserProfile {
