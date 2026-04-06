@@ -27,6 +27,16 @@ import sonicPose from "@/assets/badges/sonic-pose.png";
 import robloxCool from "@/assets/badges/roblox-cool.png";
 import epsteinSmile from "@/assets/badges/epstein-smile.png";
 import shrekLook from "@/assets/badges/shrek-look.png";
+import luffyCry from "@/assets/badges/luffy-cry.png";
+import vegetaRain from "@/assets/badges/vegeta-rain.png";
+import comradeDoge from "@/assets/badges/comrade-doge.png";
+import hammerSickle from "@/assets/badges/hammer-sickle.png";
+import patriotLion from "@/assets/badges/patriot-lion.png";
+import amongUsBat from "@/assets/badges/among-us-bat.png";
+import saitamaLook from "@/assets/badges/saitama-look.png";
+import trumpFist from "@/assets/badges/trump-fist.png";
+import trumpPoint from "@/assets/badges/trump-point.png";
+import npcCurrentThing from "@/assets/badges/npc-current-thing.png";
 
 export interface Badge {
   id: string;
@@ -64,6 +74,16 @@ export const AVAILABLE_BADGES: Badge[] = [
   { id: "roblox-cool", name: "Roblox Cool", image: robloxCool },
   { id: "epstein-smile", name: "Epstein Smile", image: epsteinSmile },
   { id: "shrek-look", name: "Shrek Look", image: shrekLook },
+  { id: "luffy-cry", name: "Luffy Cry", image: luffyCry },
+  { id: "vegeta-rain", name: "Vegeta Rain", image: vegetaRain },
+  { id: "comrade-doge", name: "Comrade Doge", image: comradeDoge },
+  { id: "hammer-sickle", name: "Hammer & Sickle", image: hammerSickle },
+  { id: "patriot-lion", name: "Patriot Lion", image: patriotLion },
+  { id: "among-us-bat", name: "Among Us Bat", image: amongUsBat },
+  { id: "saitama-look", name: "Saitama Look", image: saitamaLook },
+  { id: "trump-fist", name: "Trump Fist", image: trumpFist },
+  { id: "trump-point", name: "Trump Point", image: trumpPoint },
+  { id: "npc-current-thing", name: "NPC Current Thing", image: npcCurrentThing },
 ];
 
 export interface UserProfile {
