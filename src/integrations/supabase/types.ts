@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          is_archived: boolean
           media_type: string | null
           media_url: string | null
           post_id: string
@@ -27,6 +28,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          is_archived?: boolean
           media_type?: string | null
           media_url?: string | null
           post_id: string
@@ -36,6 +38,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          is_archived?: boolean
           media_type?: string | null
           media_url?: string | null
           post_id?: string
@@ -57,6 +60,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          is_archived: boolean
           is_pinned: boolean
           likes: string[] | null
           media_type: string | null
@@ -69,6 +73,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          is_archived?: boolean
           is_pinned?: boolean
           likes?: string[] | null
           media_type?: string | null
@@ -81,6 +86,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          is_archived?: boolean
           is_pinned?: boolean
           likes?: string[] | null
           media_type?: string | null
