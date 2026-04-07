@@ -3,8 +3,7 @@ import type { UserProfile, Post, Comment } from "@/lib/store";
 
 // ===== PROFILES =====
 export async function fetchProfiles(): Promise<Record<string, UserProfile>> {
-  const { data, error } = await supabase.from("profiles").select("*");
-  if (error) throw error;
+  const { data } = await supabase.from("profiles").select("*");
   const map: Record<string, UserProfile> = {};
   for (const p of data || []) {
     map[p.display_name] = {
@@ -42,40 +41,18 @@ export async function updateProfileMod(displayName: string, isMod: boolean) {
 
 // ===== POSTS =====
 export async function fetchPosts(): Promise<Post[]> {
-  const { data, error } = await supabase
-    .from("posts")
-    .select("id,user_id,title,description,media_type,likes,created_at,is_pinned")
-    .order("is_pinned", { ascending: false })
-    .order("created_at", { ascending: false });
-
-  if (error) throw error;
-
+  const { data } = await supabase.from("posts").select("*").order("is_pinned", { ascending: false }).order("created_at", { ascending: false });
   return (data || []).map(p => ({
     id: p.id,
     userId: p.user_id,
     title: p.title,
     description: p.description || "",
-    mediaUrl: undefined,
+    mediaUrl: p.media_url || undefined,
     mediaType: p.media_type || undefined,
     likes: p.likes || [],
     createdAt: p.created_at,
     isPinned: p.is_pinned || false,
   }));
-}
-
-export async function fetchPostMedia(id: string) {
-  const { data, error } = await supabase
-    .from("posts")
-    .select("media_url, media_type")
-    .eq("id", id)
-    .single();
-
-  if (error) throw error;
-
-  return {
-    mediaUrl: data.media_url || undefined,
-    mediaType: data.media_type || undefined,
-  };
 }
 
 export async function togglePinPost(id: string, pinned: boolean) {
@@ -98,7 +75,7 @@ export async function updatePost(id: string, title: string, description: string)
 }
 
 export async function deletePost(id: string) {
-  void id;
+  await supabase.from("posts").delete().eq("id", id);
 }
 
 export async function togglePostLike(postId: string, userId: string) {
@@ -112,8 +89,7 @@ export async function togglePostLike(postId: string, userId: string) {
 
 // ===== COMMENTS =====
 export async function fetchComments(postId: string): Promise<Comment[]> {
-  const { data, error } = await supabase.from("comments").select("*").eq("post_id", postId).order("created_at", { ascending: true });
-  if (error) throw error;
+  const { data } = await supabase.from("comments").select("*").eq("post_id", postId).order("created_at", { ascending: true });
   return (data || []).map(c => ({
     id: c.id,
     postId: c.post_id,
@@ -136,5 +112,5 @@ export async function createComment(comment: { postId: string; userId: string; t
 }
 
 export async function deleteComment(id: string) {
-  void id;
+  await supabase.from("comments").delete().eq("id", id);
 }

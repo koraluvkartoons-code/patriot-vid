@@ -18,17 +18,9 @@ export default function Index() {
   const [loading, setLoading] = useState(true);
 
   const loadData = useCallback(async () => {
-    setLoading(true);
-    const [postsResult, profilesResult] = await Promise.allSettled([fetchPosts(), fetchProfiles()]);
-
-    if (postsResult.status === "fulfilled") {
-      setPosts(postsResult.value);
-    }
-
-    if (profilesResult.status === "fulfilled") {
-      setProfiles(profilesResult.value);
-    }
-
+    const [p, pr] = await Promise.all([fetchPosts(), fetchProfiles()]);
+    setPosts(p);
+    setProfiles(pr);
     setLoading(false);
   }, []);
 

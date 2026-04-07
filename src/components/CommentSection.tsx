@@ -2,10 +2,10 @@ import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { getCurrentUserId, type UserProfile, type Comment as CommentType } from "@/lib/store";
-import { fetchComments, createComment } from "@/lib/api";
+import { fetchComments, createComment, deleteComment } from "@/lib/api";
 import UserBadge from "./UserBadge";
 import GiphyPicker from "./GiphyPicker";
-import { ImagePlus } from "lucide-react";
+import { ImagePlus, Trash2 } from "lucide-react";
 
 interface Props {
   postId: string;
@@ -20,6 +20,7 @@ export default function CommentSection({ postId, onNeedSetup, profiles }: Props)
   const [showGiphy, setShowGiphy] = useState(false);
   const [comments, setComments] = useState<CommentType[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
+  const currentUser = getCurrentUserId();
 
   const loadComments = async () => {
     const data = await fetchComments(postId);
@@ -48,13 +49,25 @@ export default function CommentSection({ postId, onNeedSetup, profiles }: Props)
     reader.readAsDataURL(f);
   };
 
+  const handleDelete = async (id: string) => {
+    await deleteComment(id);
+    loadComments();
+  };
+
+  const isAdmin = currentUser === "PatriotAdmin";
+
   return (
     <div className="space-y-3">
       {comments.map(c => (
         <div key={c.id} className="bg-muted/50 rounded-lg p-3">
           <div className="flex items-center justify-between mb-1">
             <UserBadge userId={c.userId} size="sm" profiles={profiles} />
-            <span className="text-[10px] text-muted-foreground">{new Date(c.createdAt).toLocaleString()}</span>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] text-muted-foreground">{new Date(c.createdAt).toLocaleString()}</span>
+              {(c.userId === currentUser || isAdmin) && (
+                <button onClick={() => handleDelete(c.id)}><Trash2 className="w-3 h-3 text-destructive" /></button>
+              )}
+            </div>
           </div>
           {c.text && <p className="text-foreground text-sm">{c.text}</p>}
           {c.mediaUrl && (
