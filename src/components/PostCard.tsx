@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { type Post, type UserProfile, getCurrentUserId } from "@/lib/store";
-import { updatePost, deletePost as apiDeletePost, togglePostLike, togglePinPost } from "@/lib/api";
+import { fetchPostMedia, updatePost, togglePostLike, togglePinPost } from "@/lib/api";
 import UserBadge from "./UserBadge";
 import CommentSection from "./CommentSection";
-import { Heart, MessageCircle, Trash2, Edit, ExternalLink, Pin } from "lucide-react";
+import { Heart, MessageCircle, Edit, ExternalLink, Pin } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -20,19 +20,43 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
   const [editing, setEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(post.title);
   const [editDesc, setEditDesc] = useState(post.description);
+  const [mediaUrl, setMediaUrl] = useState(post.mediaUrl);
+  const [mediaType, setMediaType] = useState(post.mediaType);
   const currentUser = getCurrentUserId();
   const isAdmin = currentUser === "PatriotAdmin";
   const isOwner = currentUser === post.userId;
   const liked = currentUser ? post.likes.includes(currentUser) : false;
 
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadMedia = async () => {
+      setMediaUrl(post.mediaUrl);
+      setMediaType(post.mediaType);
+
+      if (!post.mediaType || post.mediaUrl) return;
+
+      try {
+        const media = await fetchPostMedia(post.id);
+        if (cancelled) return;
+        setMediaUrl(media.mediaUrl);
+        setMediaType(media.mediaType);
+      } catch {
+        if (cancelled) return;
+        setMediaUrl(undefined);
+      }
+    };
+
+    loadMedia();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [post.id, post.mediaType, post.mediaUrl]);
+
   const handleLike = async () => {
     if (!currentUser) { onNeedSetup(); return; }
     await togglePostLike(post.id, currentUser);
-    onRefresh();
-  };
-
-  const handleDelete = async () => {
-    await apiDeletePost(post.id);
     onRefresh();
   };
 
@@ -54,15 +78,16 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
           <Pin className="w-3 h-3 fill-primary" /> Pinned Post
         </div>
       )}
-      {post.mediaUrl && (
-        post.mediaType === "video" ? (
-          <video src={post.mediaUrl} controls className="w-full max-h-96 object-contain bg-background" />
-        ) : post.mediaType === "link" ? (
-          <a href={post.mediaUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-3 bg-muted/50 text-primary hover:text-accent transition-colors">
-            <ExternalLink className="w-4 h-4" /> <span className="text-sm truncate">{post.mediaUrl}</span>
+      {mediaType && !mediaUrl && <div className="w-full h-40 bg-muted/50 animate-pulse" />}
+      {mediaUrl && (
+        mediaType === "video" ? (
+          <video src={mediaUrl} controls className="w-full max-h-96 object-contain bg-background" />
+        ) : mediaType === "link" ? (
+          <a href={mediaUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-3 bg-muted/50 text-primary hover:text-accent transition-colors">
+            <ExternalLink className="w-4 h-4" /> <span className="text-sm truncate">{mediaUrl}</span>
           </a>
         ) : (
-          <img src={post.mediaUrl} alt={post.title} className="w-full max-h-96 object-contain bg-background" />
+          <img src={mediaUrl} alt={post.title} className="w-full max-h-96 object-contain bg-background" />
         )
       )}
       <div className="p-4">
@@ -75,7 +100,6 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
                   <Pin className={`w-4 h-4 ${post.isPinned ? "text-primary fill-primary" : "text-muted-foreground hover:text-primary"}`} />
                 </button>
                 <button onClick={() => setEditing(!editing)}><Edit className="w-4 h-4 text-muted-foreground hover:text-accent" /></button>
-                <button onClick={handleDelete}><Trash2 className="w-4 h-4 text-muted-foreground hover:text-destructive" /></button>
               </>
             )}
           </div>
