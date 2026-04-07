@@ -1,6 +1,19 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { UserProfile, Post, Comment } from "@/lib/store";
 
+// ===== STORAGE HELPERS =====
+export async function uploadMedia(file: File): Promise<string> {
+  const ext = file.name.split(".").pop() || "bin";
+  const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const { error } = await supabase.storage.from("media").upload(path, file, {
+    cacheControl: "3600",
+    upsert: false,
+  });
+  if (error) throw error;
+  const { data } = supabase.storage.from("media").getPublicUrl(path);
+  return data.publicUrl;
+}
+
 // ===== PROFILES =====
 export async function fetchProfiles(): Promise<Record<string, UserProfile>> {
   const { data, error } = await supabase.from("profiles").select("*");
@@ -15,7 +28,6 @@ export async function fetchProfiles(): Promise<Record<string, UserProfile>> {
       isModerator: p.is_moderator || false,
     };
   }
-  // Always ensure admin
   if (!map["PatriotAdmin"]) {
     map["PatriotAdmin"] = { displayName: "PatriotAdmin", avatar: "", badges: [], isAdmin: true };
   }
@@ -44,8 +56,31 @@ export async function updateProfileMod(displayName: string, isMod: boolean) {
 export async function fetchPosts(): Promise<Post[]> {
   const { data, error } = await supabase
     .from("posts")
-    .select("id,user_id,title,description,media_type,likes,created_at,is_pinned")
+    .select("id,user_id,title,description,media_url,media_type,likes,created_at,is_pinned,is_archived")
+    .eq("is_archived", false)
     .order("is_pinned", { ascending: false })
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+
+  return (data || []).map(p => ({
+    id: p.id,
+    userId: p.user_id,
+    title: p.title,
+    description: p.description || "",
+    mediaUrl: p.media_url || undefined,
+    mediaType: p.media_type || undefined,
+    likes: p.likes || [],
+    createdAt: p.created_at,
+    isPinned: p.is_pinned || false,
+  }));
+}
+
+export async function fetchArchivedPosts(): Promise<Post[]> {
+  const { data, error } = await supabase
+    .from("posts")
+    .select("id,user_id,title,description,media_type,likes,created_at,is_pinned")
+    .eq("is_archived", true)
     .order("created_at", { ascending: false });
 
   if (error) throw error;
@@ -97,7 +132,16 @@ export async function updatePost(id: string, title: string, description: string)
   await supabase.from("posts").update({ title, description, updated_at: new Date().toISOString() }).eq("id", id);
 }
 
+export async function archivePost(id: string) {
+  await supabase.from("posts").update({ is_archived: true } as any).eq("id", id);
+}
+
+export async function restorePost(id: string) {
+  await supabase.from("posts").update({ is_archived: false } as any).eq("id", id);
+}
+
 export async function deletePost(id: string) {
+  // No-op: posts are never permanently deleted
   void id;
 }
 
@@ -112,7 +156,7 @@ export async function togglePostLike(postId: string, userId: string) {
 
 // ===== COMMENTS =====
 export async function fetchComments(postId: string): Promise<Comment[]> {
-  const { data, error } = await supabase.from("comments").select("*").eq("post_id", postId).order("created_at", { ascending: true });
+  const { data, error } = await supabase.from("comments").select("*").eq("post_id", postId).eq("is_archived", false).order("created_at", { ascending: true });
   if (error) throw error;
   return (data || []).map(c => ({
     id: c.id,
@@ -135,6 +179,11 @@ export async function createComment(comment: { postId: string; userId: string; t
   });
 }
 
+export async function archiveComment(id: string) {
+  await supabase.from("comments").update({ text: "[archived]" } as any).eq("id", id);
+}
+
 export async function deleteComment(id: string) {
+  // No-op
   void id;
 }
