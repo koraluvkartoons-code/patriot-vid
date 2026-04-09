@@ -156,6 +156,16 @@ export const AVAILABLE_BADGES: Badge[] = [
   { id: "miku-dance", name: "Miku Dance", image: mikuDance },
   { id: "dancing-triangle", name: "Dancing Triangle", image: dancingTriangle },
   { id: "homer-bushes", name: "Homer Bushes", image: homerBushes },
+  { id: "veggie-tales-tomato", name: "VeggieTales Tomato", image: veggieTalesTomato },
+  { id: "usa-flag", name: "USA Flag", image: usaFlag },
+  { id: "gumball-caveman", name: "Gumball Caveman", image: gumballCaveman },
+  { id: "evil-patrick", name: "Evil Patrick", image: evilPatrick },
+  { id: "angry-darwin", name: "Angry Darwin", image: angryDarwin },
+  { id: "thonk-emoji", name: "Thonk Emoji", image: thonkEmoji },
+  { id: "joker-laugh", name: "Joker Laugh", image: jokerLaugh },
+  { id: "breaking-bad-mario", name: "Breaking Bad Mario", image: breakingBadMario },
+  { id: "fortnite-stare", name: "Fortnite Stare", image: fortniteStare },
+  { id: "dora-smirk", name: "Dora Smirk", image: doraSmirk },
 ];
 
 export interface UserProfile {
