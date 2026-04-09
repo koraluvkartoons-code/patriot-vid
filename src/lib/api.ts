@@ -98,7 +98,8 @@ export async function updatePost(id: string, title: string, description: string)
 }
 
 export async function deletePost(id: string) {
-  void id;
+  await supabase.from("comments").delete().eq("post_id", id);
+  await supabase.from("posts").delete().eq("id", id);
 }
 
 export async function togglePostLike(postId: string, userId: string) {
@@ -136,5 +137,5 @@ export async function createComment(comment: { postId: string; userId: string; t
 }
 
 export async function deleteComment(id: string) {
-  void id;
+  await supabase.from("comments").delete().eq("id", id);
 }

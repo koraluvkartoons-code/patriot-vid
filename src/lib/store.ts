@@ -53,6 +53,11 @@ import narutoFist from "@/assets/badges/naruto-fist.png";
 import marioYoshi from "@/assets/badges/mario-yoshi.png";
 import kirbyHehe from "@/assets/badges/kirby-hehe.png";
 import handsomeSquidward from "@/assets/badges/handsome-squidward.png";
+import squidwardStare from "@/assets/badges/squidward-stare.gif";
+import dancingBanana from "@/assets/badges/dancing-banana.gif";
+import pixelMario from "@/assets/badges/pixel-mario.gif";
+import marioHappy from "@/assets/badges/mario-happy.gif";
+import pepeSombrero from "@/assets/badges/pepe-sombrero.gif";
 
 export interface Badge {
   id: string;
@@ -116,6 +121,11 @@ export const AVAILABLE_BADGES: Badge[] = [
   { id: "mario-yoshi", name: "Mario & Yoshi", image: marioYoshi },
   { id: "kirby-hehe", name: "Kirby Hehe", image: kirbyHehe },
   { id: "handsome-squidward", name: "Handsome Squidward", image: handsomeSquidward },
+  { id: "squidward-stare", name: "Squidward Stare", image: squidwardStare },
+  { id: "dancing-banana", name: "Dancing Banana", image: dancingBanana },
+  { id: "pixel-mario", name: "Pixel Mario", image: pixelMario },
+  { id: "mario-happy", name: "Mario Happy", image: marioHappy },
+  { id: "pepe-sombrero", name: "Pepe Sombrero", image: pepeSombrero },
 ];
 
 export interface UserProfile {
