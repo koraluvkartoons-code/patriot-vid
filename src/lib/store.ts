@@ -58,6 +58,16 @@ import dancingBanana from "@/assets/badges/dancing-banana.gif";
 import pixelMario from "@/assets/badges/pixel-mario.gif";
 import marioHappy from "@/assets/badges/mario-happy.gif";
 import pepeSombrero from "@/assets/badges/pepe-sombrero.gif";
+import dancingBaby from "@/assets/badges/dancing-baby.gif";
+import elmoFire from "@/assets/badges/elmo-fire.gif";
+import woodyStare from "@/assets/badges/woody-stare.gif";
+import nyanCat from "@/assets/badges/nyan-cat.gif";
+import peterGriffinRun from "@/assets/badges/peter-griffin-run.gif";
+import itachiStare from "@/assets/badges/itachi-stare.gif";
+import spongebob3d from "@/assets/badges/spongebob-3d.gif";
+import mikuDance from "@/assets/badges/miku-dance.gif";
+import dancingTriangle from "@/assets/badges/dancing-triangle.gif";
+import homerBushes from "@/assets/badges/homer-bushes.gif";
 
 export interface Badge {
   id: string;
@@ -126,6 +136,16 @@ export const AVAILABLE_BADGES: Badge[] = [
   { id: "pixel-mario", name: "Pixel Mario", image: pixelMario },
   { id: "mario-happy", name: "Mario Happy", image: marioHappy },
   { id: "pepe-sombrero", name: "Pepe Sombrero", image: pepeSombrero },
+  { id: "dancing-baby", name: "Dancing Baby", image: dancingBaby },
+  { id: "elmo-fire", name: "Elmo Fire", image: elmoFire },
+  { id: "woody-stare", name: "Woody Stare", image: woodyStare },
+  { id: "nyan-cat", name: "Nyan Cat", image: nyanCat },
+  { id: "peter-griffin-run", name: "Peter Griffin Run", image: peterGriffinRun },
+  { id: "itachi-stare", name: "Itachi Stare", image: itachiStare },
+  { id: "spongebob-3d", name: "Spongebob 3D", image: spongebob3d },
+  { id: "miku-dance", name: "Miku Dance", image: mikuDance },
+  { id: "dancing-triangle", name: "Dancing Triangle", image: dancingTriangle },
+  { id: "homer-bushes", name: "Homer Bushes", image: homerBushes },
 ];
 
 export interface UserProfile {
