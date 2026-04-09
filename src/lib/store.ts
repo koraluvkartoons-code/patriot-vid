@@ -176,6 +176,16 @@ export const AVAILABLE_BADGES: Badge[] = [
   { id: "breaking-bad-mario", name: "Breaking Bad Mario", image: breakingBadMario },
   { id: "fortnite-stare", name: "Fortnite Stare", image: fortniteStare },
   { id: "dora-smirk", name: "Dora Smirk", image: doraSmirk },
+  { id: "monkey-puppet", name: "Monkey Puppet", image: monkeyPuppet },
+  { id: "doge-cool", name: "Doge Cool", image: dogeCool },
+  { id: "bald-guy-stare", name: "Bald Guy Stare", image: baldGuyStare },
+  { id: "buff-doge", name: "Buff Doge", image: buffDoge },
+  { id: "mcdonalds-arches", name: "McDonald's Arches", image: mcdonaldsArches },
+  { id: "fry-squint", name: "Fry Squint", image: frySquint },
+  { id: "soyjak-pointing", name: "Soyjak Pointing", image: soyjakPointing },
+  { id: "among-us-red", name: "Among Us Red", image: amongUsRed },
+  { id: "mario-mushroom", name: "Mario Mushroom", image: marioMushroom },
+  { id: "trump-thumbsup", name: "Trump Thumbs Up", image: trumpThumbsup },
 ];
 
 export interface UserProfile {
