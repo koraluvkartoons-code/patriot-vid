@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { type Post, type UserProfile, getCurrentUserId } from "@/lib/store";
-import { fetchPostMedia, updatePost, togglePostLike, togglePinPost } from "@/lib/api";
+import { fetchPostMedia, updatePost, togglePostLike, togglePinPost, deletePost } from "@/lib/api";
 import UserBadge from "./UserBadge";
 import CommentSection from "./CommentSection";
-import { Heart, MessageCircle, Edit, ExternalLink, Pin } from "lucide-react";
+import { Heart, MessageCircle, Edit, ExternalLink, Pin, Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -71,6 +71,12 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
     onRefresh();
   };
 
+  const handleDelete = async () => {
+    if (!confirm("Delete this post permanently?")) return;
+    await deletePost(post.id);
+    onRefresh();
+  };
+
   return (
     <div className={`gradient-card border rounded-xl overflow-hidden glow-purple transition-all hover:glow-pink ${post.isPinned ? "border-primary ring-1 ring-primary/30" : "border-border"}`}>
       {post.isPinned && (
@@ -100,6 +106,7 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
                   <Pin className={`w-4 h-4 ${post.isPinned ? "text-primary fill-primary" : "text-muted-foreground hover:text-primary"}`} />
                 </button>
                 <button onClick={() => setEditing(!editing)}><Edit className="w-4 h-4 text-muted-foreground hover:text-accent" /></button>
+                <button onClick={handleDelete} title="Delete"><Trash2 className="w-4 h-4 text-muted-foreground hover:text-destructive" /></button>
               </>
             )}
           </div>
