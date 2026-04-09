@@ -78,6 +78,16 @@ import jokerLaugh from "@/assets/badges/joker-laugh.png";
 import breakingBadMario from "@/assets/badges/breaking-bad-mario.png";
 import fortniteStare from "@/assets/badges/fortnite-stare.png";
 import doraSmirk from "@/assets/badges/dora-smirk.png";
+import monkeyPuppet from "@/assets/badges/monkey-puppet.png";
+import dogeCool from "@/assets/badges/doge-cool.png";
+import baldGuyStare from "@/assets/badges/bald-guy-stare.png";
+import buffDoge from "@/assets/badges/buff-doge.png";
+import mcdonaldsArches from "@/assets/badges/mcdonalds-arches.png";
+import frySquint from "@/assets/badges/fry-squint.png";
+import soyjakPointing from "@/assets/badges/soyjak-pointing.png";
+import amongUsRed from "@/assets/badges/among-us-red.png";
+import marioMushroom from "@/assets/badges/mario-mushroom.png";
+import trumpThumbsup from "@/assets/badges/trump-thumbsup.png";
 
 export interface Badge {
   id: string;
