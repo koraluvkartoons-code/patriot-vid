@@ -118,6 +118,10 @@ import rainbowPepe from "@/assets/badges/rainbow-pepe.png";
 import clownPepeAk from "@/assets/badges/clown-pepe-ak.png";
 import bigBrainPepe from "@/assets/badges/big-brain-pepe.png";
 import spoderman from "@/assets/badges/spoderman.png";
+import pepeCross from "@/assets/badges/pepe-cross.png";
+import ashtarCommand from "@/assets/badges/ashtar-command.png";
+import thousandYardStare from "@/assets/badges/thousand-yard-stare.png";
+import vaultBoy from "@/assets/badges/vault-boy.png";
 
 export interface Badge {
   id: string;
@@ -246,6 +250,10 @@ export const AVAILABLE_BADGES: Badge[] = [
   { id: "clown-pepe-ak", name: "Clown Pepe AK", image: clownPepeAk },
   { id: "big-brain-pepe", name: "Big Brain Pepe", image: bigBrainPepe },
   { id: "spoderman", name: "Spoderman", image: spoderman },
+  { id: "pepe-cross", name: "Pepe Cross", image: pepeCross },
+  { id: "ashtar-command", name: "Ashtar Command", image: ashtarCommand },
+  { id: "thousand-yard-stare", name: "Thousand Yard Stare", image: thousandYardStare },
+  { id: "vault-boy", name: "Vault Boy", image: vaultBoy },
 ];
 
 export interface UserProfile {
