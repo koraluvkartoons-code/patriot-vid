@@ -216,6 +216,16 @@ export const AVAILABLE_BADGES: Badge[] = [
   { id: "my-melody", name: "My Melody", image: myMelody },
   { id: "kirby-joking", name: "Kirby Joking", image: kirbyJoking },
   { id: "pepe-punch", name: "Pepe Punch", image: pepePunch },
+  { id: "gigachad", name: "Gigachad", image: gigachad },
+  { id: "npc-face", name: "NPC Face", image: npcFace },
+  { id: "pepe-sitting", name: "Pepe Sitting", image: pepeSitting },
+  { id: "roll-safe", name: "Roll Safe", image: rollSafe },
+  { id: "patrick-scheming", name: "Patrick Scheming", image: patrickScheming },
+  { id: "nick-young", name: "Nick Young", image: nickYoung },
+  { id: "kyle-southpark", name: "Kyle South Park", image: kyleSouthpark },
+  { id: "vader-money", name: "Vader Money", image: vaderMoney },
+  { id: "america-first", name: "America First", image: americaFirst },
+  { id: "ultra-maga", name: "Ultra MAGA", image: ultraMaga },
 ];
 
 export interface UserProfile {
