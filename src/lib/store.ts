@@ -108,6 +108,16 @@ import kyleSouthpark from "@/assets/badges/kyle-southpark.png";
 import vaderMoney from "@/assets/badges/vader-money.png";
 import americaFirst from "@/assets/badges/america-first.png";
 import ultraMaga from "@/assets/badges/ultra-maga.png";
+import basedtriots from "@/assets/badges/basedtriots.png";
+import flag750first from "@/assets/badges/750first-flag.png";
+import polianigames from "@/assets/badges/polianigames.png";
+import starOfDavid from "@/assets/badges/star-of-david.png";
+import jesusCross from "@/assets/badges/jesus-cross.png";
+import pepePropeller from "@/assets/badges/pepe-propeller.png";
+import rainbowPepe from "@/assets/badges/rainbow-pepe.png";
+import clownPepeAk from "@/assets/badges/clown-pepe-ak.png";
+import bigBrainPepe from "@/assets/badges/big-brain-pepe.png";
+import spoderman from "@/assets/badges/spoderman.png";
 
 export interface Badge {
   id: string;
@@ -226,6 +236,16 @@ export const AVAILABLE_BADGES: Badge[] = [
   { id: "vader-money", name: "Vader Money", image: vaderMoney },
   { id: "america-first", name: "America First", image: americaFirst },
   { id: "ultra-maga", name: "Ultra MAGA", image: ultraMaga },
+  { id: "basedtriots", name: "Basedtriots", image: basedtriots },
+  { id: "750first-flag", name: "750First Flag", image: flag750first },
+  { id: "polianigames", name: "PoliAniGames", image: polianigames },
+  { id: "star-of-david", name: "Star of David", image: starOfDavid },
+  { id: "jesus-cross", name: "Jesus Cross", image: jesusCross },
+  { id: "pepe-propeller", name: "Pepe Propeller", image: pepePropeller },
+  { id: "rainbow-pepe", name: "Rainbow Pepe", image: rainbowPepe },
+  { id: "clown-pepe-ak", name: "Clown Pepe AK", image: clownPepeAk },
+  { id: "big-brain-pepe", name: "Big Brain Pepe", image: bigBrainPepe },
+  { id: "spoderman", name: "Spoderman", image: spoderman },
 ];
 
 export interface UserProfile {
