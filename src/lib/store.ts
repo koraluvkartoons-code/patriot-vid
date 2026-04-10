@@ -88,6 +88,16 @@ import soyjakPointing from "@/assets/badges/soyjak-pointing.png";
 import amongUsRed from "@/assets/badges/among-us-red.png";
 import marioMushroom from "@/assets/badges/mario-mushroom.png";
 import trumpThumbsup from "@/assets/badges/trump-thumbsup.png";
+import helloKitty from "@/assets/badges/hello-kitty.png";
+import pepeBan from "@/assets/badges/pepe-ban.png";
+import squidwardDab from "@/assets/badges/squidward-dab.png";
+import kirbySmirk from "@/assets/badges/kirby-smirk.png";
+import pepeThinking2 from "@/assets/badges/pepe-thinking.png";
+import tanjiroPhone from "@/assets/badges/tanjiro-phone.png";
+import pepeDeusVult from "@/assets/badges/pepe-deus-vult.png";
+import myMelody from "@/assets/badges/my-melody.png";
+import kirbyJoking from "@/assets/badges/kirby-joking.png";
+import pepePunch from "@/assets/badges/pepe-punch.png";
 
 export interface Badge {
   id: string;
@@ -186,6 +196,16 @@ export const AVAILABLE_BADGES: Badge[] = [
   { id: "among-us-red", name: "Among Us Red", image: amongUsRed },
   { id: "mario-mushroom", name: "Mario Mushroom", image: marioMushroom },
   { id: "trump-thumbsup", name: "Trump Thumbs Up", image: trumpThumbsup },
+  { id: "hello-kitty", name: "Hello Kitty", image: helloKitty },
+  { id: "pepe-ban", name: "Pepe Ban", image: pepeBan },
+  { id: "squidward-dab", name: "Squidward Dab", image: squidwardDab },
+  { id: "kirby-smirk", name: "Kirby Smirk", image: kirbySmirk },
+  { id: "pepe-thinking2", name: "Pepe Thinking", image: pepeThinking2 },
+  { id: "tanjiro-phone", name: "Tanjiro Phone", image: tanjiroPhone },
+  { id: "pepe-deus-vult", name: "Pepe Deus Vult", image: pepeDeusVult },
+  { id: "my-melody", name: "My Melody", image: myMelody },
+  { id: "kirby-joking", name: "Kirby Joking", image: kirbyJoking },
+  { id: "pepe-punch", name: "Pepe Punch", image: pepePunch },
 ];
 
 export interface UserProfile {
