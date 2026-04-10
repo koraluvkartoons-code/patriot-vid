@@ -236,6 +236,16 @@ export const AVAILABLE_BADGES: Badge[] = [
   { id: "vader-money", name: "Vader Money", image: vaderMoney },
   { id: "america-first", name: "America First", image: americaFirst },
   { id: "ultra-maga", name: "Ultra MAGA", image: ultraMaga },
+  { id: "basedtriots", name: "Basedtriots", image: basedtriots },
+  { id: "750first-flag", name: "750First Flag", image: flag750first },
+  { id: "polianigames", name: "PoliAniGames", image: polianigames },
+  { id: "star-of-david", name: "Star of David", image: starOfDavid },
+  { id: "jesus-cross", name: "Jesus Cross", image: jesusCross },
+  { id: "pepe-propeller", name: "Pepe Propeller", image: pepePropeller },
+  { id: "rainbow-pepe", name: "Rainbow Pepe", image: rainbowPepe },
+  { id: "clown-pepe-ak", name: "Clown Pepe AK", image: clownPepeAk },
+  { id: "big-brain-pepe", name: "Big Brain Pepe", image: bigBrainPepe },
+  { id: "spoderman", name: "Spoderman", image: spoderman },
 ];
 
 export interface UserProfile {
