@@ -88,6 +88,16 @@ import soyjakPointing from "@/assets/badges/soyjak-pointing.png";
 import amongUsRed from "@/assets/badges/among-us-red.png";
 import marioMushroom from "@/assets/badges/mario-mushroom.png";
 import trumpThumbsup from "@/assets/badges/trump-thumbsup.png";
+import helloKitty from "@/assets/badges/hello-kitty.png";
+import pepeBan from "@/assets/badges/pepe-ban.png";
+import squidwardDab from "@/assets/badges/squidward-dab.png";
+import kirbySmirk from "@/assets/badges/kirby-smirk.png";
+import pepeThinking2 from "@/assets/badges/pepe-thinking.png";
+import tanjiroPhone from "@/assets/badges/tanjiro-phone.png";
+import pepeDeusVult from "@/assets/badges/pepe-deus-vult.png";
+import myMelody from "@/assets/badges/my-melody.png";
+import kirbyJoking from "@/assets/badges/kirby-joking.png";
+import pepePunch from "@/assets/badges/pepe-punch.png";
 
 export interface Badge {
   id: string;
