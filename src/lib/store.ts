@@ -108,6 +108,16 @@ import kyleSouthpark from "@/assets/badges/kyle-southpark.png";
 import vaderMoney from "@/assets/badges/vader-money.png";
 import americaFirst from "@/assets/badges/america-first.png";
 import ultraMaga from "@/assets/badges/ultra-maga.png";
+import basedtriots from "@/assets/badges/basedtriots.png";
+import flag750first from "@/assets/badges/750first-flag.png";
+import polianigames from "@/assets/badges/polianigames.png";
+import starOfDavid from "@/assets/badges/star-of-david.png";
+import jesusCross from "@/assets/badges/jesus-cross.png";
+import pepePropeller from "@/assets/badges/pepe-propeller.png";
+import rainbowPepe from "@/assets/badges/rainbow-pepe.png";
+import clownPepeAk from "@/assets/badges/clown-pepe-ak.png";
+import bigBrainPepe from "@/assets/badges/big-brain-pepe.png";
+import spoderman from "@/assets/badges/spoderman.png";
 
 export interface Badge {
   id: string;
