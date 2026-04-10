@@ -118,6 +118,10 @@ import rainbowPepe from "@/assets/badges/rainbow-pepe.png";
 import clownPepeAk from "@/assets/badges/clown-pepe-ak.png";
 import bigBrainPepe from "@/assets/badges/big-brain-pepe.png";
 import spoderman from "@/assets/badges/spoderman.png";
+import pepeCross from "@/assets/badges/pepe-cross.png";
+import ashtarCommand from "@/assets/badges/ashtar-command.png";
+import thousandYardStare from "@/assets/badges/thousand-yard-stare.png";
+import vaultBoy from "@/assets/badges/vault-boy.png";
 
 export interface Badge {
   id: string;
