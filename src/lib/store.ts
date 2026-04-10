@@ -250,6 +250,10 @@ export const AVAILABLE_BADGES: Badge[] = [
   { id: "clown-pepe-ak", name: "Clown Pepe AK", image: clownPepeAk },
   { id: "big-brain-pepe", name: "Big Brain Pepe", image: bigBrainPepe },
   { id: "spoderman", name: "Spoderman", image: spoderman },
+  { id: "pepe-cross", name: "Pepe Cross", image: pepeCross },
+  { id: "ashtar-command", name: "Ashtar Command", image: ashtarCommand },
+  { id: "thousand-yard-stare", name: "Thousand Yard Stare", image: thousandYardStare },
+  { id: "vault-boy", name: "Vault Boy", image: vaultBoy },
 ];
 
 export interface UserProfile {
