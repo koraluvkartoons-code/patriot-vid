@@ -196,6 +196,16 @@ export const AVAILABLE_BADGES: Badge[] = [
   { id: "among-us-red", name: "Among Us Red", image: amongUsRed },
   { id: "mario-mushroom", name: "Mario Mushroom", image: marioMushroom },
   { id: "trump-thumbsup", name: "Trump Thumbs Up", image: trumpThumbsup },
+  { id: "hello-kitty", name: "Hello Kitty", image: helloKitty },
+  { id: "pepe-ban", name: "Pepe Ban", image: pepeBan },
+  { id: "squidward-dab", name: "Squidward Dab", image: squidwardDab },
+  { id: "kirby-smirk", name: "Kirby Smirk", image: kirbySmirk },
+  { id: "pepe-thinking2", name: "Pepe Thinking", image: pepeThinking2 },
+  { id: "tanjiro-phone", name: "Tanjiro Phone", image: tanjiroPhone },
+  { id: "pepe-deus-vult", name: "Pepe Deus Vult", image: pepeDeusVult },
+  { id: "my-melody", name: "My Melody", image: myMelody },
+  { id: "kirby-joking", name: "Kirby Joking", image: kirbyJoking },
+  { id: "pepe-punch", name: "Pepe Punch", image: pepePunch },
 ];
 
 export interface UserProfile {
