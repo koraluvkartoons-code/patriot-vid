@@ -122,6 +122,16 @@ import pepeCross from "@/assets/badges/pepe-cross.png";
 import ashtarCommand from "@/assets/badges/ashtar-command.png";
 import thousandYardStare from "@/assets/badges/thousand-yard-stare.png";
 import vaultBoy from "@/assets/badges/vault-boy.png";
+import streamerSmirk from "@/assets/badges/streamer-smirk.png";
+import nickFuentes from "@/assets/badges/nick-fuentes.png";
+import magaEmoji from "@/assets/badges/maga-emoji.png";
+import pepeMagaHat from "@/assets/badges/pepe-maga-hat.png";
+import sonicPixel from "@/assets/badges/sonic-pixel.png";
+import patrickHammer from "@/assets/badges/patrick-hammer.png";
+import gamerWojak from "@/assets/badges/gamer-wojak.png";
+import brainletAbacus from "@/assets/badges/brainlet-abacus.png";
+import pepeWojakHug from "@/assets/badges/pepe-wojak-hug.png";
+import hoodieWojak from "@/assets/badges/hoodie-wojak.png";
 
 export interface Badge {
   id: string;
