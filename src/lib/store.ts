@@ -142,6 +142,10 @@ import marioStretched from "@/assets/badges/mario-stretched.png";
 import paperMario from "@/assets/badges/paper-mario.png";
 import uglySonic from "@/assets/badges/ugly-sonic.png";
 import chadProfile from "@/assets/badges/chad-profile.png";
+import shockedGuy from "@/assets/badges/shocked-guy.png";
+import triggeredPepe from "@/assets/badges/triggered-pepe.png";
+import dogeClassic from "@/assets/badges/doge-classic.png";
+import beanos from "@/assets/badges/beanos.png";
 
 export interface Badge {
   id: string;
@@ -294,6 +298,10 @@ export const AVAILABLE_BADGES: Badge[] = [
   { id: "paper-mario", name: "Paper Mario", image: paperMario },
   { id: "ugly-sonic", name: "Ugly Sonic", image: uglySonic },
   { id: "chad-profile", name: "Chad Profile", image: chadProfile },
+  { id: "shocked-guy", name: "Shocked Guy", image: shockedGuy },
+  { id: "triggered-pepe", name: "Triggered Pepe", image: triggeredPepe },
+  { id: "doge-classic", name: "Doge Classic", image: dogeClassic },
+  { id: "beanos", name: "Beanos", image: beanos },
 ];
 
 export interface UserProfile {
