@@ -1,6 +1,16 @@
 import { supabase } from "@/integrations/supabase/client";
 import type { UserProfile, Post, Comment } from "@/lib/store";
 
+// ===== MEDIA UPLOAD =====
+export async function uploadMedia(file: File): Promise<string> {
+  const ext = file.name.split(".").pop() || "bin";
+  const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const { error } = await supabase.storage.from("media").upload(path, file);
+  if (error) throw error;
+  const { data } = supabase.storage.from("media").getPublicUrl(path);
+  return data.publicUrl;
+}
+
 // ===== PROFILES =====
 export async function fetchProfiles(): Promise<Record<string, UserProfile>> {
   const { data, error } = await supabase.from("profiles").select("*");
