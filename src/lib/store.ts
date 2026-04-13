@@ -264,6 +264,16 @@ export const AVAILABLE_BADGES: Badge[] = [
   { id: "ashtar-command", name: "Ashtar Command", image: ashtarCommand },
   { id: "thousand-yard-stare", name: "Thousand Yard Stare", image: thousandYardStare },
   { id: "vault-boy", name: "Vault Boy", image: vaultBoy },
+  { id: "streamer-smirk", name: "Streamer Smirk", image: streamerSmirk },
+  { id: "nick-fuentes", name: "Nick Fuentes", image: nickFuentes },
+  { id: "maga-emoji", name: "MAGA Emoji", image: magaEmoji },
+  { id: "pepe-maga-hat", name: "Pepe MAGA Hat", image: pepeMagaHat },
+  { id: "sonic-pixel", name: "Sonic Pixel", image: sonicPixel },
+  { id: "patrick-hammer", name: "Patrick Hammer", image: patrickHammer },
+  { id: "gamer-wojak", name: "Gamer Wojak", image: gamerWojak },
+  { id: "brainlet-abacus", name: "Brainlet Abacus", image: brainletAbacus },
+  { id: "pepe-wojak-hug", name: "Pepe Wojak Hug", image: pepeWojakHug },
+  { id: "hoodie-wojak", name: "Hoodie Wojak", image: hoodieWojak },
 ];
 
 export interface UserProfile {
