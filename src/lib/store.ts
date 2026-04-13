@@ -123,7 +123,7 @@ import ashtarCommand from "@/assets/badges/ashtar-command.png";
 import thousandYardStare from "@/assets/badges/thousand-yard-stare.png";
 import vaultBoy from "@/assets/badges/vault-boy.png";
 import streamerSmirk from "@/assets/badges/streamer-smirk.png";
-import nickFuentes from "@/assets/badges/nick-fuentes.png";
+import charlieKirk from "@/assets/badges/nick-fuentes.png";
 import magaEmoji from "@/assets/badges/maga-emoji.png";
 import pepeMagaHat from "@/assets/badges/pepe-maga-hat.png";
 import sonicPixel from "@/assets/badges/sonic-pixel.png";
@@ -132,6 +132,16 @@ import gamerWojak from "@/assets/badges/gamer-wojak.png";
 import brainletAbacus from "@/assets/badges/brainlet-abacus.png";
 import pepeWojakHug from "@/assets/badges/pepe-wojak-hug.png";
 import hoodieWojak from "@/assets/badges/hoodie-wojak.png";
+import flatPepe from "@/assets/badges/flat-pepe.png";
+import soyjakScream from "@/assets/badges/soyjak-scream.png";
+import ciaGlowie from "@/assets/badges/cia-glowie.png";
+import ugandanKnuckles from "@/assets/badges/ugandan-knuckles.png";
+import jerryMouse from "@/assets/badges/jerry-mouse.png";
+import rainbowPepe2 from "@/assets/badges/rainbow-pepe2.png";
+import marioStretched from "@/assets/badges/mario-stretched.png";
+import paperMario from "@/assets/badges/paper-mario.png";
+import uglySonic from "@/assets/badges/ugly-sonic.png";
+import chadProfile from "@/assets/badges/chad-profile.png";
 
 export interface Badge {
   id: string;
@@ -265,7 +275,7 @@ export const AVAILABLE_BADGES: Badge[] = [
   { id: "thousand-yard-stare", name: "Thousand Yard Stare", image: thousandYardStare },
   { id: "vault-boy", name: "Vault Boy", image: vaultBoy },
   { id: "streamer-smirk", name: "Streamer Smirk", image: streamerSmirk },
-  { id: "nick-fuentes", name: "Nick Fuentes", image: nickFuentes },
+  { id: "charlie-kirk", name: "Charlie Kirk", image: charlieKirk },
   { id: "maga-emoji", name: "MAGA Emoji", image: magaEmoji },
   { id: "pepe-maga-hat", name: "Pepe MAGA Hat", image: pepeMagaHat },
   { id: "sonic-pixel", name: "Sonic Pixel", image: sonicPixel },
@@ -274,6 +284,16 @@ export const AVAILABLE_BADGES: Badge[] = [
   { id: "brainlet-abacus", name: "Brainlet Abacus", image: brainletAbacus },
   { id: "pepe-wojak-hug", name: "Pepe Wojak Hug", image: pepeWojakHug },
   { id: "hoodie-wojak", name: "Hoodie Wojak", image: hoodieWojak },
+  { id: "flat-pepe", name: "Flat Pepe", image: flatPepe },
+  { id: "soyjak-scream", name: "Soyjak Scream", image: soyjakScream },
+  { id: "cia-glowie", name: "CIA Glowie", image: ciaGlowie },
+  { id: "ugandan-knuckles", name: "Ugandan Knuckles", image: ugandanKnuckles },
+  { id: "jerry-mouse", name: "Jerry Mouse", image: jerryMouse },
+  { id: "rainbow-pepe2", name: "Rainbow Pepe 2", image: rainbowPepe2 },
+  { id: "mario-stretched", name: "Mario Stretched", image: marioStretched },
+  { id: "paper-mario", name: "Paper Mario", image: paperMario },
+  { id: "ugly-sonic", name: "Ugly Sonic", image: uglySonic },
+  { id: "chad-profile", name: "Chad Profile", image: chadProfile },
 ];
 
 export interface UserProfile {
