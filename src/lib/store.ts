@@ -146,6 +146,16 @@ import shockedGuy from "@/assets/badges/shocked-guy.png";
 import triggeredPepe from "@/assets/badges/triggered-pepe.png";
 import dogeClassic from "@/assets/badges/doge-classic.png";
 import beanos from "@/assets/badges/beanos.png";
+import obamaJoker from "@/assets/badges/obama-joker.png";
+import magaEagle from "@/assets/badges/maga-eagle.png";
+import bidenHarris from "@/assets/badges/biden-harris.png";
+import commiePal from "@/assets/badges/commie-pal.png";
+import duckLips from "@/assets/badges/duck-lips.png";
+import andrewTate from "@/assets/badges/andrew-tate.png";
+import fazeLogo from "@/assets/badges/faze-logo.png";
+import lebronGlow from "@/assets/badges/lebron-glow.png";
+import angryPepe2 from "@/assets/badges/angry-pepe.png";
+import spongebobCry from "@/assets/badges/spongebob-cry.png";
 
 export interface Badge {
   id: string;
