@@ -312,6 +312,16 @@ export const AVAILABLE_BADGES: Badge[] = [
   { id: "triggered-pepe", name: "Triggered Pepe", image: triggeredPepe },
   { id: "doge-classic", name: "Doge Classic", image: dogeClassic },
   { id: "beanos", name: "Beanos", image: beanos },
+  { id: "obama-joker", name: "Obama Joker", image: obamaJoker },
+  { id: "maga-eagle", name: "MAGA Eagle", image: magaEagle },
+  { id: "biden-harris", name: "Biden Harris", image: bidenHarris },
+  { id: "commie-pal", name: "Commie Pal", image: commiePal },
+  { id: "duck-lips", name: "Duck Lips", image: duckLips },
+  { id: "andrew-tate", name: "Andrew Tate", image: andrewTate },
+  { id: "faze-logo", name: "FaZe Logo", image: fazeLogo },
+  { id: "lebron-glow", name: "LeBron Glow", image: lebronGlow },
+  { id: "angry-pepe2", name: "Angry Pepe 2", image: angryPepe2 },
+  { id: "spongebob-cry", name: "Spongebob Cry", image: spongebobCry },
 ];
 
 export interface UserProfile {
