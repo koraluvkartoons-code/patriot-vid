@@ -146,6 +146,16 @@ import shockedGuy from "@/assets/badges/shocked-guy.png";
 import triggeredPepe from "@/assets/badges/triggered-pepe.png";
 import dogeClassic from "@/assets/badges/doge-classic.png";
 import beanos from "@/assets/badges/beanos.png";
+import obamaJoker from "@/assets/badges/obama-joker.png";
+import magaEagle from "@/assets/badges/maga-eagle.png";
+import bidenHarris from "@/assets/badges/biden-harris.png";
+import commiePal from "@/assets/badges/commie-pal.png";
+import duckLips from "@/assets/badges/duck-lips.png";
+import andrewTate from "@/assets/badges/andrew-tate.png";
+import fazeLogo from "@/assets/badges/faze-logo.png";
+import lebronGlow from "@/assets/badges/lebron-glow.png";
+import angryPepe2 from "@/assets/badges/angry-pepe.png";
+import spongebobCry from "@/assets/badges/spongebob-cry.png";
 
 export interface Badge {
   id: string;
@@ -302,6 +312,16 @@ export const AVAILABLE_BADGES: Badge[] = [
   { id: "triggered-pepe", name: "Triggered Pepe", image: triggeredPepe },
   { id: "doge-classic", name: "Doge Classic", image: dogeClassic },
   { id: "beanos", name: "Beanos", image: beanos },
+  { id: "obama-joker", name: "Obama Joker", image: obamaJoker },
+  { id: "maga-eagle", name: "MAGA Eagle", image: magaEagle },
+  { id: "biden-harris", name: "Biden Harris", image: bidenHarris },
+  { id: "commie-pal", name: "Commie Pal", image: commiePal },
+  { id: "duck-lips", name: "Duck Lips", image: duckLips },
+  { id: "andrew-tate", name: "Andrew Tate", image: andrewTate },
+  { id: "faze-logo", name: "FaZe Logo", image: fazeLogo },
+  { id: "lebron-glow", name: "LeBron Glow", image: lebronGlow },
+  { id: "angry-pepe2", name: "Angry Pepe 2", image: angryPepe2 },
+  { id: "spongebob-cry", name: "Spongebob Cry", image: spongebobCry },
 ];
 
 export interface UserProfile {
