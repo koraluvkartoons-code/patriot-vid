@@ -156,6 +156,16 @@ import fazeLogo from "@/assets/badges/faze-logo.png";
 import lebronGlow from "@/assets/badges/lebron-glow.png";
 import angryPepe2 from "@/assets/badges/angry-pepe.png";
 import spongebobCry from "@/assets/badges/spongebob-cry.png";
+import patrickDrool from "@/assets/badges/patrick-drool.png";
+import commieSoyjak from "@/assets/badges/commie-soyjak.png";
+import commieBugs from "@/assets/badges/commie-bugs.png";
+import cheRage from "@/assets/badges/che-rage.png";
+import blutEagle from "@/assets/badges/blut-eagle.png";
+import shrekKek from "@/assets/badges/shrek-kek.png";
+import patrickCommunism from "@/assets/badges/patrick-communism.png";
+import shrekPeter from "@/assets/badges/shrek-peter.png";
+import pepePropeller2 from "@/assets/badges/pepe-propeller.png";
+import kekFlag from "@/assets/badges/kek-flag.png";
 
 export interface Badge {
   id: string;
@@ -313,8 +323,8 @@ export const AVAILABLE_BADGES: Badge[] = [
   { id: "doge-classic", name: "Doge Classic", image: dogeClassic },
   { id: "beanos", name: "Beanos", image: beanos },
   { id: "obama-joker", name: "Obama Joker", image: obamaJoker },
-  { id: "maga-eagle", name: "MAGA Eagle", image: magaEagle },
-  { id: "biden-harris", name: "Biden Harris", image: bidenHarris },
+  { id: "maga-eagle", name: "HOGGERS", image: magaEagle },
+  { id: "biden-harris", name: "LIBBERS", image: bidenHarris },
   { id: "commie-pal", name: "Commie Pal", image: commiePal },
   { id: "duck-lips", name: "Duck Lips", image: duckLips },
   { id: "andrew-tate", name: "Andrew Tate", image: andrewTate },
@@ -322,6 +332,16 @@ export const AVAILABLE_BADGES: Badge[] = [
   { id: "lebron-glow", name: "LeBron Glow", image: lebronGlow },
   { id: "angry-pepe2", name: "Angry Pepe 2", image: angryPepe2 },
   { id: "spongebob-cry", name: "Spongebob Cry", image: spongebobCry },
+  { id: "patrick-drool", name: "Patrick Drool", image: patrickDrool },
+  { id: "commie-soyjak", name: "Commie Soyjak", image: commieSoyjak },
+  { id: "commie-bugs", name: "Commie Bugs", image: commieBugs },
+  { id: "che-rage", name: "Che Rage", image: cheRage },
+  { id: "blut-eagle", name: "Blut Eagle", image: blutEagle },
+  { id: "shrek-kek", name: "Shrek Kek", image: shrekKek },
+  { id: "patrick-communism", name: "Patrick Communism", image: patrickCommunism },
+  { id: "shrek-peter", name: "Shrek Peter", image: shrekPeter },
+  { id: "pepe-propeller2", name: "Pepe Propeller 2", image: pepePropeller2 },
+  { id: "kek-flag", name: "Kek Flag", image: kekFlag },
 ];
 
 export interface UserProfile {
