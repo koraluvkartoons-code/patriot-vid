@@ -1,11 +1,13 @@
 import { useState, useCallback, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { getCurrentUserId, type Post, type UserProfile } from "@/lib/store";
 import { fetchPosts, fetchProfiles } from "@/lib/api";
+import { supabase } from "@/integrations/supabase/client";
 import UserSetupDialog from "@/components/UserSetupDialog";
 import CreatePost from "@/components/CreatePost";
 import PostCard from "@/components/PostCard";
 import AdminPanel from "@/components/AdminPanel";
-import { Shield, User } from "lucide-react";
+import { Shield, User, Radio, Film } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import eagleImg from "@/assets/eagle.png";
 
@@ -16,6 +18,7 @@ export default function Index() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [profiles, setProfiles] = useState<Record<string, UserProfile>>({});
   const [loading, setLoading] = useState(true);
+  const [liveStreams, setLiveStreams] = useState<any[]>([]);
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -33,6 +36,18 @@ export default function Index() {
   }, []);
 
   useEffect(() => { loadData(); }, [loadData]);
+
+  useEffect(() => {
+    const loadLive = async () => {
+      const { data } = await supabase.from("streams").select("*").eq("status", "live").order("started_at", { ascending: false });
+      setLiveStreams(data || []);
+    };
+    loadLive();
+    const ch = supabase.channel("live-streams")
+      .on("postgres_changes", { event: "*", schema: "public", table: "streams" }, loadLive)
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, []);
 
   const currentUser = userId ? profiles[userId] : null;
   const isAdmin = userId === "PatriotAdmin";
