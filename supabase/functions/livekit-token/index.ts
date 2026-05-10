@@ -1,5 +1,9 @@
-import { corsHeaders } from "@supabase/supabase-js/cors";
 import { createHmac } from "node:crypto";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+};
 
 // Mint a LiveKit JWT (HS256). Avoids needing the server SDK.
 function base64url(input: string | Uint8Array) {
