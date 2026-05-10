@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Room, RoomEvent, RemoteTrack, RemoteParticipant, Track } from "livekit-client";
+import { Room, RoomEvent, type RemoteTrack, Track } from "livekit-client";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchProfiles } from "@/lib/api";
 import { getGuestName, getGuestSessionId } from "@/lib/guest";
