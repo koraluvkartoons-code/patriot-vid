@@ -38,9 +38,21 @@ export default function GoLive() {
   const camTrackRef = useRef<LocalVideoTrack | null>(null);
   const micTrackRef = useRef<LocalAudioTrack | null>(null);
   const screenTrackRef = useRef<LocalVideoTrack | null>(null);
+  const screenAudioTrackRef = useRef<any>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
   const recordedChunksRef = useRef<Blob[]>([]);
+  const screenRecorderRef = useRef<MediaRecorder | null>(null);
+  const screenChunksRef = useRef<Blob[]>([]);
   const startTimeRef = useRef<number>(0);
+
+  const testTTS = () => {
+    try {
+      const u = new SpeechSynthesisUtterance("Test! Text to speech is working. Try typing exclamation mario in chat.");
+      u.rate = 1.05;
+      window.speechSynthesis.speak(u);
+      toast.success("TTS playing — check volume");
+    } catch { toast.error("TTS not supported"); }
+  };
 
   useEffect(() => { fetchProfiles().then(setProfiles); }, []);
 
