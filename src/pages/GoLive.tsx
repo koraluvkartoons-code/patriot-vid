@@ -272,8 +272,11 @@ export default function GoLive() {
             ) : (
               <div className="h-full bg-black rounded-lg border border-primary/30 flex items-center justify-center text-pink-400">Chat appears when you go live</div>
             )}
-          </div>
-        </div>
+      </div>
+      {isLive && streamId && roomRef.current && (
+        <LiveOverlay room={roomRef.current} streamId={streamId} />
+      )}
+    </div>
       </div>
     </div>
   );
