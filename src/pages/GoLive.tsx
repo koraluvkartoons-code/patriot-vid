@@ -126,10 +126,36 @@ export default function GoLive() {
   const toggleScreen = async () => {
     if (!roomRef.current) return;
     if (sharing) {
+      // Stop screen recorder & upload
+      try {
+        const sr = screenRecorderRef.current;
+        if (sr && sr.state !== "inactive") {
+          await new Promise<void>(res => { sr.onstop = () => res(); sr.stop(); });
+        }
+        if (screenChunksRef.current.length > 0 && streamId) {
+          const blob = new Blob(screenChunksRef.current, { type: "video/webm" });
+          const path = `${streamId}-screen-${Date.now()}.webm`;
+          toast.message("Saving screen recording…");
+          const { error } = await supabase.storage.from("stream-recordings").upload(path, blob, { contentType: "video/webm", upsert: true });
+          if (!error) {
+            const url = supabase.storage.from("stream-recordings").getPublicUrl(path).data.publicUrl;
+            await supabase.from("streams").update({ screen_recording_url: url }).eq("id", streamId);
+            toast.success("Screen recording saved");
+          }
+        }
+      } catch {}
+      screenChunksRef.current = [];
+      screenRecorderRef.current = null;
+
       if (screenTrackRef.current) {
         roomRef.current.localParticipant.unpublishTrack(screenTrackRef.current);
         screenTrackRef.current.stop();
         screenTrackRef.current = null;
+      }
+      if (screenAudioTrackRef.current) {
+        roomRef.current.localParticipant.unpublishTrack(screenAudioTrackRef.current);
+        screenAudioTrackRef.current.stop?.();
+        screenAudioTrackRef.current = null;
       }
       setSharing(false);
     } else {
@@ -138,6 +164,20 @@ export default function GoLive() {
         for (const t of tracks) {
           await roomRef.current.localParticipant.publishTrack(t);
           if (t.kind === Track.Kind.Video) screenTrackRef.current = t as LocalVideoTrack;
+          else screenAudioTrackRef.current = t;
+        }
+        // Start screen recorder (screen video + screen audio if present + mic)
+        if (screenTrackRef.current) {
+          const mediaTracks: MediaStreamTrack[] = [screenTrackRef.current.mediaStreamTrack];
+          if (screenAudioTrackRef.current?.mediaStreamTrack) mediaTracks.push(screenAudioTrackRef.current.mediaStreamTrack);
+          if (micTrackRef.current?.mediaStreamTrack) mediaTracks.push(micTrackRef.current.mediaStreamTrack);
+          const ms = new MediaStream(mediaTracks);
+          const mime = MediaRecorder.isTypeSupported("video/webm;codecs=vp9,opus") ? "video/webm;codecs=vp9,opus" : "video/webm";
+          const sr = new MediaRecorder(ms, { mimeType: mime, videoBitsPerSecond: 3_000_000 });
+          screenChunksRef.current = [];
+          sr.ondataavailable = e => { if (e.data.size > 0) screenChunksRef.current.push(e.data); };
+          sr.start(2000);
+          screenRecorderRef.current = sr;
         }
         setSharing(true);
       } catch (e: any) { toast.error("Screen share denied"); }
