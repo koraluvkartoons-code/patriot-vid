@@ -5,9 +5,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
-import GoLive from "./pages/GoLive.tsx";
-import Watch from "./pages/Watch.tsx";
-import PastStreams from "./pages/PastStreams.tsx";
 
 const queryClient = new QueryClient();
 
@@ -19,9 +16,6 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/live" element={<GoLive />} />
-          <Route path="/watch/:streamId" element={<Watch />} />
-          <Route path="/streams" element={<PastStreams />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
