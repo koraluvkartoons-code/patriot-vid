@@ -98,6 +98,8 @@ export default function LiveOverlay({ room, streamId }: { room: Room; streamId: 
     const onUnpub = (pub: LocalTrackPublication) => {
       if (pub.source === Track.Source.ScreenShare && screenRef.current) {
         pub.track?.detach(screenRef.current);
+        screenRef.current.style.display = "none";
+        screenRef.current.srcObject = null;
       }
     };
     room.localParticipant.videoTrackPublications.forEach((p) => onPub(p as LocalTrackPublication));

@@ -1,0 +1,1 @@
+ALTER TABLE public.streams ADD COLUMN IF NOT EXISTS screen_recording_url text;

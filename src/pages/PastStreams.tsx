@@ -71,6 +71,16 @@ export default function PastStreams() {
                         <Button size="sm" variant="secondary"><Download className="w-3 h-3 mr-1" />Download</Button>
                       </a>
                     )}
+                    {s.screen_recording_url && (
+                      <>
+                        <a href={s.screen_recording_url} target="_blank" rel="noreferrer">
+                          <Button size="sm" variant="secondary"><Play className="w-3 h-3 mr-1" />Screen Replay</Button>
+                        </a>
+                        <a href={s.screen_recording_url} download={`${s.title}-screen.webm`}>
+                          <Button size="sm" variant="secondary"><Download className="w-3 h-3 mr-1" />Screen DL</Button>
+                        </a>
+                      </>
+                    )}
                     {canDelete && (
                       <Button size="sm" variant="destructive" onClick={() => del(s)}><Trash2 className="w-3 h-3 mr-1" />Delete</Button>
                     )}

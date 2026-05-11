@@ -38,9 +38,21 @@ export default function GoLive() {
   const camTrackRef = useRef<LocalVideoTrack | null>(null);
   const micTrackRef = useRef<LocalAudioTrack | null>(null);
   const screenTrackRef = useRef<LocalVideoTrack | null>(null);
+  const screenAudioTrackRef = useRef<any>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
   const recordedChunksRef = useRef<Blob[]>([]);
+  const screenRecorderRef = useRef<MediaRecorder | null>(null);
+  const screenChunksRef = useRef<Blob[]>([]);
   const startTimeRef = useRef<number>(0);
+
+  const testTTS = () => {
+    try {
+      const u = new SpeechSynthesisUtterance("Test! Text to speech is working. Try typing exclamation mario in chat.");
+      u.rate = 1.05;
+      window.speechSynthesis.speak(u);
+      toast.success("TTS playing — check volume");
+    } catch { toast.error("TTS not supported"); }
+  };
 
   useEffect(() => { fetchProfiles().then(setProfiles); }, []);
 
@@ -114,10 +126,36 @@ export default function GoLive() {
   const toggleScreen = async () => {
     if (!roomRef.current) return;
     if (sharing) {
+      // Stop screen recorder & upload
+      try {
+        const sr = screenRecorderRef.current;
+        if (sr && sr.state !== "inactive") {
+          await new Promise<void>(res => { sr.onstop = () => res(); sr.stop(); });
+        }
+        if (screenChunksRef.current.length > 0 && streamId) {
+          const blob = new Blob(screenChunksRef.current, { type: "video/webm" });
+          const path = `${streamId}-screen-${Date.now()}.webm`;
+          toast.message("Saving screen recording…");
+          const { error } = await supabase.storage.from("stream-recordings").upload(path, blob, { contentType: "video/webm", upsert: true });
+          if (!error) {
+            const url = supabase.storage.from("stream-recordings").getPublicUrl(path).data.publicUrl;
+            await supabase.from("streams").update({ screen_recording_url: url }).eq("id", streamId);
+            toast.success("Screen recording saved");
+          }
+        }
+      } catch {}
+      screenChunksRef.current = [];
+      screenRecorderRef.current = null;
+
       if (screenTrackRef.current) {
         roomRef.current.localParticipant.unpublishTrack(screenTrackRef.current);
         screenTrackRef.current.stop();
         screenTrackRef.current = null;
+      }
+      if (screenAudioTrackRef.current) {
+        roomRef.current.localParticipant.unpublishTrack(screenAudioTrackRef.current);
+        screenAudioTrackRef.current.stop?.();
+        screenAudioTrackRef.current = null;
       }
       setSharing(false);
     } else {
@@ -126,6 +164,20 @@ export default function GoLive() {
         for (const t of tracks) {
           await roomRef.current.localParticipant.publishTrack(t);
           if (t.kind === Track.Kind.Video) screenTrackRef.current = t as LocalVideoTrack;
+          else screenAudioTrackRef.current = t;
+        }
+        // Start screen recorder (screen video + screen audio if present + mic)
+        if (screenTrackRef.current) {
+          const mediaTracks: MediaStreamTrack[] = [screenTrackRef.current.mediaStreamTrack];
+          if (screenAudioTrackRef.current?.mediaStreamTrack) mediaTracks.push(screenAudioTrackRef.current.mediaStreamTrack);
+          if (micTrackRef.current?.mediaStreamTrack) mediaTracks.push(micTrackRef.current.mediaStreamTrack);
+          const ms = new MediaStream(mediaTracks);
+          const mime = MediaRecorder.isTypeSupported("video/webm;codecs=vp9,opus") ? "video/webm;codecs=vp9,opus" : "video/webm";
+          const sr = new MediaRecorder(ms, { mimeType: mime, videoBitsPerSecond: 3_000_000 });
+          screenChunksRef.current = [];
+          sr.ondataavailable = e => { if (e.data.size > 0) screenChunksRef.current.push(e.data); };
+          sr.start(2000);
+          screenRecorderRef.current = sr;
         }
         setSharing(true);
       } catch (e: any) { toast.error("Screen share denied"); }
@@ -154,10 +206,14 @@ export default function GoLive() {
   const endStream = async () => {
     if (!streamId) return;
     try {
-      // Stop recorder
+      // Stop recorders
       const recorder = recorderRef.current;
       if (recorder && recorder.state !== "inactive") {
         await new Promise<void>(res => { recorder.onstop = () => res(); recorder.stop(); });
+      }
+      const sr = screenRecorderRef.current;
+      if (sr && sr.state !== "inactive") {
+        await new Promise<void>(res => { sr.onstop = () => res(); sr.stop(); });
       }
       const duration = Math.floor((Date.now() - startTimeRef.current) / 1000);
 
@@ -165,9 +221,10 @@ export default function GoLive() {
       camTrackRef.current?.stop();
       micTrackRef.current?.stop();
       screenTrackRef.current?.stop();
+      screenAudioTrackRef.current?.stop?.();
       await roomRef.current?.disconnect();
 
-      // Upload recording
+      // Upload camera recording
       let recording_url: string | null = null;
       if (recordedChunksRef.current.length > 0) {
         const blob = new Blob(recordedChunksRef.current, { type: "video/webm" });
@@ -181,12 +238,28 @@ export default function GoLive() {
         }
       }
 
-      await supabase.from("streams").update({
+      // Upload screen recording (if any from final share session)
+      let screen_recording_url: string | null = null;
+      if (screenChunksRef.current.length > 0) {
+        const blob = new Blob(screenChunksRef.current, { type: "video/webm" });
+        const path = `${streamId}-screen-final.webm`;
+        toast.message("Uploading screen recording…");
+        const { error } = await supabase.storage.from("stream-recordings").upload(path, blob, {
+          contentType: "video/webm", upsert: true,
+        });
+        if (!error) {
+          screen_recording_url = supabase.storage.from("stream-recordings").getPublicUrl(path).data.publicUrl;
+        }
+      }
+
+      const updates: any = {
         status: "ended",
         ended_at: new Date().toISOString(),
         duration_seconds: duration,
         recording_url,
-      }).eq("id", streamId);
+      };
+      if (screen_recording_url) updates.screen_recording_url = screen_recording_url;
+      await supabase.from("streams").update(updates).eq("id", streamId);
 
       toast.success("Stream ended & saved");
       setIsLive(false);
@@ -214,7 +287,7 @@ export default function GoLive() {
           <Button variant="ghost" onClick={() => navigate("/streams")} className="text-foreground">Past Streams</Button>
         </div>
 
-        <div className="grid lg:grid-cols-[2fr_1fr] gap-4">
+        <div className="grid lg:grid-cols-[2fr_1fr] gap-4 relative" style={{ zIndex: 1000 }}>
           <div className="space-y-3">
             <div className="aspect-video bg-black rounded-lg overflow-hidden border border-primary/30">
               <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-contain" />
@@ -251,10 +324,14 @@ export default function GoLive() {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <Button onClick={toggleScreen} variant="secondary"><MonitorUp className="w-4 h-4 mr-1" />{sharing ? "Stop Share" : "Share Screen"}</Button>
+                  <Button onClick={testTTS} variant="secondary">🔊 Test TTS</Button>
                   <Button onClick={copyLink} variant="secondary"><Copy className="w-4 h-4 mr-1" />Copy Link</Button>
                   <Button onClick={share} variant="secondary"><Share2 className="w-4 h-4 mr-1" />Share</Button>
                   <Button onClick={endStream} className="bg-red-700 hover:bg-red-600 text-white ml-auto"><StopCircle className="w-4 h-4 mr-1" />End Stream</Button>
                 </div>
+                <p className="text-xs text-muted-foreground">
+                  Tip: TTS reads every chat message aloud. Type <span className="text-pink-400 font-mono">!mario</span>, <span className="text-pink-400 font-mono">!peach</span>, <span className="text-pink-400 font-mono">!bowser</span>, <span className="text-pink-400 font-mono">!yoshi</span>, or <span className="text-pink-400 font-mono">!sonic</span> to launch jumping stickers. Paste an image (Ctrl/Cmd+V) to flash it on the overlay.
+                </p>
               </div>
             )}
           </div>
