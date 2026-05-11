@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Mic, Video as VideoIcon, MonitorUp, StopCircle, Copy, Share2, ArrowLeft } from "lucide-react";
 import LiveChat from "@/components/LiveChat";
+import LiveOverlay from "@/components/LiveOverlay";
 import { toast } from "sonner";
 
 type Quality = "480p" | "720p" | "1080p";
@@ -271,8 +272,11 @@ export default function GoLive() {
             ) : (
               <div className="h-full bg-black rounded-lg border border-primary/30 flex items-center justify-center text-pink-400">Chat appears when you go live</div>
             )}
-          </div>
-        </div>
+      </div>
+      {isLive && streamId && roomRef.current && (
+        <LiveOverlay room={roomRef.current} streamId={streamId} />
+      )}
+    </div>
       </div>
     </div>
   );
