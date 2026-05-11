@@ -252,12 +252,14 @@ export default function GoLive() {
         }
       }
 
-      await supabase.from("streams").update({
+      const updates: any = {
         status: "ended",
         ended_at: new Date().toISOString(),
         duration_seconds: duration,
         recording_url,
-      }).eq("id", streamId);
+      };
+      if (screen_recording_url) updates.screen_recording_url = screen_recording_url;
+      await supabase.from("streams").update(updates).eq("id", streamId);
 
       toast.success("Stream ended & saved");
       setIsLive(false);
