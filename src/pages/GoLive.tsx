@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Mic, Video as VideoIcon, MonitorUp, StopCircle, Copy, Share2, ArrowLeft } from "lucide-react";
 import LiveChat from "@/components/LiveChat";
+import LiveOverlay from "@/components/LiveOverlay";
 import { toast } from "sonner";
 
 type Quality = "480p" | "720p" | "1080p";
