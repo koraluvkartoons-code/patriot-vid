@@ -324,10 +324,14 @@ export default function GoLive() {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <Button onClick={toggleScreen} variant="secondary"><MonitorUp className="w-4 h-4 mr-1" />{sharing ? "Stop Share" : "Share Screen"}</Button>
+                  <Button onClick={testTTS} variant="secondary">🔊 Test TTS</Button>
                   <Button onClick={copyLink} variant="secondary"><Copy className="w-4 h-4 mr-1" />Copy Link</Button>
                   <Button onClick={share} variant="secondary"><Share2 className="w-4 h-4 mr-1" />Share</Button>
                   <Button onClick={endStream} className="bg-red-700 hover:bg-red-600 text-white ml-auto"><StopCircle className="w-4 h-4 mr-1" />End Stream</Button>
                 </div>
+                <p className="text-xs text-muted-foreground">
+                  Tip: TTS reads every chat message aloud. Type <span className="text-pink-400 font-mono">!mario</span>, <span className="text-pink-400 font-mono">!peach</span>, <span className="text-pink-400 font-mono">!bowser</span>, <span className="text-pink-400 font-mono">!yoshi</span>, or <span className="text-pink-400 font-mono">!sonic</span> to launch jumping stickers. Paste an image (Ctrl/Cmd+V) to flash it on the overlay.
+                </p>
               </div>
             )}
           </div>
