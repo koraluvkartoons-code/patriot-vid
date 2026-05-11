@@ -206,10 +206,14 @@ export default function GoLive() {
   const endStream = async () => {
     if (!streamId) return;
     try {
-      // Stop recorder
+      // Stop recorders
       const recorder = recorderRef.current;
       if (recorder && recorder.state !== "inactive") {
         await new Promise<void>(res => { recorder.onstop = () => res(); recorder.stop(); });
+      }
+      const sr = screenRecorderRef.current;
+      if (sr && sr.state !== "inactive") {
+        await new Promise<void>(res => { sr.onstop = () => res(); sr.stop(); });
       }
       const duration = Math.floor((Date.now() - startTimeRef.current) / 1000);
 
@@ -217,9 +221,10 @@ export default function GoLive() {
       camTrackRef.current?.stop();
       micTrackRef.current?.stop();
       screenTrackRef.current?.stop();
+      screenAudioTrackRef.current?.stop?.();
       await roomRef.current?.disconnect();
 
-      // Upload recording
+      // Upload camera recording
       let recording_url: string | null = null;
       if (recordedChunksRef.current.length > 0) {
         const blob = new Blob(recordedChunksRef.current, { type: "video/webm" });
@@ -230,6 +235,20 @@ export default function GoLive() {
         });
         if (!error) {
           recording_url = supabase.storage.from("stream-recordings").getPublicUrl(path).data.publicUrl;
+        }
+      }
+
+      // Upload screen recording (if any from final share session)
+      let screen_recording_url: string | null = null;
+      if (screenChunksRef.current.length > 0) {
+        const blob = new Blob(screenChunksRef.current, { type: "video/webm" });
+        const path = `${streamId}-screen-final.webm`;
+        toast.message("Uploading screen recording…");
+        const { error } = await supabase.storage.from("stream-recordings").upload(path, blob, {
+          contentType: "video/webm", upsert: true,
+        });
+        if (!error) {
+          screen_recording_url = supabase.storage.from("stream-recordings").getPublicUrl(path).data.publicUrl;
         }
       }
 
