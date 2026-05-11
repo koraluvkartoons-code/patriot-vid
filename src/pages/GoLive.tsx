@@ -287,7 +287,7 @@ export default function GoLive() {
           <Button variant="ghost" onClick={() => navigate("/streams")} className="text-foreground">Past Streams</Button>
         </div>
 
-        <div className="grid lg:grid-cols-[2fr_1fr] gap-4">
+        <div className="grid lg:grid-cols-[2fr_1fr] gap-4 relative" style={{ zIndex: 1000 }}>
           <div className="space-y-3">
             <div className="aspect-video bg-black rounded-lg overflow-hidden border border-primary/30">
               <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-contain" />
