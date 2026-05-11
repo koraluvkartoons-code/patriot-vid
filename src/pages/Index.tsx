@@ -1,11 +1,13 @@
 import { useState, useCallback, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { getCurrentUserId, type Post, type UserProfile } from "@/lib/store";
 import { fetchPosts, fetchProfiles } from "@/lib/api";
+import { supabase } from "@/integrations/supabase/client";
 import UserSetupDialog from "@/components/UserSetupDialog";
 import CreatePost from "@/components/CreatePost";
 import PostCard from "@/components/PostCard";
 import AdminPanel from "@/components/AdminPanel";
-import { Shield, User } from "lucide-react";
+import { Shield, User, Radio, Film } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import eagleImg from "@/assets/eagle.png";
 
@@ -16,6 +18,7 @@ export default function Index() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [profiles, setProfiles] = useState<Record<string, UserProfile>>({});
   const [loading, setLoading] = useState(true);
+  const [liveStreams, setLiveStreams] = useState<any[]>([]);
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -33,6 +36,18 @@ export default function Index() {
   }, []);
 
   useEffect(() => { loadData(); }, [loadData]);
+
+  useEffect(() => {
+    const loadLive = async () => {
+      const { data } = await supabase.from("streams").select("*").eq("status", "live").order("started_at", { ascending: false });
+      setLiveStreams(data || []);
+    };
+    loadLive();
+    const ch = supabase.channel("live-streams")
+      .on("postgres_changes", { event: "*", schema: "public", table: "streams" }, loadLive)
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, []);
 
   const currentUser = userId ? profiles[userId] : null;
   const isAdmin = userId === "PatriotAdmin";
@@ -53,7 +68,9 @@ export default function Index() {
               <span className="text-primary">.Vid</span>
             </h1>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
+            <Link to="/live"><Button size="sm" variant="ghost" className="text-red-400 hover:text-red-300 h-8"><Radio className="w-4 h-4 mr-1" /><span className="text-xs hidden sm:inline">Go Live</span></Button></Link>
+            <Link to="/streams"><Button size="sm" variant="ghost" className="text-foreground hover:text-primary h-8"><Film className="w-4 h-4 mr-1" /><span className="text-xs hidden sm:inline">Streams</span></Button></Link>
             {(isAdmin || isMod) && (
               <Button size="sm" variant="ghost" onClick={() => setShowAdmin(true)} className="text-gold hover:text-gold-shine h-8">
                 <Shield className="w-4 h-4" />
@@ -68,6 +85,20 @@ export default function Index() {
       </header>
 
       <main className="container max-w-2xl mx-auto px-4 py-6 space-y-6">
+        {liveStreams.length > 0 && (
+          <div className="space-y-2">
+            {liveStreams.map(s => (
+              <Link key={s.id} to={`/watch/${s.id}`} className="block bg-gradient-to-r from-red-600/20 to-pink-600/20 border border-red-500/40 rounded-lg p-3 hover:from-red-600/30 hover:to-pink-600/30 transition">
+                <div className="flex items-center gap-2">
+                  <span className="text-red-500 animate-pulse font-bold">● LIVE</span>
+                  <span className="font-bold text-foreground truncate">{s.title}</span>
+                  <span className="text-xs text-muted-foreground ml-auto">@{s.host_user_id}</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+
         <CreatePost onNeedSetup={needSetup} onCreated={loadData} />
 
         {loading && (
