@@ -128,7 +128,19 @@ export default function GoLive() {
       });
       if (tokErr || (tokenData as any)?.error) throw new Error((tokenData as any)?.error || tokErr?.message);
 
-      const room = new Room({ adaptiveStream: true, dynacast: true });
+      const room = new Room({
+        adaptiveStream: true,
+        dynacast: true,
+        publishDefaults: {
+          simulcast: true,
+          videoSimulcastLayers: [VideoPresets.h180, VideoPresets.h360],
+          videoCodec: "vp8", // broadest hardware decode + lowest CPU = lowest latency
+          screenShareEncoding: ScreenSharePresets.h1080fps15.encoding,
+          dtx: true,
+          red: true,
+          stopMicTrackOnMute: false,
+        },
+      });
       roomRef.current = room;
       await room.connect((tokenData as any).url, (tokenData as any).token);
 
