@@ -46,7 +46,11 @@ export default function Watch() {
           body: { room: data.room_name, identity: getGuestSessionId(), name: guestName, isHost: false },
         });
         if (!(tok as any)?.token) return;
-        const room = new Room({ adaptiveStream: true });
+        const room = new Room({
+          adaptiveStream: true,
+          dynacast: true,
+          publishDefaults: { simulcast: true },
+        });
         roomRef.current = room;
 
         const attach = (track: RemoteTrack, pub: RemoteTrackPublication) => {
