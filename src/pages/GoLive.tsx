@@ -38,7 +38,10 @@ export default function GoLive() {
   const [micOn, setMicOn] = useState(true);
   const [segCount, setSegCount] = useState(0);
 
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);          // main preview (cam, or screen when sharing)
+  const camPipRef = useRef<HTMLVideoElement>(null);         // small cam overlay shown while sharing
+  const camHiddenRef = useRef<HTMLVideoElement>(null);      // hidden cam element used by canvas compositor
+  const screenHiddenRef = useRef<HTMLVideoElement>(null);   // hidden screen element used by canvas compositor
   const roomRef = useRef<Room | null>(null);
   const camTrackRef = useRef<LocalVideoTrack | null>(null);
   const micTrackRef = useRef<LocalAudioTrack | null>(null);
@@ -50,6 +53,9 @@ export default function GoLive() {
   const startTimeRef = useRef<number>(0);
   const streamIdRef = useRef<string | null>(null);
   const stoppingRef = useRef(false);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const rafRef = useRef<number | null>(null);
+  const sharingRef = useRef(false);
 
   useEffect(() => { fetchProfiles().then(setProfiles); }, []);
   useEffect(() => { if (!userId) navigate("/"); }, [userId, navigate]);
