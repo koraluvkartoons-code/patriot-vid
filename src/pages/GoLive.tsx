@@ -222,14 +222,32 @@ export default function GoLive() {
         screenTrackRef.current.stop();
         screenTrackRef.current = null;
       }
+      sharingRef.current = false;
       setSharing(false);
+      // Restore camera as main preview
+      if (videoRef.current && camTrackRef.current) camTrackRef.current.attach(videoRef.current);
+      if (screenHiddenRef.current) screenHiddenRef.current.srcObject = null;
     } else {
       try {
         const tracks = await roomRef.current.localParticipant.createScreenTracks({ audio: true } as ScreenShareCaptureOptions);
         for (const t of tracks) {
           await roomRef.current.localParticipant.publishTrack(t);
-          if (t.kind === Track.Kind.Video) screenTrackRef.current = t as LocalVideoTrack;
+          if (t.kind === Track.Kind.Video) {
+            const vt = t as LocalVideoTrack;
+            screenTrackRef.current = vt;
+            // Feed compositor + main preview
+            if (screenHiddenRef.current) {
+              screenHiddenRef.current.srcObject = new MediaStream([vt.mediaStreamTrack]);
+              screenHiddenRef.current.muted = true;
+              screenHiddenRef.current.playsInline = true;
+              screenHiddenRef.current.play().catch(() => {});
+            }
+            if (videoRef.current) vt.attach(videoRef.current);
+            // Cam moves to PiP preview
+            if (camPipRef.current && camTrackRef.current) camTrackRef.current.attach(camPipRef.current);
+          }
         }
+        sharingRef.current = true;
         setSharing(true);
       } catch { toast.error("Screen share denied"); }
     }
