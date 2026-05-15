@@ -7,7 +7,7 @@ import { getGuestName, getGuestSessionId } from "@/lib/guest";
 import { fetchProfiles } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Mic, Video as VideoIcon, MonitorUp, StopCircle, Copy, Share2, ArrowLeft } from "lucide-react";
+import { Mic, MicOff, Video as VideoIcon, VideoOff, MonitorUp, StopCircle, Copy, Share2, ArrowLeft } from "lucide-react";
 import LiveChat from "@/components/LiveChat";
 import { toast } from "sonner";
 
@@ -17,6 +17,9 @@ const QUALITY_MAP: Record<Quality, { width: number; height: number; frameRate: n
   "720p": { width: 1280, height: 720, frameRate: 30 },
   "1080p": { width: 1920, height: 1080, frameRate: 30 },
 };
+
+// 60s segments — uploaded continuously so multi-hour streams never blow memory.
+const SEGMENT_MS = 60_000;
 
 export default function GoLive() {
   const navigate = useNavigate();
@@ -31,6 +34,9 @@ export default function GoLive() {
   const [micId, setMicId] = useState<string>("");
   const [quality, setQuality] = useState<Quality>("720p");
   const [sharing, setSharing] = useState(false);
+  const [camOn, setCamOn] = useState(true);
+  const [micOn, setMicOn] = useState(true);
+  const [segCount, setSegCount] = useState(0);
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const roomRef = useRef<Room | null>(null);
@@ -38,14 +44,15 @@ export default function GoLive() {
   const micTrackRef = useRef<LocalAudioTrack | null>(null);
   const screenTrackRef = useRef<LocalVideoTrack | null>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
-  const recordedChunksRef = useRef<Blob[]>([]);
+  const segmentsRef = useRef<{ path: string; url: string; index: number }[]>([]);
+  const segIndexRef = useRef(0);
+  const rotateTimerRef = useRef<number | null>(null);
   const startTimeRef = useRef<number>(0);
+  const streamIdRef = useRef<string | null>(null);
+  const stoppingRef = useRef(false);
 
   useEffect(() => { fetchProfiles().then(setProfiles); }, []);
-
-  useEffect(() => {
-    if (!userId) { navigate("/"); return; }
-  }, [userId, navigate]);
+  useEffect(() => { if (!userId) navigate("/"); }, [userId, navigate]);
 
   const loadDevices = async () => {
     const devs = await navigator.mediaDevices.enumerateDevices();
@@ -53,21 +60,68 @@ export default function GoLive() {
     setMics(devs.filter(d => d.kind === "audioinput"));
   };
 
+  const buildRecorderStream = () => {
+    const tracks: MediaStreamTrack[] = [];
+    if (camTrackRef.current) tracks.push(camTrackRef.current.mediaStreamTrack);
+    if (micTrackRef.current) tracks.push(micTrackRef.current.mediaStreamTrack);
+    return new MediaStream(tracks);
+  };
+
+  const uploadSegment = async (blob: Blob, index: number) => {
+    const sid = streamIdRef.current;
+    if (!sid || blob.size === 0) return;
+    const path = `${sid}/seg-${String(index).padStart(5, "0")}.webm`;
+    const { error } = await supabase.storage.from("stream-recordings").upload(path, blob, {
+      contentType: "video/webm", upsert: true,
+    });
+    if (error) { console.error("seg upload", error); return; }
+    const url = supabase.storage.from("stream-recordings").getPublicUrl(path).data.publicUrl;
+    segmentsRef.current.push({ path, url, index });
+    setSegCount(segmentsRef.current.length);
+    // Persist segments + first as recording_url for thumbnails.
+    await supabase.from("streams").update({
+      segments: segmentsRef.current,
+      recording_url: segmentsRef.current[0]?.url ?? null,
+    }).eq("id", sid);
+  };
+
+  const startRecorderCycle = () => {
+    if (stoppingRef.current) return;
+    const ms = buildRecorderStream();
+    if (ms.getTracks().length === 0) return;
+    const mime = MediaRecorder.isTypeSupported("video/webm;codecs=vp9,opus")
+      ? "video/webm;codecs=vp9,opus" : "video/webm";
+    const rec = new MediaRecorder(ms, { mimeType: mime, videoBitsPerSecond: 2_500_000 });
+    const chunks: Blob[] = [];
+    const idx = segIndexRef.current++;
+    rec.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+    rec.onstop = async () => {
+      const blob = new Blob(chunks, { type: "video/webm" });
+      uploadSegment(blob, idx);
+      if (!stoppingRef.current) startRecorderCycle();
+    };
+    rec.start();
+    recorderRef.current = rec;
+    rotateTimerRef.current = window.setTimeout(() => {
+      try { rec.state !== "inactive" && rec.stop(); } catch {}
+    }, SEGMENT_MS);
+  };
+
   const goLive = async () => {
     if (!userId) return;
     try {
-      // Permissions + device list
       await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
       await loadDevices();
 
       const room_name = `stream-${crypto.randomUUID()}`;
       const { data: streamRow, error: insertErr } = await supabase
         .from("streams")
-        .insert({ host_user_id: userId, title, room_name, status: "live" })
+        .insert({ host_user_id: userId, title, room_name, status: "live", segments: [] })
         .select()
         .single();
       if (insertErr) throw insertErr;
       setStreamId(streamRow.id);
+      streamIdRef.current = streamRow.id;
 
       const { data: tokenData, error: tokErr } = await supabase.functions.invoke("livekit-token", {
         body: { room: room_name, identity: userId, name: userId, isHost: true },
@@ -88,20 +142,13 @@ export default function GoLive() {
       micTrackRef.current = micTrack;
       await room.localParticipant.publishTrack(camTrack);
       await room.localParticipant.publishTrack(micTrack);
+      if (videoRef.current) camTrack.attach(videoRef.current);
 
-      if (videoRef.current) {
-        camTrack.attach(videoRef.current);
-      }
-
-      // Start local recording (camera+mic)
-      const mediaStream = new MediaStream([camTrack.mediaStreamTrack, micTrack.mediaStreamTrack]);
-      const mime = MediaRecorder.isTypeSupported("video/webm;codecs=vp9,opus") ? "video/webm;codecs=vp9,opus" : "video/webm";
-      const recorder = new MediaRecorder(mediaStream, { mimeType: mime, videoBitsPerSecond: 2_500_000 });
-      recordedChunksRef.current = [];
-      recorder.ondataavailable = e => { if (e.data.size > 0) recordedChunksRef.current.push(e.data); };
-      recorder.start(2000);
-      recorderRef.current = recorder;
+      stoppingRef.current = false;
+      segmentsRef.current = [];
+      segIndexRef.current = 0;
       startTimeRef.current = Date.now();
+      startRecorderCycle();
 
       setIsLive(true);
       toast.success("You are LIVE 🔴");
@@ -127,65 +174,64 @@ export default function GoLive() {
           if (t.kind === Track.Kind.Video) screenTrackRef.current = t as LocalVideoTrack;
         }
         setSharing(true);
-      } catch (e: any) { toast.error("Screen share denied"); }
+      } catch { toast.error("Screen share denied"); }
     }
+  };
+
+  const toggleCam = async () => {
+    if (!camTrackRef.current) return;
+    const next = !camOn;
+    await camTrackRef.current.mute(); // ensure consistent state
+    if (next) await camTrackRef.current.unmute();
+    setCamOn(next);
+  };
+  const toggleMic = async () => {
+    if (!micTrackRef.current) return;
+    const next = !micOn;
+    if (next) await micTrackRef.current.unmute(); else await micTrackRef.current.mute();
+    setMicOn(next);
   };
 
   const switchCamera = async (newId: string) => {
     setCamId(newId);
-    if (camTrackRef.current && roomRef.current) {
-      await camTrackRef.current.restartTrack({ deviceId: newId });
-    }
+    if (camTrackRef.current) await camTrackRef.current.restartTrack({ deviceId: newId });
   };
   const switchMic = async (newId: string) => {
     setMicId(newId);
     if (micTrackRef.current) await micTrackRef.current.restartTrack({ deviceId: newId });
   };
-
   const changeQuality = async (q: Quality) => {
     setQuality(q);
-    if (camTrackRef.current) {
-      const cfg = QUALITY_MAP[q];
-      await camTrackRef.current.restartTrack({ resolution: cfg });
-    }
+    if (camTrackRef.current) await camTrackRef.current.restartTrack({ resolution: QUALITY_MAP[q] });
   };
 
   const endStream = async () => {
-    if (!streamId) return;
+    const sid = streamIdRef.current;
+    if (!sid) return;
     try {
-      // Stop recorder
-      const recorder = recorderRef.current;
-      if (recorder && recorder.state !== "inactive") {
-        await new Promise<void>(res => { recorder.onstop = () => res(); recorder.stop(); });
+      stoppingRef.current = true;
+      if (rotateTimerRef.current) { clearTimeout(rotateTimerRef.current); rotateTimerRef.current = null; }
+      const rec = recorderRef.current;
+      if (rec && rec.state !== "inactive") {
+        await new Promise<void>(res => { const prev = rec.onstop; rec.onstop = async (ev) => { if (prev) await (prev as any).call(rec, ev); res(); }; rec.stop(); });
       }
       const duration = Math.floor((Date.now() - startTimeRef.current) / 1000);
 
-      // Stop tracks
       camTrackRef.current?.stop();
       micTrackRef.current?.stop();
       screenTrackRef.current?.stop();
       await roomRef.current?.disconnect();
 
-      // Upload recording
-      let recording_url: string | null = null;
-      if (recordedChunksRef.current.length > 0) {
-        const blob = new Blob(recordedChunksRef.current, { type: "video/webm" });
-        const path = `${streamId}.webm`;
-        toast.message("Uploading recording…");
-        const { error } = await supabase.storage.from("stream-recordings").upload(path, blob, {
-          contentType: "video/webm", upsert: true,
-        });
-        if (!error) {
-          recording_url = supabase.storage.from("stream-recordings").getPublicUrl(path).data.publicUrl;
-        }
-      }
+      // wait briefly for last segment upload
+      await new Promise(r => setTimeout(r, 800));
 
       await supabase.from("streams").update({
         status: "ended",
         ended_at: new Date().toISOString(),
         duration_seconds: duration,
-        recording_url,
-      }).eq("id", streamId);
+        segments: segmentsRef.current,
+        recording_url: segmentsRef.current[0]?.url ?? null,
+      }).eq("id", sid);
 
       toast.success("Stream ended & saved");
       setIsLive(false);
@@ -197,10 +243,7 @@ export default function GoLive() {
 
   const watchUrl = streamId ? `${window.location.origin}/watch/${streamId}` : "";
   const copyLink = () => { navigator.clipboard.writeText(watchUrl); toast.success("Link copied"); };
-  const share = async () => {
-    if (navigator.share) await navigator.share({ title, url: watchUrl });
-    else copyLink();
-  };
+  const share = async () => { if (navigator.share) await navigator.share({ title, url: watchUrl }); else copyLink(); };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -222,13 +265,11 @@ export default function GoLive() {
             {!isLive ? (
               <div className="space-y-3 bg-card rounded-lg p-4 border border-border">
                 <Input value={title} onChange={e => setTitle(e.target.value)} placeholder="Stream title" />
-                <Button onClick={goLive} className="w-full bg-red-600 hover:bg-red-500 text-white font-bold">
-                  🔴 GO LIVE
-                </Button>
+                <Button onClick={goLive} className="w-full bg-red-600 hover:bg-red-500 text-white font-bold">🔴 GO LIVE</Button>
               </div>
             ) : (
               <div className="space-y-3 bg-card rounded-lg p-4 border border-border">
-                <div className="grid sm:grid-cols-2 gap-2">
+                <div className="grid sm:grid-cols-3 gap-2">
                   <div>
                     <label className="text-xs text-muted-foreground flex items-center gap-1"><VideoIcon className="w-3 h-3" /> Camera</label>
                     <select value={camId} onChange={e => switchCamera(e.target.value)} className="w-full bg-muted text-foreground rounded p-1.5 text-sm">
@@ -249,11 +290,14 @@ export default function GoLive() {
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-2">
+                  <Button onClick={toggleCam} variant="secondary">{camOn ? <VideoIcon className="w-4 h-4 mr-1" /> : <VideoOff className="w-4 h-4 mr-1" />}{camOn ? "Cam On" : "Cam Off"}</Button>
+                  <Button onClick={toggleMic} variant="secondary">{micOn ? <Mic className="w-4 h-4 mr-1" /> : <MicOff className="w-4 h-4 mr-1" />}{micOn ? "Mic On" : "Muted"}</Button>
                   <Button onClick={toggleScreen} variant="secondary"><MonitorUp className="w-4 h-4 mr-1" />{sharing ? "Stop Share" : "Share Screen"}</Button>
                   <Button onClick={copyLink} variant="secondary"><Copy className="w-4 h-4 mr-1" />Copy Link</Button>
                   <Button onClick={share} variant="secondary"><Share2 className="w-4 h-4 mr-1" />Share</Button>
                   <Button onClick={endStream} className="bg-red-700 hover:bg-red-600 text-white ml-auto"><StopCircle className="w-4 h-4 mr-1" />End Stream</Button>
                 </div>
+                <p className="text-xs text-muted-foreground">Saved segments: {segCount} (auto-uploads every 60s — multi-hour safe)</p>
               </div>
             )}
           </div>
