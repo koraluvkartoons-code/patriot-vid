@@ -334,8 +334,18 @@ export default function GoLive() {
 
         <div className="grid lg:grid-cols-[2fr_1fr] gap-4">
           <div className="space-y-3">
-            <div className="aspect-video bg-black rounded-lg overflow-hidden border border-primary/30">
+            <div className="aspect-video bg-black rounded-lg overflow-hidden border border-primary/30 relative">
               <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-contain" />
+              {sharing && (
+                <video
+                  ref={camPipRef}
+                  autoPlay muted playsInline
+                  className="absolute bottom-3 right-3 w-1/4 aspect-video object-cover rounded-md border-2 border-primary shadow-2xl bg-black"
+                />
+              )}
+              {/* hidden compositor sources */}
+              <video ref={camHiddenRef} className="hidden" muted playsInline />
+              <video ref={screenHiddenRef} className="hidden" muted playsInline />
             </div>
 
             {!isLive ? (
