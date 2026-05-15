@@ -38,10 +38,7 @@ export default function GoLive() {
   const [micOn, setMicOn] = useState(true);
   const [segCount, setSegCount] = useState(0);
 
-  const videoRef = useRef<HTMLVideoElement>(null);          // main preview (cam, or screen when sharing)
-  const camPipRef = useRef<HTMLVideoElement>(null);         // small cam overlay shown while sharing
-  const camHiddenRef = useRef<HTMLVideoElement>(null);      // hidden cam element used by canvas compositor
-  const screenHiddenRef = useRef<HTMLVideoElement>(null);   // hidden screen element used by canvas compositor
+  const videoRef = useRef<HTMLVideoElement>(null);
   const roomRef = useRef<Room | null>(null);
   const camTrackRef = useRef<LocalVideoTrack | null>(null);
   const micTrackRef = useRef<LocalAudioTrack | null>(null);
@@ -53,9 +50,6 @@ export default function GoLive() {
   const startTimeRef = useRef<number>(0);
   const streamIdRef = useRef<string | null>(null);
   const stoppingRef = useRef(false);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const rafRef = useRef<number | null>(null);
-  const sharingRef = useRef(false);
 
   useEffect(() => { fetchProfiles().then(setProfiles); }, []);
   useEffect(() => { if (!userId) navigate("/"); }, [userId, navigate]);
@@ -66,50 +60,11 @@ export default function GoLive() {
     setMics(devs.filter(d => d.kind === "audioinput"));
   };
 
-  // Compose camera + (optional) screen share into one canvas, return its capture stream + mic.
-  const buildRecorderStream = (): MediaStream => {
-    const canvas = document.createElement("canvas");
-    canvas.width = 1280; canvas.height = 720;
-    canvasRef.current = canvas;
-    const ctx = canvas.getContext("2d")!;
-
-    const camEl = camHiddenRef.current!;
-    const scrEl = screenHiddenRef.current!;
-    if (camTrackRef.current) {
-      camEl.srcObject = new MediaStream([camTrackRef.current.mediaStreamTrack]);
-      camEl.muted = true; camEl.playsInline = true; camEl.play().catch(() => {});
-    }
-
-    const draw = () => {
-      ctx.fillStyle = "#000"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-      const screenReady = sharingRef.current && scrEl.videoWidth > 0;
-      if (screenReady) {
-        // Screen fills frame, cam in bottom-right PiP
-        const sw = scrEl.videoWidth, sh = scrEl.videoHeight;
-        const r = Math.min(canvas.width / sw, canvas.height / sh);
-        const dw = sw * r, dh = sh * r;
-        ctx.drawImage(scrEl, (canvas.width - dw) / 2, (canvas.height - dh) / 2, dw, dh);
-        if (camEl.videoWidth > 0) {
-          const pw = canvas.width * 0.22, ph = pw * 0.5625;
-          const px = canvas.width - pw - 16, py = canvas.height - ph - 16;
-          ctx.save();
-          ctx.fillStyle = "#000"; ctx.fillRect(px - 2, py - 2, pw + 4, ph + 4);
-          ctx.drawImage(camEl, px, py, pw, ph);
-          ctx.restore();
-        }
-      } else if (camEl.videoWidth > 0) {
-        const cw = camEl.videoWidth, ch = camEl.videoHeight;
-        const r = Math.min(canvas.width / cw, canvas.height / ch);
-        const dw = cw * r, dh = ch * r;
-        ctx.drawImage(camEl, (canvas.width - dw) / 2, (canvas.height - dh) / 2, dw, dh);
-      }
-      rafRef.current = requestAnimationFrame(draw);
-    };
-    rafRef.current = requestAnimationFrame(draw);
-
-    const out = (canvas as any).captureStream(30) as MediaStream;
-    if (micTrackRef.current) out.addTrack(micTrackRef.current.mediaStreamTrack);
-    return out;
+  const buildRecorderStream = () => {
+    const tracks: MediaStreamTrack[] = [];
+    if (camTrackRef.current) tracks.push(camTrackRef.current.mediaStreamTrack);
+    if (micTrackRef.current) tracks.push(micTrackRef.current.mediaStreamTrack);
+    return new MediaStream(tracks);
   };
 
   const uploadSegment = async (blob: Blob, index: number) => {
@@ -222,32 +177,14 @@ export default function GoLive() {
         screenTrackRef.current.stop();
         screenTrackRef.current = null;
       }
-      sharingRef.current = false;
       setSharing(false);
-      // Restore camera as main preview
-      if (videoRef.current && camTrackRef.current) camTrackRef.current.attach(videoRef.current);
-      if (screenHiddenRef.current) screenHiddenRef.current.srcObject = null;
     } else {
       try {
         const tracks = await roomRef.current.localParticipant.createScreenTracks({ audio: true } as ScreenShareCaptureOptions);
         for (const t of tracks) {
           await roomRef.current.localParticipant.publishTrack(t);
-          if (t.kind === Track.Kind.Video) {
-            const vt = t as LocalVideoTrack;
-            screenTrackRef.current = vt;
-            // Feed compositor + main preview
-            if (screenHiddenRef.current) {
-              screenHiddenRef.current.srcObject = new MediaStream([vt.mediaStreamTrack]);
-              screenHiddenRef.current.muted = true;
-              screenHiddenRef.current.playsInline = true;
-              screenHiddenRef.current.play().catch(() => {});
-            }
-            if (videoRef.current) vt.attach(videoRef.current);
-            // Cam moves to PiP preview
-            if (camPipRef.current && camTrackRef.current) camTrackRef.current.attach(camPipRef.current);
-          }
+          if (t.kind === Track.Kind.Video) screenTrackRef.current = t as LocalVideoTrack;
         }
-        sharingRef.current = true;
         setSharing(true);
       } catch { toast.error("Screen share denied"); }
     }
@@ -286,7 +223,6 @@ export default function GoLive() {
     try {
       stoppingRef.current = true;
       if (rotateTimerRef.current) { clearTimeout(rotateTimerRef.current); rotateTimerRef.current = null; }
-      if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = null; }
       const rec = recorderRef.current;
       if (rec && rec.state !== "inactive") {
         await new Promise<void>(res => { const prev = rec.onstop; rec.onstop = async (ev) => { if (prev) await (prev as any).call(rec, ev); res(); }; rec.stop(); });
@@ -334,18 +270,8 @@ export default function GoLive() {
 
         <div className="grid lg:grid-cols-[2fr_1fr] gap-4">
           <div className="space-y-3">
-            <div className="aspect-video bg-black rounded-lg overflow-hidden border border-primary/30 relative">
+            <div className="aspect-video bg-black rounded-lg overflow-hidden border border-primary/30">
               <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-contain" />
-              {sharing && (
-                <video
-                  ref={camPipRef}
-                  autoPlay muted playsInline
-                  className="absolute bottom-3 right-3 w-1/4 aspect-video object-cover rounded-md border-2 border-primary shadow-2xl bg-black"
-                />
-              )}
-              {/* hidden compositor sources */}
-              <video ref={camHiddenRef} className="hidden" muted playsInline />
-              <video ref={screenHiddenRef} className="hidden" muted playsInline />
             </div>
 
             {!isLive ? (
