@@ -286,6 +286,7 @@ export default function GoLive() {
     try {
       stoppingRef.current = true;
       if (rotateTimerRef.current) { clearTimeout(rotateTimerRef.current); rotateTimerRef.current = null; }
+      if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = null; }
       const rec = recorderRef.current;
       if (rec && rec.state !== "inactive") {
         await new Promise<void>(res => { const prev = rec.onstop; rec.onstop = async (ev) => { if (prev) await (prev as any).call(rec, ev); res(); }; rec.stop(); });
