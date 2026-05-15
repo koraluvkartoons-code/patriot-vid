@@ -235,6 +235,7 @@ export type Database = {
           recording_url: string | null
           room_name: string
           screen_recording_url: string | null
+          segments: Json
           started_at: string
           status: string
           thumbnail_url: string | null
@@ -250,6 +251,7 @@ export type Database = {
           recording_url?: string | null
           room_name: string
           screen_recording_url?: string | null
+          segments?: Json
           started_at?: string
           status?: string
           thumbnail_url?: string | null
@@ -265,6 +267,7 @@ export type Database = {
           recording_url?: string | null
           room_name?: string
           screen_recording_url?: string | null
+          segments?: Json
           started_at?: string
           status?: string
           thumbnail_url?: string | null
