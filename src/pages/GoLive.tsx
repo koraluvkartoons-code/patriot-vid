@@ -66,13 +66,6 @@ export default function GoLive() {
     setMics(devs.filter(d => d.kind === "audioinput"));
   };
 
-  const buildRecorderStream = () => {
-    const tracks: MediaStreamTrack[] = [];
-    if (camTrackRef.current) tracks.push(camTrackRef.current.mediaStreamTrack);
-    if (micTrackRef.current) tracks.push(micTrackRef.current.mediaStreamTrack);
-    return new MediaStream(tracks);
-  };
-
   // Compose camera + (optional) screen share into one canvas, return its capture stream + mic.
   const buildRecorderStream = (): MediaStream => {
     const canvas = document.createElement("canvas");
