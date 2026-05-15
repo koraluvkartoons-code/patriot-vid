@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Room, createLocalVideoTrack, createLocalAudioTrack, LocalVideoTrack, LocalAudioTrack, Track, type ScreenShareCaptureOptions } from "livekit-client";
+import { Room, createLocalVideoTrack, createLocalAudioTrack, LocalVideoTrack, LocalAudioTrack, Track, VideoPresets, ScreenSharePresets, type ScreenShareCaptureOptions } from "livekit-client";
 import { supabase } from "@/integrations/supabase/client";
 import { getCurrentUserId, type UserProfile } from "@/lib/store";
 import { getGuestName, getGuestSessionId } from "@/lib/guest";
@@ -128,7 +128,19 @@ export default function GoLive() {
       });
       if (tokErr || (tokenData as any)?.error) throw new Error((tokenData as any)?.error || tokErr?.message);
 
-      const room = new Room({ adaptiveStream: true, dynacast: true });
+      const room = new Room({
+        adaptiveStream: true,
+        dynacast: true,
+        publishDefaults: {
+          simulcast: true,
+          videoSimulcastLayers: [VideoPresets.h180, VideoPresets.h360],
+          videoCodec: "vp8", // broadest hardware decode + lowest CPU = lowest latency
+          screenShareEncoding: ScreenSharePresets.h1080fps15.encoding,
+          dtx: true,
+          red: true,
+          stopMicTrackOnMute: false,
+        },
+      });
       roomRef.current = room;
       await room.connect((tokenData as any).url, (tokenData as any).token);
 
