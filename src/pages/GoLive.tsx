@@ -73,6 +73,52 @@ export default function GoLive() {
     return new MediaStream(tracks);
   };
 
+  // Compose camera + (optional) screen share into one canvas, return its capture stream + mic.
+  const buildRecorderStream = (): MediaStream => {
+    const canvas = document.createElement("canvas");
+    canvas.width = 1280; canvas.height = 720;
+    canvasRef.current = canvas;
+    const ctx = canvas.getContext("2d")!;
+
+    const camEl = camHiddenRef.current!;
+    const scrEl = screenHiddenRef.current!;
+    if (camTrackRef.current) {
+      camEl.srcObject = new MediaStream([camTrackRef.current.mediaStreamTrack]);
+      camEl.muted = true; camEl.playsInline = true; camEl.play().catch(() => {});
+    }
+
+    const draw = () => {
+      ctx.fillStyle = "#000"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const screenReady = sharingRef.current && scrEl.videoWidth > 0;
+      if (screenReady) {
+        // Screen fills frame, cam in bottom-right PiP
+        const sw = scrEl.videoWidth, sh = scrEl.videoHeight;
+        const r = Math.min(canvas.width / sw, canvas.height / sh);
+        const dw = sw * r, dh = sh * r;
+        ctx.drawImage(scrEl, (canvas.width - dw) / 2, (canvas.height - dh) / 2, dw, dh);
+        if (camEl.videoWidth > 0) {
+          const pw = canvas.width * 0.22, ph = pw * 0.5625;
+          const px = canvas.width - pw - 16, py = canvas.height - ph - 16;
+          ctx.save();
+          ctx.fillStyle = "#000"; ctx.fillRect(px - 2, py - 2, pw + 4, ph + 4);
+          ctx.drawImage(camEl, px, py, pw, ph);
+          ctx.restore();
+        }
+      } else if (camEl.videoWidth > 0) {
+        const cw = camEl.videoWidth, ch = camEl.videoHeight;
+        const r = Math.min(canvas.width / cw, canvas.height / ch);
+        const dw = cw * r, dh = ch * r;
+        ctx.drawImage(camEl, (canvas.width - dw) / 2, (canvas.height - dh) / 2, dw, dh);
+      }
+      rafRef.current = requestAnimationFrame(draw);
+    };
+    rafRef.current = requestAnimationFrame(draw);
+
+    const out = (canvas as any).captureStream(30) as MediaStream;
+    if (micTrackRef.current) out.addTrack(micTrackRef.current.mediaStreamTrack);
+    return out;
+  };
+
   const uploadSegment = async (blob: Blob, index: number) => {
     const sid = streamIdRef.current;
     if (!sid || blob.size === 0) return;
