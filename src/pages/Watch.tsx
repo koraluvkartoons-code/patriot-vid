@@ -21,6 +21,8 @@ export default function Watch() {
   const [hasScreen, setHasScreen] = useState(false);
   const [pipPos, setPipPos] = useState({ x: 16, y: 16 });
   const [pipSize, setPipSize] = useState(220);
+  const [volume, setVolume] = useState(1);
+  const [muted, setMuted] = useState(false);
 
   const screenVideoRef = useRef<HTMLVideoElement>(null);
   const camVideoRef = useRef<HTMLVideoElement>(null);
@@ -158,6 +160,20 @@ export default function Watch() {
                     </div>
                   )}
                   <audio ref={audioRef} autoPlay />
+                </div>
+                <div className="flex items-center gap-2 mt-2 bg-card p-2 rounded-lg border border-border">
+                  <Button size="sm" variant="secondary" onClick={() => {
+                    const next = !muted; setMuted(next);
+                    if (audioRef.current) { audioRef.current.muted = next; audioRef.current.play().catch(() => {}); }
+                  }}>{muted ? "🔇" : "🔊"}</Button>
+                  <input type="range" min={0} max={1} step={0.01} value={volume}
+                    onChange={e => {
+                      const v = +e.target.value; setVolume(v);
+                      if (audioRef.current) { audioRef.current.volume = v; audioRef.current.muted = false; audioRef.current.play().catch(() => {}); }
+                      setMuted(false);
+                    }}
+                    className="flex-1 accent-pink-500" aria-label="Volume" />
+                  <span className="text-xs text-muted-foreground w-10 text-right">{Math.round(volume * 100)}%</span>
                 </div>
               </>
             ) : segments.length > 0 ? (
