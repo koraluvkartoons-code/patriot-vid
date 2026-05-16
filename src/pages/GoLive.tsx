@@ -248,14 +248,17 @@ export default function GoLive() {
         screenTrackRef.current = null;
       }
       setSharing(false);
+      ensureComposite();
     } else {
       try {
-        const tracks = await roomRef.current.localParticipant.createScreenTracks({ audio: true } as ScreenShareCaptureOptions);
+        // audio:false — system-audio capture was causing the host mic to lag/echo for viewers
+        const tracks = await roomRef.current.localParticipant.createScreenTracks({ audio: false } as ScreenShareCaptureOptions);
         for (const t of tracks) {
           await roomRef.current.localParticipant.publishTrack(t);
           if (t.kind === Track.Kind.Video) screenTrackRef.current = t as LocalVideoTrack;
         }
         setSharing(true);
+        ensureComposite();
       } catch { toast.error("Screen share denied"); }
     }
   };
