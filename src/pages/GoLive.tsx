@@ -117,11 +117,12 @@ export default function GoLive() {
     const c = canvasRef.current!;
     const ctx = c.getContext("2d")!;
     const draw = () => {
+      ensureComposite();
       ctx.fillStyle = "#000";
       ctx.fillRect(0, 0, c.width, c.height);
       const screen = screenElRef.current;
       const cam = camElRef.current;
-      const hasScreen = !!screenTrackRef.current && !!screen && screen.readyState >= 2 && screen.videoWidth > 0;
+      const hasScreen = !!screenTrackRef.current && !screenTrackRef.current.mediaStreamTrack.muted && !!screen && screen.readyState >= 2 && screen.videoWidth > 0;
       if (hasScreen && screen) {
         const r = Math.min(c.width / screen.videoWidth, c.height / screen.videoHeight);
         const w = screen.videoWidth * r, h = screen.videoHeight * r;
@@ -314,6 +315,10 @@ export default function GoLive() {
       stoppingRef.current = true;
       if (rotateTimerRef.current) { clearTimeout(rotateTimerRef.current); rotateTimerRef.current = null; }
       if (drawRafRef.current != null) { cancelAnimationFrame(drawRafRef.current); drawRafRef.current = null; }
+      camElRef.current?.remove();
+      screenElRef.current?.remove();
+      camElRef.current = null;
+      screenElRef.current = null;
       const rec = recorderRef.current;
       if (rec && rec.state !== "inactive") {
         await new Promise<void>(res => { const prev = rec.onstop; rec.onstop = async (ev) => { if (prev) await (prev as any).call(rec, ev); res(); }; rec.stop(); });
