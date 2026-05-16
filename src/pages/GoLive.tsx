@@ -133,8 +133,8 @@ export default function GoLive() {
         dynacast: true,
         publishDefaults: {
           simulcast: true,
-          videoSimulcastLayers: [VideoPresets.h180, VideoPresets.h360],
-          videoCodec: "vp8", // broadest hardware decode + lowest CPU = lowest latency
+          videoSimulcastLayers: [VideoPresets.h180, VideoPresets.h360, VideoPresets.h720],
+          videoCodec: "h264", // hardware-encoded on most devices → much less CPU than vp8/vp9 = less host lag
           screenShareEncoding: ScreenSharePresets.h1080fps15.encoding,
           dtx: true,
           red: true,
