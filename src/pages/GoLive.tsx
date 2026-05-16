@@ -66,6 +66,19 @@ export default function GoLive() {
   };
 
   const ensureComposite = () => {
+    const prepareVideo = (v: HTMLVideoElement) => {
+      v.autoplay = true;
+      v.muted = true;
+      v.playsInline = true;
+      v.setAttribute("playsinline", "true");
+      v.style.position = "fixed";
+      v.style.left = "-9999px";
+      v.style.top = "-9999px";
+      v.style.width = "1px";
+      v.style.height = "1px";
+      v.style.opacity = "0";
+      if (!document.body.contains(v)) document.body.appendChild(v);
+    };
     if (!canvasRef.current) {
       const c = document.createElement("canvas");
       c.width = 1280; c.height = 720;
@@ -73,22 +86,26 @@ export default function GoLive() {
     }
     if (!camElRef.current) {
       const v = document.createElement("video");
-      v.autoplay = true; v.muted = true; (v as any).playsInline = true;
+      prepareVideo(v);
       camElRef.current = v;
     }
     if (!screenElRef.current) {
       const v = document.createElement("video");
-      v.autoplay = true; v.muted = true; (v as any).playsInline = true;
+      prepareVideo(v);
       screenElRef.current = v;
     }
     if (camTrackRef.current) {
-      const ms = new MediaStream([camTrackRef.current.mediaStreamTrack]);
-      camElRef.current.srcObject = ms;
+      const current = camElRef.current.srcObject as MediaStream | null;
+      if (current?.getVideoTracks()[0] !== camTrackRef.current.mediaStreamTrack) {
+        camElRef.current.srcObject = new MediaStream([camTrackRef.current.mediaStreamTrack]);
+      }
       camElRef.current.play().catch(() => {});
     }
     if (screenTrackRef.current) {
-      const ms = new MediaStream([screenTrackRef.current.mediaStreamTrack]);
-      screenElRef.current.srcObject = ms;
+      const current = screenElRef.current.srcObject as MediaStream | null;
+      if (current?.getVideoTracks()[0] !== screenTrackRef.current.mediaStreamTrack) {
+        screenElRef.current.srcObject = new MediaStream([screenTrackRef.current.mediaStreamTrack]);
+      }
       screenElRef.current.play().catch(() => {});
     } else {
       screenElRef.current.srcObject = null;
