@@ -89,9 +89,10 @@ export default function GoLive() {
     if (stoppingRef.current) return;
     const ms = buildRecorderStream();
     if (ms.getTracks().length === 0) return;
-    const mime = MediaRecorder.isTypeSupported("video/webm;codecs=vp9,opus")
-      ? "video/webm;codecs=vp9,opus" : "video/webm";
-    const rec = new MediaRecorder(ms, { mimeType: mime, videoBitsPerSecond: 2_500_000 });
+    // VP8 (not VP9) — VP9 encoding eats CPU on the host and is the #1 cause of live lag while the same recording replays fine.
+    const mime = MediaRecorder.isTypeSupported("video/webm;codecs=vp8,opus")
+      ? "video/webm;codecs=vp8,opus" : "video/webm";
+    const rec = new MediaRecorder(ms, { mimeType: mime, videoBitsPerSecond: 1_500_000 });
     const chunks: Blob[] = [];
     const idx = segIndexRef.current++;
     rec.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
