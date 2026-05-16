@@ -174,6 +174,7 @@ export default function Watch() {
                     }}
                     className="flex-1 accent-pink-500" aria-label="Volume" />
                   <span className="text-xs text-muted-foreground w-10 text-right">{Math.round(volume * 100)}%</span>
+                </div>
               </>
             ) : segments.length > 0 ? (
               <ReplayPlayer segments={segments} />
