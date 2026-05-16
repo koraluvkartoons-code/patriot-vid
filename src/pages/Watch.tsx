@@ -21,6 +21,8 @@ export default function Watch() {
   const [hasScreen, setHasScreen] = useState(false);
   const [pipPos, setPipPos] = useState({ x: 16, y: 16 });
   const [pipSize, setPipSize] = useState(220);
+  const [volume, setVolume] = useState(1);
+  const [muted, setMuted] = useState(false);
 
   const screenVideoRef = useRef<HTMLVideoElement>(null);
   const camVideoRef = useRef<HTMLVideoElement>(null);
