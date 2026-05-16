@@ -161,6 +161,19 @@ export default function Watch() {
                   )}
                   <audio ref={audioRef} autoPlay />
                 </div>
+                <div className="flex items-center gap-2 mt-2 bg-card p-2 rounded-lg border border-border">
+                  <Button size="sm" variant="secondary" onClick={() => {
+                    const next = !muted; setMuted(next);
+                    if (audioRef.current) { audioRef.current.muted = next; audioRef.current.play().catch(() => {}); }
+                  }}>{muted ? "🔇" : "🔊"}</Button>
+                  <input type="range" min={0} max={1} step={0.01} value={volume}
+                    onChange={e => {
+                      const v = +e.target.value; setVolume(v);
+                      if (audioRef.current) { audioRef.current.volume = v; audioRef.current.muted = false; audioRef.current.play().catch(() => {}); }
+                      setMuted(false);
+                    }}
+                    className="flex-1 accent-pink-500" aria-label="Volume" />
+                  <span className="text-xs text-muted-foreground w-10 text-right">{Math.round(volume * 100)}%</span>
               </>
             ) : segments.length > 0 ? (
               <ReplayPlayer segments={segments} />
