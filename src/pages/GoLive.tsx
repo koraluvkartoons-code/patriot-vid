@@ -50,6 +50,11 @@ export default function GoLive() {
   const startTimeRef = useRef<number>(0);
   const streamIdRef = useRef<string | null>(null);
   const stoppingRef = useRef(false);
+  // canvas compositor — so screen share + PiP cam end up baked into the replay recording
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const camElRef = useRef<HTMLVideoElement | null>(null);
+  const screenElRef = useRef<HTMLVideoElement | null>(null);
+  const drawRafRef = useRef<number | null>(null);
 
   useEffect(() => { fetchProfiles().then(setProfiles); }, []);
   useEffect(() => { if (!userId) navigate("/"); }, [userId, navigate]);
