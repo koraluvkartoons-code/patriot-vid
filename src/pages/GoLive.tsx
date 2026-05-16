@@ -228,6 +228,8 @@ export default function GoLive() {
       segmentsRef.current = [];
       segIndexRef.current = 0;
       startTimeRef.current = Date.now();
+      ensureComposite();
+      startDrawLoop();
       startRecorderCycle();
 
       setIsLive(true);
