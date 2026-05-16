@@ -50,6 +50,11 @@ export default function GoLive() {
   const startTimeRef = useRef<number>(0);
   const streamIdRef = useRef<string | null>(null);
   const stoppingRef = useRef(false);
+  // canvas compositor — so screen share + PiP cam end up baked into the replay recording
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const camElRef = useRef<HTMLVideoElement | null>(null);
+  const screenElRef = useRef<HTMLVideoElement | null>(null);
+  const drawRafRef = useRef<number | null>(null);
 
   useEffect(() => { fetchProfiles().then(setProfiles); }, []);
   useEffect(() => { if (!userId) navigate("/"); }, [userId, navigate]);
@@ -60,9 +65,71 @@ export default function GoLive() {
     setMics(devs.filter(d => d.kind === "audioinput"));
   };
 
+  const ensureComposite = () => {
+    if (!canvasRef.current) {
+      const c = document.createElement("canvas");
+      c.width = 1280; c.height = 720;
+      canvasRef.current = c;
+    }
+    if (!camElRef.current) {
+      const v = document.createElement("video");
+      v.autoplay = true; v.muted = true; (v as any).playsInline = true;
+      camElRef.current = v;
+    }
+    if (!screenElRef.current) {
+      const v = document.createElement("video");
+      v.autoplay = true; v.muted = true; (v as any).playsInline = true;
+      screenElRef.current = v;
+    }
+    if (camTrackRef.current) {
+      const ms = new MediaStream([camTrackRef.current.mediaStreamTrack]);
+      camElRef.current.srcObject = ms;
+      camElRef.current.play().catch(() => {});
+    }
+    if (screenTrackRef.current) {
+      const ms = new MediaStream([screenTrackRef.current.mediaStreamTrack]);
+      screenElRef.current.srcObject = ms;
+      screenElRef.current.play().catch(() => {});
+    } else {
+      screenElRef.current.srcObject = null;
+    }
+  };
+
+  const startDrawLoop = () => {
+    if (drawRafRef.current != null) return;
+    const c = canvasRef.current!;
+    const ctx = c.getContext("2d")!;
+    const draw = () => {
+      ctx.fillStyle = "#000";
+      ctx.fillRect(0, 0, c.width, c.height);
+      const screen = screenElRef.current;
+      const cam = camElRef.current;
+      const hasScreen = !!screenTrackRef.current && !!screen && screen.readyState >= 2 && screen.videoWidth > 0;
+      if (hasScreen && screen) {
+        const r = Math.min(c.width / screen.videoWidth, c.height / screen.videoHeight);
+        const w = screen.videoWidth * r, h = screen.videoHeight * r;
+        ctx.drawImage(screen, (c.width - w) / 2, (c.height - h) / 2, w, h);
+        if (cam && cam.readyState >= 2 && cam.videoWidth > 0) {
+          const pw = 320, ph = 180;
+          const px = c.width - pw - 20, py = 20;
+          ctx.drawImage(cam, px, py, pw, ph);
+          ctx.strokeStyle = "#e11d48"; ctx.lineWidth = 4;
+          ctx.strokeRect(px, py, pw, ph);
+        }
+      } else if (cam && cam.readyState >= 2 && cam.videoWidth > 0) {
+        const r = Math.min(c.width / cam.videoWidth, c.height / cam.videoHeight);
+        const w = cam.videoWidth * r, h = cam.videoHeight * r;
+        ctx.drawImage(cam, (c.width - w) / 2, (c.height - h) / 2, w, h);
+      }
+      drawRafRef.current = requestAnimationFrame(draw);
+    };
+    drawRafRef.current = requestAnimationFrame(draw);
+  };
+
   const buildRecorderStream = () => {
-    const tracks: MediaStreamTrack[] = [];
-    if (camTrackRef.current) tracks.push(camTrackRef.current.mediaStreamTrack);
+    ensureComposite();
+    const canvasStream = canvasRef.current!.captureStream(30);
+    const tracks: MediaStreamTrack[] = [...canvasStream.getVideoTracks()];
     if (micTrackRef.current) tracks.push(micTrackRef.current.mediaStreamTrack);
     return new MediaStream(tracks);
   };
@@ -161,6 +228,8 @@ export default function GoLive() {
       segmentsRef.current = [];
       segIndexRef.current = 0;
       startTimeRef.current = Date.now();
+      ensureComposite();
+      startDrawLoop();
       startRecorderCycle();
 
       setIsLive(true);
@@ -179,14 +248,17 @@ export default function GoLive() {
         screenTrackRef.current = null;
       }
       setSharing(false);
+      ensureComposite();
     } else {
       try {
-        const tracks = await roomRef.current.localParticipant.createScreenTracks({ audio: true } as ScreenShareCaptureOptions);
+        // audio:false — system-audio capture was causing the host mic to lag/echo for viewers
+        const tracks = await roomRef.current.localParticipant.createScreenTracks({ audio: false } as ScreenShareCaptureOptions);
         for (const t of tracks) {
           await roomRef.current.localParticipant.publishTrack(t);
           if (t.kind === Track.Kind.Video) screenTrackRef.current = t as LocalVideoTrack;
         }
         setSharing(true);
+        ensureComposite();
       } catch { toast.error("Screen share denied"); }
     }
   };
@@ -224,6 +296,7 @@ export default function GoLive() {
     try {
       stoppingRef.current = true;
       if (rotateTimerRef.current) { clearTimeout(rotateTimerRef.current); rotateTimerRef.current = null; }
+      if (drawRafRef.current != null) { cancelAnimationFrame(drawRafRef.current); drawRafRef.current = null; }
       const rec = recorderRef.current;
       if (rec && rec.state !== "inactive") {
         await new Promise<void>(res => { const prev = rec.onstop; rec.onstop = async (ev) => { if (prev) await (prev as any).call(rec, ev); res(); }; rec.stop(); });
