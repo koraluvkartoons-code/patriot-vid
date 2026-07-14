@@ -20,12 +20,17 @@ export default function Index() {
   const [loading, setLoading] = useState(true);
   const [liveStreams, setLiveStreams] = useState<any[]>([]);
 
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const PAGE_SIZE = 20;
+
   const loadData = useCallback(async () => {
     setLoading(true);
-    const [postsResult, profilesResult] = await Promise.allSettled([fetchPosts(), fetchProfiles()]);
+    const [postsResult, profilesResult] = await Promise.allSettled([fetchPosts(PAGE_SIZE, 0), fetchProfiles()]);
 
     if (postsResult.status === "fulfilled") {
       setPosts(postsResult.value);
+      setHasMore(postsResult.value.length === PAGE_SIZE);
     }
 
     if (profilesResult.status === "fulfilled") {
@@ -34,6 +39,18 @@ export default function Index() {
 
     setLoading(false);
   }, []);
+
+  const loadMore = useCallback(async () => {
+    if (loadingMore || !hasMore) return;
+    setLoadingMore(true);
+    try {
+      const more = await fetchPosts(PAGE_SIZE, posts.length);
+      setPosts(prev => [...prev, ...more]);
+      setHasMore(more.length === PAGE_SIZE);
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [posts.length, loadingMore, hasMore]);
 
   useEffect(() => { loadData(); }, [loadData]);
 
@@ -116,6 +133,14 @@ export default function Index() {
         {posts.map(post => (
           <PostCard key={post.id} post={post} onNeedSetup={needSetup} onRefresh={loadData} profiles={profiles} />
         ))}
+
+        {!loading && hasMore && (
+          <div className="text-center py-4">
+            <Button onClick={loadMore} disabled={loadingMore} variant="secondary" className="text-foreground">
+              {loadingMore ? "Loading..." : "Load more posts"}
+            </Button>
+          </div>
+        )}
       </main>
 
       <UserSetupDialog open={showSetup} onComplete={(id) => { setUserId(id); setShowSetup(false); loadData(); }} />

@@ -51,12 +51,13 @@ export async function updateProfileMod(displayName: string, isMod: boolean) {
 }
 
 // ===== POSTS =====
-export async function fetchPosts(): Promise<Post[]> {
+export async function fetchPosts(limit = 20, offset = 0): Promise<Post[]> {
   const { data, error } = await supabase
     .from("posts")
     .select("id,user_id,title,description,media_type,likes,created_at,is_pinned")
     .order("is_pinned", { ascending: false })
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false })
+    .range(offset, offset + limit - 1);
 
   if (error) throw error;
 
