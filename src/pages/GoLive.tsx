@@ -43,6 +43,7 @@ export default function GoLive() {
   const camTrackRef = useRef<LocalVideoTrack | null>(null);
   const micTrackRef = useRef<LocalAudioTrack | null>(null);
   const screenTrackRef = useRef<LocalVideoTrack | null>(null);
+  const screenAudioTrackRef = useRef<MediaStreamTrack | null>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
   const segmentsRef = useRef<{ path: string; url: string; index: number }[]>([]);
   const segIndexRef = useRef(0);
@@ -50,6 +51,11 @@ export default function GoLive() {
   const startTimeRef = useRef<number>(0);
   const streamIdRef = useRef<string | null>(null);
   const stoppingRef = useRef(false);
+  // Compositor for recording camera + screen together
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const camSrcVideoRef = useRef<HTMLVideoElement | null>(null);
+  const screenSrcVideoRef = useRef<HTMLVideoElement | null>(null);
+  const rafRef = useRef<number | null>(null);
 
   useEffect(() => { fetchProfiles().then(setProfiles); }, []);
   useEffect(() => { if (!userId) navigate("/"); }, [userId, navigate]);
