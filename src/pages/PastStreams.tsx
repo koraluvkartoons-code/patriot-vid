@@ -24,10 +24,11 @@ export default function PastStreams() {
 
   const del = async (s: any) => {
     if (!confirm("Delete this stream permanently?")) return;
+    const { data: full } = await supabase.from("streams").select("segments,recording_url").eq("id", s.id).single();
     const paths: string[] = [];
-    if (Array.isArray(s.segments)) for (const seg of s.segments) if (seg?.path) paths.push(seg.path);
-    if (s.recording_url) {
-      const p = s.recording_url.split("/stream-recordings/")[1];
+    if (full && Array.isArray(full.segments)) for (const seg of full.segments as any[]) if (seg?.path) paths.push(seg.path);
+    if (full?.recording_url) {
+      const p = full.recording_url.split("/stream-recordings/")[1];
       if (p && !paths.includes(p)) paths.push(p);
     }
     if (paths.length) await supabase.storage.from("stream-recordings").remove(paths);
