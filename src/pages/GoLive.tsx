@@ -258,6 +258,10 @@ export default function GoLive() {
         screenTrackRef.current.stop();
         screenTrackRef.current = null;
       }
+      if (screenAudioTrackRef.current) {
+        try { screenAudioTrackRef.current.stop(); } catch {}
+        screenAudioTrackRef.current = null;
+      }
       setSharing(false);
     } else {
       try {
@@ -265,10 +269,16 @@ export default function GoLive() {
         for (const t of tracks) {
           await roomRef.current.localParticipant.publishTrack(t);
           if (t.kind === Track.Kind.Video) screenTrackRef.current = t as LocalVideoTrack;
+          if (t.kind === Track.Kind.Audio) screenAudioTrackRef.current = t.mediaStreamTrack;
         }
         setSharing(true);
       } catch { toast.error("Screen share denied"); }
     }
+    // Rotate recorder so recording picks up the new composition (screen on/off, screen audio)
+    try {
+      const rec = recorderRef.current;
+      if (rec && rec.state !== "inactive") rec.stop();
+    } catch {}
   };
 
   const toggleCam = async () => {
