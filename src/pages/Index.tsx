@@ -133,6 +133,14 @@ export default function Index() {
         {posts.map(post => (
           <PostCard key={post.id} post={post} onNeedSetup={needSetup} onRefresh={loadData} profiles={profiles} />
         ))}
+
+        {!loading && hasMore && (
+          <div className="text-center py-4">
+            <Button onClick={loadMore} disabled={loadingMore} variant="secondary" className="text-foreground">
+              {loadingMore ? "Loading..." : "Load more posts"}
+            </Button>
+          </div>
+        )}
       </main>
 
       <UserSetupDialog open={showSetup} onComplete={(id) => { setUserId(id); setShowSetup(false); loadData(); }} />
