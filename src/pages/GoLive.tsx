@@ -323,6 +323,8 @@ export default function GoLive() {
       camTrackRef.current?.stop();
       micTrackRef.current?.stop();
       screenTrackRef.current?.stop();
+      if (screenAudioTrackRef.current) { try { screenAudioTrackRef.current.stop(); } catch {} screenAudioTrackRef.current = null; }
+      if (rafRef.current != null) { cancelAnimationFrame(rafRef.current); rafRef.current = null; }
       await roomRef.current?.disconnect();
 
       // wait briefly for last segment upload
