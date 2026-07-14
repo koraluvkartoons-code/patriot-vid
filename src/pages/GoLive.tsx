@@ -66,10 +66,84 @@ export default function GoLive() {
     setMics(devs.filter(d => d.kind === "audioinput"));
   };
 
+  const ensureCompositor = () => {
+    if (!canvasRef.current) {
+      const c = document.createElement("canvas");
+      c.width = 1280; c.height = 720;
+      canvasRef.current = c;
+    }
+    if (!camSrcVideoRef.current) {
+      const v = document.createElement("video");
+      v.autoplay = true; v.muted = true; v.playsInline = true;
+      camSrcVideoRef.current = v;
+    }
+    if (!screenSrcVideoRef.current) {
+      const v = document.createElement("video");
+      v.autoplay = true; v.muted = true; v.playsInline = true;
+      screenSrcVideoRef.current = v;
+    }
+  };
+
+  const startCompositorLoop = () => {
+    if (rafRef.current != null) return;
+    const draw = () => {
+      const canvas = canvasRef.current;
+      const ctx = canvas?.getContext("2d");
+      if (canvas && ctx) {
+        ctx.fillStyle = "#000";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        const scr = screenSrcVideoRef.current;
+        const cam = camSrcVideoRef.current;
+        const hasScreen = !!screenTrackRef.current && scr && scr.videoWidth > 0;
+        if (hasScreen && scr) {
+          // fit screen into canvas
+          const sw = scr.videoWidth, sh = scr.videoHeight;
+          const scale = Math.min(canvas.width / sw, canvas.height / sh);
+          const w = sw * scale, h = sh * scale;
+          ctx.drawImage(scr, (canvas.width - w) / 2, (canvas.height - h) / 2, w, h);
+          if (cam && cam.videoWidth > 0 && camOn) {
+            const pipW = canvas.width * 0.22;
+            const pipH = pipW * (cam.videoHeight / cam.videoWidth);
+            ctx.drawImage(cam, canvas.width - pipW - 16, canvas.height - pipH - 16, pipW, pipH);
+          }
+        } else if (cam && cam.videoWidth > 0) {
+          const sw = cam.videoWidth, sh = cam.videoHeight;
+          const scale = Math.min(canvas.width / sw, canvas.height / sh);
+          const w = sw * scale, h = sh * scale;
+          ctx.drawImage(cam, (canvas.width - w) / 2, (canvas.height - h) / 2, w, h);
+        }
+      }
+      rafRef.current = requestAnimationFrame(draw);
+    };
+    rafRef.current = requestAnimationFrame(draw);
+  };
+
   const buildRecorderStream = () => {
-    const tracks: MediaStreamTrack[] = [];
-    if (camTrackRef.current) tracks.push(camTrackRef.current.mediaStreamTrack);
+    ensureCompositor();
+    // wire cam/screen mediastreams to hidden video elements
+    if (camSrcVideoRef.current && camTrackRef.current) {
+      const ms = new MediaStream([camTrackRef.current.mediaStreamTrack]);
+      if (camSrcVideoRef.current.srcObject !== ms) {
+        camSrcVideoRef.current.srcObject = ms;
+        camSrcVideoRef.current.play().catch(() => {});
+      }
+    }
+    if (screenSrcVideoRef.current) {
+      if (screenTrackRef.current) {
+        const ms = new MediaStream([screenTrackRef.current.mediaStreamTrack]);
+        if (screenSrcVideoRef.current.srcObject !== ms) {
+          screenSrcVideoRef.current.srcObject = ms;
+          screenSrcVideoRef.current.play().catch(() => {});
+        }
+      } else {
+        screenSrcVideoRef.current.srcObject = null;
+      }
+    }
+    startCompositorLoop();
+    const canvasStream = canvasRef.current!.captureStream(30);
+    const tracks: MediaStreamTrack[] = [...canvasStream.getVideoTracks()];
     if (micTrackRef.current) tracks.push(micTrackRef.current.mediaStreamTrack);
+    if (screenAudioTrackRef.current) tracks.push(screenAudioTrackRef.current);
     return new MediaStream(tracks);
   };
 
