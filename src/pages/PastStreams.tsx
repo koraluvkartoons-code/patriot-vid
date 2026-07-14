@@ -13,7 +13,11 @@ export default function PastStreams() {
   const isAdmin = userId === "PatriotAdmin";
 
   const load = async () => {
-    const { data } = await supabase.from("streams").select("*").order("created_at", { ascending: false });
+    const { data } = await supabase
+      .from("streams")
+      .select("id,title,host_user_id,status,recording_url,duration_seconds,created_at")
+      .order("created_at", { ascending: false })
+      .limit(100);
     setStreams(data || []);
   };
   useEffect(() => { load(); }, []);
