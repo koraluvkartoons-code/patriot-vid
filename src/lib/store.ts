@@ -346,6 +346,8 @@ export const AVAILABLE_BADGES: Badge[] = [
   { id: "shrek-peter", name: "Shrek Peter", image: shrekPeter },
   { id: "pepe-propeller2", name: "Pepe Propeller 2", image: pepePropeller2 },
   { id: "kek-flag", name: "Kek Flag", image: kekFlag },
+  { id: "master-chief", name: "Master Chief", image: masterChief },
+  { id: "basedtriot-bear", name: "Basedtriot Bear", image: basedtriotBear },
 ];
 
 export interface UserProfile {
