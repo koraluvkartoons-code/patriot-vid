@@ -166,6 +166,10 @@ import patrickCommunism from "@/assets/badges/patrick-communism.png";
 import shrekPeter from "@/assets/badges/shrek-peter.png";
 import pepePropeller2 from "@/assets/badges/pepe-propeller.png";
 import kekFlag from "@/assets/badges/kek-flag.png";
+import masterChiefAsset from "@/assets/badges/master-chief.gif.asset.json";
+import basedtriotBearAsset from "@/assets/badges/basedtriot-bear.png.asset.json";
+const masterChief = masterChiefAsset.url;
+const basedtriotBear = basedtriotBearAsset.url;
 
 export interface Badge {
   id: string;
@@ -342,6 +346,8 @@ export const AVAILABLE_BADGES: Badge[] = [
   { id: "shrek-peter", name: "Shrek Peter", image: shrekPeter },
   { id: "pepe-propeller2", name: "Pepe Propeller 2", image: pepePropeller2 },
   { id: "kek-flag", name: "Kek Flag", image: kekFlag },
+  { id: "master-chief", name: "Master Chief", image: masterChief },
+  { id: "basedtriot-bear", name: "Basedtriot Bear", image: basedtriotBear },
 ];
 
 export interface UserProfile {
