@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Search, X } from "lucide-react";
 
-const API_KEY = "imKdh9YxKa4FU354hMTvXfmuguhB5Iw5";
+const API_KEY = "STISYuQRFlvhpSNN8Uup0TxXf5u54c8d";
 
 interface Props {
   onSelect: (url: string) => void;
