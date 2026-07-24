@@ -86,6 +86,16 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
     onRefresh();
   };
 
+  const copyLink = async () => {
+    const url = `${window.location.origin}/post/${post.id}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      toast({ title: "Link copied", description: url });
+    } catch {
+      toast({ title: "Copy failed", description: url });
+    }
+  };
+
   return (
     <div className={`gradient-card border rounded-xl overflow-hidden glow-purple transition-all hover:glow-pink ${post.isPinned ? "border-primary ring-1 ring-primary/30" : "border-border"}`}>
       {post.isPinned && (
