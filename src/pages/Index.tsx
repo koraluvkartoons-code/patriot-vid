@@ -22,11 +22,12 @@ export default function Index() {
 
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [order, setOrder] = useState<"newest" | "oldest">("newest");
   const PAGE_SIZE = 20;
 
   const loadData = useCallback(async () => {
     setLoading(true);
-    const [postsResult, profilesResult] = await Promise.allSettled([fetchPosts(PAGE_SIZE, 0), fetchProfiles()]);
+    const [postsResult, profilesResult] = await Promise.allSettled([fetchPosts(PAGE_SIZE, 0, order), fetchProfiles()]);
 
     if (postsResult.status === "fulfilled") {
       setPosts(postsResult.value);
@@ -38,19 +39,19 @@ export default function Index() {
     }
 
     setLoading(false);
-  }, []);
+  }, [order]);
 
   const loadMore = useCallback(async () => {
     if (loadingMore || !hasMore) return;
     setLoadingMore(true);
     try {
-      const more = await fetchPosts(PAGE_SIZE, posts.length);
+      const more = await fetchPosts(PAGE_SIZE, posts.length, order);
       setPosts(prev => [...prev, ...more]);
       setHasMore(more.length === PAGE_SIZE);
     } finally {
       setLoadingMore(false);
     }
-  }, [posts.length, loadingMore, hasMore]);
+  }, [posts.length, loadingMore, hasMore, order]);
 
   useEffect(() => { loadData(); }, [loadData]);
 
@@ -117,6 +118,25 @@ export default function Index() {
         )}
 
         <CreatePost onNeedSetup={needSetup} onCreated={loadData} />
+
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            variant={order === "newest" ? "default" : "secondary"}
+            onClick={() => setOrder("newest")}
+            className="text-foreground"
+          >
+            Latest
+          </Button>
+          <Button
+            size="sm"
+            variant={order === "oldest" ? "default" : "secondary"}
+            onClick={() => setOrder("oldest")}
+            className="text-foreground"
+          >
+            Older
+          </Button>
+        </div>
 
         {loading && (
           <div className="text-center py-16">
