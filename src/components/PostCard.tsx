@@ -119,6 +119,9 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
         <div className="flex items-center justify-between mb-2">
           <UserBadge userId={post.userId} profiles={profiles} />
           <div className="flex items-center gap-1">
+            <button onClick={copyLink} title="Copy link to post">
+              <Link2 className="w-4 h-4 text-muted-foreground hover:text-accent" />
+            </button>
             {(isOwner || isAdmin) && (
               <>
                 <button onClick={handlePin} title={post.isPinned ? "Unpin" : "Pin"}>
