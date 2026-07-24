@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { type Post, type UserProfile, getCurrentUserId } from "@/lib/store";
 import { fetchPostMedia, updatePost, togglePostLike, togglePinPost, deletePost } from "@/lib/api";
 import UserBadge from "./UserBadge";
 import CommentSection from "./CommentSection";
-import { Heart, MessageCircle, Edit, ExternalLink, Pin, Trash2 } from "lucide-react";
+import { Heart, MessageCircle, Edit, ExternalLink, Pin, Trash2, Link2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/hooks/use-toast";
 
 interface Props {
   post: Post;
@@ -84,6 +86,16 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
     onRefresh();
   };
 
+  const copyLink = async () => {
+    const url = `${window.location.origin}/post/${post.id}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      toast({ title: "Link copied", description: url });
+    } catch {
+      toast({ title: "Copy failed", description: url });
+    }
+  };
+
   return (
     <div className={`gradient-card border rounded-xl overflow-hidden glow-purple transition-all hover:glow-pink ${post.isPinned ? "border-primary ring-1 ring-primary/30" : "border-border"}`}>
       {post.isPinned && (
@@ -107,6 +119,9 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
         <div className="flex items-center justify-between mb-2">
           <UserBadge userId={post.userId} profiles={profiles} />
           <div className="flex items-center gap-1">
+            <button onClick={copyLink} title="Copy link to post">
+              <Link2 className="w-4 h-4 text-muted-foreground hover:text-accent" />
+            </button>
             {(isOwner || isAdmin) && (
               <>
                 <button onClick={handlePin} title={post.isPinned ? "Unpin" : "Pin"}>
@@ -130,10 +145,10 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
             </div>
           </div>
         ) : (
-          <>
+          <Link to={`/post/${post.id}`} className="block hover:opacity-90">
             <h2 className="text-foreground font-bold text-lg mb-1">{post.title}</h2>
             {post.description && <p className="text-muted-foreground text-sm mb-2">{post.description}</p>}
-          </>
+          </Link>
         )}
         <div className="flex items-center gap-4 text-sm">
           <button onClick={handleLike} className={`flex items-center gap-1 transition-colors ${liked ? "text-primary" : "text-muted-foreground hover:text-primary"}`}>
@@ -142,7 +157,7 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
           <button onClick={() => setShowComments(!showComments)} className="flex items-center gap-1 text-muted-foreground hover:text-accent transition-colors">
             <MessageCircle className="w-4 h-4" /> Comments
           </button>
-          <span className="text-muted-foreground text-xs ml-auto">{new Date(post.createdAt).toLocaleString()}</span>
+          <Link to={`/post/${post.id}`} className="text-muted-foreground text-xs ml-auto hover:text-primary">{new Date(post.createdAt).toLocaleString()}</Link>
         </div>
         {showComments && (
           <div className="mt-3 pt-3 border-t border-border">
