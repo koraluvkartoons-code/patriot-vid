@@ -106,7 +106,9 @@ export async function createPost(post: { userId: string; title: string; descript
 }
 
 export async function updatePost(id: string, title: string, description: string, createdAt?: string) {
-  const patch: Record<string, unknown> = { title, description, updated_at: new Date().toISOString() };
+  const patch: { title: string; description: string; updated_at: string; created_at?: string } = {
+    title, description, updated_at: new Date().toISOString(),
+  };
   if (createdAt) patch.created_at = createdAt;
   await supabase.from("posts").update(patch).eq("id", id);
 }

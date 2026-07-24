@@ -20,6 +20,12 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
   const [editing, setEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(post.title);
   const [editDesc, setEditDesc] = useState(post.description);
+  const toLocalInput = (iso: string) => {
+    const d = new Date(iso);
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  };
+  const [editDate, setEditDate] = useState(toLocalInput(post.createdAt));
   const [mediaUrl, setMediaUrl] = useState(post.mediaUrl);
   const [mediaType, setMediaType] = useState(post.mediaType);
   const currentUser = getCurrentUserId();
@@ -66,7 +72,8 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
   };
 
   const saveEdit = async () => {
-    await updatePost(post.id, editTitle.trim() || post.title, editDesc.trim());
+    const iso = editDate ? new Date(editDate).toISOString() : undefined;
+    await updatePost(post.id, editTitle.trim() || post.title, editDesc.trim(), iso);
     setEditing(false);
     onRefresh();
   };
@@ -115,6 +122,8 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
           <div className="space-y-2 mb-2">
             <Input value={editTitle} onChange={e => setEditTitle(e.target.value)} className="bg-muted border-border text-foreground" />
             <Textarea value={editDesc} onChange={e => setEditDesc(e.target.value)} className="bg-muted border-border text-foreground" />
+            <label className="block text-xs text-muted-foreground">Post date</label>
+            <Input type="datetime-local" value={editDate} onChange={e => setEditDate(e.target.value)} className="bg-muted border-border text-foreground" />
             <div className="flex gap-2">
               <Button size="sm" onClick={saveEdit} className="gradient-btn text-foreground">Save</Button>
               <Button size="sm" variant="ghost" onClick={() => setEditing(false)} className="text-muted-foreground">Cancel</Button>
