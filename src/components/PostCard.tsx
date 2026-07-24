@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { type Post, type UserProfile, getCurrentUserId } from "@/lib/store";
 import { fetchPostMedia, updatePost, togglePostLike, togglePinPost, deletePost } from "@/lib/api";
 import UserBadge from "./UserBadge";
 import CommentSection from "./CommentSection";
-import { Heart, MessageCircle, Edit, ExternalLink, Pin, Trash2 } from "lucide-react";
+import { Heart, MessageCircle, Edit, ExternalLink, Pin, Trash2, Link2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/hooks/use-toast";
 
 interface Props {
   post: Post;
