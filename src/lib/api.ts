@@ -51,12 +51,13 @@ export async function updateProfileMod(displayName: string, isMod: boolean) {
 }
 
 // ===== POSTS =====
-export async function fetchPosts(limit = 20, offset = 0): Promise<Post[]> {
+export async function fetchPosts(limit = 20, offset = 0, order: "newest" | "oldest" = "newest"): Promise<Post[]> {
+  const ascending = order === "oldest";
   const { data, error } = await supabase
     .from("posts")
     .select("id,user_id,title,description,media_type,likes,created_at,is_pinned")
     .order("is_pinned", { ascending: false })
-    .order("created_at", { ascending: false })
+    .order("created_at", { ascending })
     .range(offset, offset + limit - 1);
 
   if (error) throw error;
@@ -104,8 +105,10 @@ export async function createPost(post: { userId: string; title: string; descript
   });
 }
 
-export async function updatePost(id: string, title: string, description: string) {
-  await supabase.from("posts").update({ title, description, updated_at: new Date().toISOString() }).eq("id", id);
+export async function updatePost(id: string, title: string, description: string, createdAt?: string) {
+  const patch: Record<string, unknown> = { title, description, updated_at: new Date().toISOString() };
+  if (createdAt) patch.created_at = createdAt;
+  await supabase.from("posts").update(patch).eq("id", id);
 }
 
 export async function deletePost(id: string) {
