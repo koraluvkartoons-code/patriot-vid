@@ -23,6 +23,7 @@ const App = () => (
           <Route path="/live" element={<GoLive />} />
           <Route path="/watch/:streamId" element={<Watch />} />
           <Route path="/streams" element={<PastStreams />} />
+          <Route path="/post/:id" element={<PostPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
