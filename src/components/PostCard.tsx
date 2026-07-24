@@ -157,7 +157,7 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
           <button onClick={() => setShowComments(!showComments)} className="flex items-center gap-1 text-muted-foreground hover:text-accent transition-colors">
             <MessageCircle className="w-4 h-4" /> Comments
           </button>
-          <span className="text-muted-foreground text-xs ml-auto">{new Date(post.createdAt).toLocaleString()}</span>
+          <Link to={`/post/${post.id}`} className="text-muted-foreground text-xs ml-auto hover:text-primary">{new Date(post.createdAt).toLocaleString()}</Link>
         </div>
         {showComments && (
           <div className="mt-3 pt-3 border-t border-border">
