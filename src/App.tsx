@@ -8,6 +8,7 @@ import NotFound from "./pages/NotFound.tsx";
 import GoLive from "./pages/GoLive.tsx";
 import Watch from "./pages/Watch.tsx";
 import PastStreams from "./pages/PastStreams.tsx";
+import PostPage from "./pages/PostPage.tsx";
 
 const queryClient = new QueryClient();
 
