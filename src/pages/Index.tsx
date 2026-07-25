@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { getCurrentUserId, type Post, type UserProfile } from "@/lib/store";
 import { fetchPosts, fetchProfiles } from "@/lib/api";
@@ -24,6 +24,8 @@ export default function Index() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [order, setOrder] = useState<"newest" | "oldest">("newest");
   const PAGE_SIZE = 20;
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -66,6 +68,23 @@ export default function Index() {
       .subscribe();
     return () => { supabase.removeChannel(ch); };
   }, []);
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loadingMore) {
+          loadMore();
+        }
+      },
+      { rootMargin: "200px" }
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [loadMore, hasMore, loadingMore]);
 
   const currentUser = userId ? profiles[userId] : null;
   const isAdmin = userId === "PatriotAdmin";
@@ -155,11 +174,7 @@ export default function Index() {
         ))}
 
         {!loading && hasMore && (
-          <div className="text-center py-4">
-            <Button onClick={loadMore} disabled={loadingMore} variant="secondary" className="text-foreground">
-              {loadingMore ? "Loading..." : "Load more posts"}
-            </Button>
-          </div>
+          <div ref={sentinelRef} className="h-4" />
         )}
       </main>
 
