@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { getCurrentUserId, type Post, type UserProfile } from "@/lib/store";
 import { fetchPosts, fetchProfiles } from "@/lib/api";
