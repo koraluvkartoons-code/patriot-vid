@@ -69,6 +69,23 @@ export default function Index() {
     return () => { supabase.removeChannel(ch); };
   }, []);
 
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loadingMore) {
+          loadMore();
+        }
+      },
+      { rootMargin: "200px" }
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [loadMore, hasMore, loadingMore]);
+
   const currentUser = userId ? profiles[userId] : null;
   const isAdmin = userId === "PatriotAdmin";
   const isMod = currentUser?.isModerator;
