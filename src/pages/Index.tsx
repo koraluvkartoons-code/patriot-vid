@@ -67,23 +67,6 @@ export default function Index() {
     return () => { supabase.removeChannel(ch); };
   }, []);
 
-  useEffect(() => {
-    const sentinel = sentinelRef.current;
-    if (!sentinel) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loadingMore) {
-          loadMore();
-        }
-      },
-      { rootMargin: "200px" }
-    );
-
-    observer.observe(sentinel);
-    return () => observer.disconnect();
-  }, [loadMore, hasMore, loadingMore]);
-
   const currentUser = userId ? profiles[userId] : null;
   const isAdmin = userId === "PatriotAdmin";
   const isMod = currentUser?.isModerator;
@@ -172,7 +155,11 @@ export default function Index() {
         ))}
 
         {!loading && hasMore && (
-          <div ref={sentinelRef} className="h-4" />
+          <div className="text-center py-4">
+            <Button onClick={loadMore} disabled={loadingMore} variant="secondary" className="text-foreground">
+              {loadingMore ? "Loading..." : "Load more posts"}
+            </Button>
+          </div>
         )}
       </main>
 
