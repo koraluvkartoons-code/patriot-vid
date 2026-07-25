@@ -174,11 +174,7 @@ export default function Index() {
         ))}
 
         {!loading && hasMore && (
-          <div className="text-center py-4">
-            <Button onClick={loadMore} disabled={loadingMore} variant="secondary" className="text-foreground">
-              {loadingMore ? "Loading..." : "Load more posts"}
-            </Button>
-          </div>
+          <div ref={sentinelRef} className="h-4" />
         )}
       </main>
 
