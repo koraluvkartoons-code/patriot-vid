@@ -24,6 +24,8 @@ export default function Index() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [order, setOrder] = useState<"newest" | "oldest">("newest");
   const PAGE_SIZE = 20;
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
 
   const loadData = useCallback(async () => {
     setLoading(true);
