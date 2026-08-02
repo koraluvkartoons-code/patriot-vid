@@ -172,12 +172,14 @@ import cobsonSoyjakAsset from "@/assets/badges/cobson-soyjak.png.asset.json";
 import tyroneChadAsset from "@/assets/badges/tyrone-chad.jpg.asset.json";
 import dreadsHoodieAsset from "@/assets/badges/dreads-hoodie.jpg.asset.json";
 import presidentialSealAsset from "@/assets/badges/presidential-seal.png.asset.json";
+import rainbowSpurdoAsset from "@/assets/badges/rainbow-spurdo.png.asset.json";
 const masterChief = masterChiefAsset.url;
 const basedtriotBear = basedtriotBearAsset.url;
 const cobsonSoyjak = cobsonSoyjakAsset.url;
 const tyroneChad = tyroneChadAsset.url;
 const dreadsHoodie = dreadsHoodieAsset.url;
 const presidentialSeal = presidentialSealAsset.url;
+const rainbowSpurdo = rainbowSpurdoAsset.url;
 
 export interface Badge {
   id: string;
@@ -357,9 +359,10 @@ export const AVAILABLE_BADGES: Badge[] = [
   { id: "master-chief", name: "Master Chief", image: masterChief },
   { id: "basedtriot-bear", name: "Basedtriot Bear", image: basedtriotBear },
   { id: "cobson-soyjak", name: "Cobson Soyjak", image: cobsonSoyjak },
-  { id: "tyrone-chad", name: "Tyrone Chad", image: tyroneChad },
-  { id: "dreads-hoodie", name: "Dreads Hoodie", image: dreadsHoodie },
+  { id: "tyrone-chad", name: "Yakub", image: tyroneChad },
+  { id: "dreads-hoodie", name: "Tyrone Chad", image: dreadsHoodie },
   { id: "presidential-seal", name: "Presidential Seal", image: presidentialSeal },
+  { id: "rainbow-spurdo", name: "Rainbow Spurdo", image: rainbowSpurdo },
 ];
 
 export interface UserProfile {
