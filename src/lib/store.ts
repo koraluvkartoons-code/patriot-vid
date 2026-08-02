@@ -359,9 +359,10 @@ export const AVAILABLE_BADGES: Badge[] = [
   { id: "master-chief", name: "Master Chief", image: masterChief },
   { id: "basedtriot-bear", name: "Basedtriot Bear", image: basedtriotBear },
   { id: "cobson-soyjak", name: "Cobson Soyjak", image: cobsonSoyjak },
-  { id: "tyrone-chad", name: "Tyrone Chad", image: tyroneChad },
-  { id: "dreads-hoodie", name: "Dreads Hoodie", image: dreadsHoodie },
+  { id: "tyrone-chad", name: "Yakub", image: tyroneChad },
+  { id: "dreads-hoodie", name: "Tyrone Chad", image: dreadsHoodie },
   { id: "presidential-seal", name: "Presidential Seal", image: presidentialSeal },
+  { id: "rainbow-spurdo", name: "Rainbow Spurdo", image: rainbowSpurdo },
 ];
 
 export interface UserProfile {
