@@ -356,6 +356,10 @@ export const AVAILABLE_BADGES: Badge[] = [
   { id: "kek-flag", name: "Kek Flag", image: kekFlag },
   { id: "master-chief", name: "Master Chief", image: masterChief },
   { id: "basedtriot-bear", name: "Basedtriot Bear", image: basedtriotBear },
+  { id: "cobson-soyjak", name: "Cobson Soyjak", image: cobsonSoyjak },
+  { id: "tyrone-chad", name: "Tyrone Chad", image: tyroneChad },
+  { id: "dreads-hoodie", name: "Dreads Hoodie", image: dreadsHoodie },
+  { id: "presidential-seal", name: "Presidential Seal", image: presidentialSeal },
 ];
 
 export interface UserProfile {
