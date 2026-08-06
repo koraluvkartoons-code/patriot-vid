@@ -28,8 +28,10 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
   };
   const [editDate, setEditDate] = useState(toLocalInput(post.createdAt));
+  const [editCategory, setEditCategory] = useState(post.category || "");
   const [mediaUrl, setMediaUrl] = useState(post.mediaUrl);
   const [mediaType, setMediaType] = useState(post.mediaType);
+  const gallery = post.media && post.media.length > 1 ? post.media : (post.media?.length === 1 && !post.mediaUrl ? post.media : []);
   const currentUser = getCurrentUserId();
   const isAdmin = currentUser === "PatriotAdmin";
   const isOwner = currentUser === post.userId;
