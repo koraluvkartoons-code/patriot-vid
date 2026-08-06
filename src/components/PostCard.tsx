@@ -44,7 +44,7 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
       setMediaUrl(post.mediaUrl);
       setMediaType(post.mediaType);
 
-      if (!post.mediaType || post.mediaUrl) return;
+      if (post.media?.length || !post.mediaType || post.mediaUrl) return;
 
       try {
         const media = await fetchPostMedia(post.id);
