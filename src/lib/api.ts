@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import type { UserProfile, Post, Comment } from "@/lib/store";
+import type { UserProfile, Post, Comment, PostMedia } from "@/lib/store";
 
 // ===== MEDIA UPLOAD =====
 export async function uploadMedia(file: File): Promise<string> {
