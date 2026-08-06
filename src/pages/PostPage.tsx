@@ -35,6 +35,8 @@ export default function PostPage() {
         description: data.description || "",
         mediaUrl: data.media_url || undefined,
         mediaType: data.media_type || undefined,
+        media: Array.isArray(data.media) ? (data.media as any[]).filter(m => m && typeof m.url === "string") : [],
+        category: data.category || undefined,
         likes: data.likes || [],
         createdAt: data.created_at,
         isPinned: data.is_pinned || false,
