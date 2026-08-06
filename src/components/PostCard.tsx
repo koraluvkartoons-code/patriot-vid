@@ -77,7 +77,7 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
 
   const saveEdit = async () => {
     const iso = editDate ? new Date(editDate).toISOString() : undefined;
-    await updatePost(post.id, editTitle.trim() || post.title, editDesc.trim(), iso);
+    await updatePost(post.id, editTitle.trim() || post.title, editDesc.trim(), iso, editCategory);
     setEditing(false);
     onRefresh();
   };
