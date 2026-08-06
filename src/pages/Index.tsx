@@ -128,7 +128,7 @@ export default function Index() {
           </div>
         )}
 
-        <CreatePost onNeedSetup={needSetup} onCreated={loadData} />
+        <CreatePost onNeedSetup={needSetup} onCreated={loadData} categories={categories} />
 
         <div className="flex items-center gap-2">
           <Button
@@ -148,6 +148,30 @@ export default function Index() {
             Older
           </Button>
         </div>
+
+        {categories.length > 0 && (
+          <div className="flex items-center gap-2 flex-wrap">
+            <Button
+              size="sm"
+              variant={activeCategory === null ? "default" : "secondary"}
+              onClick={() => setActiveCategory(null)}
+              className="text-foreground"
+            >
+              All
+            </Button>
+            {categories.map(c => (
+              <Button
+                key={c}
+                size="sm"
+                variant={activeCategory === c ? "default" : "secondary"}
+                onClick={() => setActiveCategory(c)}
+                className="text-foreground"
+              >
+                {c}
+              </Button>
+            ))}
+          </div>
+        )}
 
         {loading && (
           <div className="text-center py-16">
