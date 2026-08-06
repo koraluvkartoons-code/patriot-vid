@@ -153,10 +153,17 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
             )}
           </div>
         </div>
+        {post.category && !editing && (
+          <div className="mb-2">
+            <span className="inline-block text-xs font-semibold px-2 py-0.5 rounded-full bg-primary/15 text-primary">{post.category}</span>
+          </div>
+        )}
         {editing ? (
           <div className="space-y-2 mb-2">
             <Input value={editTitle} onChange={e => setEditTitle(e.target.value)} className="bg-muted border-border text-foreground" />
             <Textarea value={editDesc} onChange={e => setEditDesc(e.target.value)} className="bg-muted border-border text-foreground" />
+            <label className="block text-xs text-muted-foreground">Category</label>
+            <Input value={editCategory} onChange={e => setEditCategory(e.target.value)} placeholder="Category (optional)" maxLength={40} className="bg-muted border-border text-foreground" />
             <label className="block text-xs text-muted-foreground">Post date</label>
             <Input type="datetime-local" value={editDate} onChange={e => setEditDate(e.target.value)} className="bg-muted border-border text-foreground" />
             <div className="flex gap-2">
