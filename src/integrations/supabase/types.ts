@@ -155,12 +155,14 @@ export type Database = {
       }
       posts: {
         Row: {
+          category: string | null
           created_at: string
           description: string | null
           id: string
           is_archived: boolean
           is_pinned: boolean
           likes: string[] | null
+          media: Json
           media_type: string | null
           media_url: string | null
           title: string
@@ -168,12 +170,14 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          category?: string | null
           created_at?: string
           description?: string | null
           id?: string
           is_archived?: boolean
           is_pinned?: boolean
           likes?: string[] | null
+          media?: Json
           media_type?: string | null
           media_url?: string | null
           title: string
@@ -181,12 +185,14 @@ export type Database = {
           user_id: string
         }
         Update: {
+          category?: string | null
           created_at?: string
           description?: string | null
           id?: string
           is_archived?: boolean
           is_pinned?: boolean
           likes?: string[] | null
+          media?: Json
           media_type?: string | null
           media_url?: string | null
           title?: string
