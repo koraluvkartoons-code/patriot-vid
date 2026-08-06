@@ -373,6 +373,11 @@ export interface UserProfile {
   isModerator?: boolean;
 }
 
+export interface PostMedia {
+  url: string;
+  type: "image" | "video" | "link";
+}
+
 export interface Post {
   id: string;
   userId: string;
@@ -380,6 +385,8 @@ export interface Post {
   description: string;
   mediaUrl?: string;
   mediaType?: string;
+  media?: PostMedia[];
+  category?: string;
   likes: string[];
   createdAt: string;
   isPinned?: boolean;

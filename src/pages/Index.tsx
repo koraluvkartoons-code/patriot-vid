@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { getCurrentUserId, type Post, type UserProfile } from "@/lib/store";
-import { fetchPosts, fetchProfiles } from "@/lib/api";
+import { fetchPosts, fetchProfiles, fetchCategories } from "@/lib/api";
 import { supabase } from "@/integrations/supabase/client";
 import UserSetupDialog from "@/components/UserSetupDialog";
 import CreatePost from "@/components/CreatePost";
@@ -19,6 +19,8 @@ export default function Index() {
   const [profiles, setProfiles] = useState<Record<string, UserProfile>>({});
   const [loading, setLoading] = useState(true);
   const [liveStreams, setLiveStreams] = useState<any[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -27,7 +29,11 @@ export default function Index() {
 
   const loadData = useCallback(async () => {
     setLoading(true);
-    const [postsResult, profilesResult] = await Promise.allSettled([fetchPosts(PAGE_SIZE, 0, order), fetchProfiles()]);
+    const [postsResult, profilesResult, catsResult] = await Promise.allSettled([
+      fetchPosts(PAGE_SIZE, 0, order, activeCategory || undefined),
+      fetchProfiles(),
+      fetchCategories(),
+    ]);
 
     if (postsResult.status === "fulfilled") {
       setPosts(postsResult.value);
@@ -38,22 +44,27 @@ export default function Index() {
       setProfiles(profilesResult.value);
     }
 
+    if (catsResult.status === "fulfilled") {
+      setCategories(catsResult.value);
+    }
+
     setLoading(false);
-  }, [order]);
+  }, [order, activeCategory]);
 
   const loadMore = useCallback(async () => {
     if (loadingMore || !hasMore) return;
     setLoadingMore(true);
     try {
-      const more = await fetchPosts(PAGE_SIZE, posts.length, order);
+      const more = await fetchPosts(PAGE_SIZE, posts.length, order, activeCategory || undefined);
       setPosts(prev => [...prev, ...more]);
       setHasMore(more.length === PAGE_SIZE);
     } finally {
       setLoadingMore(false);
     }
-  }, [posts.length, loadingMore, hasMore, order]);
+  }, [posts.length, loadingMore, hasMore, order, activeCategory]);
 
   useEffect(() => { loadData(); }, [loadData]);
+
 
   useEffect(() => {
     const loadLive = async () => {
@@ -117,7 +128,7 @@ export default function Index() {
           </div>
         )}
 
-        <CreatePost onNeedSetup={needSetup} onCreated={loadData} />
+        <CreatePost onNeedSetup={needSetup} onCreated={loadData} categories={categories} />
 
         <div className="flex items-center gap-2">
           <Button
@@ -137,6 +148,30 @@ export default function Index() {
             Older
           </Button>
         </div>
+
+        {categories.length > 0 && (
+          <div className="flex items-center gap-2 flex-wrap">
+            <Button
+              size="sm"
+              variant={activeCategory === null ? "default" : "secondary"}
+              onClick={() => setActiveCategory(null)}
+              className="text-foreground"
+            >
+              All
+            </Button>
+            {categories.map(c => (
+              <Button
+                key={c}
+                size="sm"
+                variant={activeCategory === c ? "default" : "secondary"}
+                onClick={() => setActiveCategory(c)}
+                className="text-foreground"
+              >
+                {c}
+              </Button>
+            ))}
+          </div>
+        )}
 
         {loading && (
           <div className="text-center py-16">

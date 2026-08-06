@@ -28,8 +28,10 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
   };
   const [editDate, setEditDate] = useState(toLocalInput(post.createdAt));
+  const [editCategory, setEditCategory] = useState(post.category || "");
   const [mediaUrl, setMediaUrl] = useState(post.mediaUrl);
   const [mediaType, setMediaType] = useState(post.mediaType);
+  const gallery = post.media && post.media.length > 1 ? post.media : (post.media?.length === 1 && !post.mediaUrl ? post.media : []);
   const currentUser = getCurrentUserId();
   const isAdmin = currentUser === "PatriotAdmin";
   const isOwner = currentUser === post.userId;
@@ -42,7 +44,7 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
       setMediaUrl(post.mediaUrl);
       setMediaType(post.mediaType);
 
-      if (!post.mediaType || post.mediaUrl) return;
+      if (post.media?.length || !post.mediaType || post.mediaUrl) return;
 
       try {
         const media = await fetchPostMedia(post.id);
@@ -75,7 +77,7 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
 
   const saveEdit = async () => {
     const iso = editDate ? new Date(editDate).toISOString() : undefined;
-    await updatePost(post.id, editTitle.trim() || post.title, editDesc.trim(), iso);
+    await updatePost(post.id, editTitle.trim() || post.title, editDesc.trim(), iso, editCategory);
     setEditing(false);
     onRefresh();
   };
@@ -103,17 +105,35 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
           <Pin className="w-3 h-3 fill-primary" /> Pinned Post
         </div>
       )}
-      {mediaType && !mediaUrl && <div className="w-full h-40 bg-muted/50 animate-pulse" />}
-      {mediaUrl && (
-        mediaType === "video" ? (
-          <video src={mediaUrl} controls className="w-full max-h-96 object-contain bg-background" />
-        ) : mediaType === "link" ? (
-          <a href={mediaUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-3 bg-muted/50 text-primary hover:text-accent transition-colors">
-            <ExternalLink className="w-4 h-4" /> <span className="text-sm truncate">{mediaUrl}</span>
-          </a>
-        ) : (
-          <img src={mediaUrl} alt={post.title} className="w-full max-h-96 object-contain bg-background" />
-        )
+      {gallery.length > 0 ? (
+        <div className={gallery.length === 1 ? "" : "grid grid-cols-2 gap-1 p-1"}>
+          {gallery.map((m, i) => (
+            m.type === "video" ? (
+              <video key={i} src={m.url} controls preload="none" className={`w-full bg-background ${gallery.length === 1 ? "max-h-96 object-contain" : "h-40 object-cover rounded-lg"}`} />
+            ) : m.type === "link" ? (
+              <a key={i} href={m.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-3 bg-muted/50 text-primary hover:text-accent transition-colors col-span-full">
+                <ExternalLink className="w-4 h-4" /> <span className="text-sm truncate">{m.url}</span>
+              </a>
+            ) : (
+              <img key={i} src={m.url} alt={post.title} loading="lazy" decoding="async" className={`w-full bg-background ${gallery.length === 1 ? "max-h-96 object-contain" : "h-40 object-cover rounded-lg"}`} />
+            )
+          ))}
+        </div>
+      ) : (
+        <>
+          {mediaType && !mediaUrl && <div className="w-full h-40 bg-muted/50 animate-pulse" />}
+          {mediaUrl && (
+            mediaType === "video" ? (
+              <video src={mediaUrl} controls preload="none" className="w-full max-h-96 object-contain bg-background" />
+            ) : mediaType === "link" ? (
+              <a href={mediaUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-3 bg-muted/50 text-primary hover:text-accent transition-colors">
+                <ExternalLink className="w-4 h-4" /> <span className="text-sm truncate">{mediaUrl}</span>
+              </a>
+            ) : (
+              <img src={mediaUrl} alt={post.title} loading="lazy" decoding="async" className="w-full max-h-96 object-contain bg-background" />
+            )
+          )}
+        </>
       )}
       <div className="p-4">
         <div className="flex items-center justify-between mb-2">
@@ -133,10 +153,17 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
             )}
           </div>
         </div>
+        {post.category && !editing && (
+          <div className="mb-2">
+            <span className="inline-block text-xs font-semibold px-2 py-0.5 rounded-full bg-primary/15 text-primary">{post.category}</span>
+          </div>
+        )}
         {editing ? (
           <div className="space-y-2 mb-2">
             <Input value={editTitle} onChange={e => setEditTitle(e.target.value)} className="bg-muted border-border text-foreground" />
             <Textarea value={editDesc} onChange={e => setEditDesc(e.target.value)} className="bg-muted border-border text-foreground" />
+            <label className="block text-xs text-muted-foreground">Category</label>
+            <Input value={editCategory} onChange={e => setEditCategory(e.target.value)} placeholder="Category (optional)" maxLength={40} className="bg-muted border-border text-foreground" />
             <label className="block text-xs text-muted-foreground">Post date</label>
             <Input type="datetime-local" value={editDate} onChange={e => setEditDate(e.target.value)} className="bg-muted border-border text-foreground" />
             <div className="flex gap-2">

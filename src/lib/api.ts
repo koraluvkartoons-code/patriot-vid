@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import type { UserProfile, Post, Comment } from "@/lib/store";
+import type { UserProfile, Post, Comment, PostMedia } from "@/lib/store";
 
 // ===== MEDIA UPLOAD =====
 export async function uploadMedia(file: File): Promise<string> {
@@ -51,11 +51,28 @@ export async function updateProfileMod(displayName: string, isMod: boolean) {
 }
 
 // ===== POSTS =====
-export async function fetchPosts(limit = 20, offset = 0, order: "newest" | "oldest" = "newest"): Promise<Post[]> {
+function parseMedia(raw: unknown): PostMedia[] {
+  if (!Array.isArray(raw)) return [];
+  return (raw as PostMedia[]).filter(m => m && typeof m.url === "string");
+}
+
+export async function fetchCategories(): Promise<string[]> {
+  const { data, error } = await supabase.from("posts").select("category").not("category", "is", null);
+  if (error) throw error;
+  const set = new Set<string>();
+  for (const r of data || []) if (r.category) set.add(r.category);
+  return [...set].sort((a, b) => a.localeCompare(b));
+}
+
+export async function fetchPosts(limit = 20, offset = 0, order: "newest" | "oldest" = "newest", category?: string): Promise<Post[]> {
   const ascending = order === "oldest";
-  const { data, error } = await supabase
+  let query = supabase
     .from("posts")
-    .select("id,user_id,title,description,media_type,likes,created_at,is_pinned")
+    .select("id,user_id,title,description,media_type,media,category,likes,created_at,is_pinned");
+
+  if (category) query = query.eq("category", category);
+
+  const { data, error } = await query
     .order("is_pinned", { ascending: false })
     .order("created_at", { ascending })
     .range(offset, offset + limit - 1);
@@ -69,6 +86,8 @@ export async function fetchPosts(limit = 20, offset = 0, order: "newest" | "olde
     description: p.description || "",
     mediaUrl: undefined,
     mediaType: p.media_type || undefined,
+    media: parseMedia(p.media),
+    category: p.category || undefined,
     likes: p.likes || [],
     createdAt: p.created_at,
     isPinned: p.is_pinned || false,
@@ -94,22 +113,25 @@ export async function togglePinPost(id: string, pinned: boolean) {
   await supabase.from("posts").update({ is_pinned: pinned }).eq("id", id);
 }
 
-export async function createPost(post: { userId: string; title: string; description: string; mediaUrl?: string; mediaType?: string }) {
+export async function createPost(post: { userId: string; title: string; description: string; mediaUrl?: string; mediaType?: string; media?: PostMedia[]; category?: string }) {
   await supabase.from("posts").insert({
     user_id: post.userId,
     title: post.title,
     description: post.description,
     media_url: post.mediaUrl || null,
     media_type: post.mediaType || null,
+    media: (post.media || []) as unknown as never,
+    category: post.category?.trim() || null,
     likes: [],
   });
 }
 
-export async function updatePost(id: string, title: string, description: string, createdAt?: string) {
-  const patch: { title: string; description: string; updated_at: string; created_at?: string } = {
+export async function updatePost(id: string, title: string, description: string, createdAt?: string, category?: string | null) {
+  const patch: { title: string; description: string; updated_at: string; created_at?: string; category?: string | null } = {
     title, description, updated_at: new Date().toISOString(),
   };
   if (createdAt) patch.created_at = createdAt;
+  if (category !== undefined) patch.category = category && category.trim() ? category.trim() : null;
   await supabase.from("posts").update(patch).eq("id", id);
 }
 
