@@ -187,7 +187,7 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
           <Link to={`/post/${post.id}`} className="text-muted-foreground text-xs ml-auto hover:text-primary">{new Date(post.createdAt).toLocaleString()}</Link>
         </div>
         {showComments && (
-          <div className="mt-3 pt-3 border-t border-border">
+          <div className="mt-2 pt-2 border-t border-border">
             <CommentSection postId={post.id} onNeedSetup={onNeedSetup} profiles={profiles} />
           </div>
         )}
