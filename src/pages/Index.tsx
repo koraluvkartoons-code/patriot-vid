@@ -113,7 +113,7 @@ export default function Index() {
         </div>
       </header>
 
-      <main className="container max-w-2xl mx-auto px-4 py-6 space-y-6">
+      <main className="container max-w-2xl mx-auto px-4 py-4 space-y-3">
         {liveStreams.length > 0 && (
           <div className="space-y-2">
             {liveStreams.map(s => (
