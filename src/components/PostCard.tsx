@@ -109,33 +109,33 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
         <div className={gallery.length === 1 ? "" : "grid grid-cols-2 gap-1 p-1"}>
           {gallery.map((m, i) => (
             m.type === "video" ? (
-              <video key={i} src={m.url} controls preload="none" className={`w-full bg-background ${gallery.length === 1 ? "max-h-96 object-contain" : "h-40 object-cover rounded-lg"}`} />
+              <video key={i} src={m.url} controls preload="none" className={`w-full bg-background ${gallery.length === 1 ? "max-h-64 object-contain" : "h-32 object-cover rounded-lg"}`} />
             ) : m.type === "link" ? (
-              <a key={i} href={m.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-3 bg-muted/50 text-primary hover:text-accent transition-colors col-span-full">
-                <ExternalLink className="w-4 h-4" /> <span className="text-sm truncate">{m.url}</span>
+              <a key={i} href={m.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-2 bg-muted/50 text-primary hover:text-accent transition-colors col-span-full">
+                <ExternalLink className="w-3 h-3" /> <span className="text-xs truncate">{m.url}</span>
               </a>
             ) : (
-              <img key={i} src={m.url} alt={post.title} loading="lazy" decoding="async" className={`w-full bg-background ${gallery.length === 1 ? "max-h-96 object-contain" : "h-40 object-cover rounded-lg"}`} />
+              <img key={i} src={m.url} alt={post.title} loading="lazy" decoding="async" className={`w-full bg-background ${gallery.length === 1 ? "max-h-64 object-contain" : "h-32 object-cover rounded-lg"}`} />
             )
           ))}
         </div>
       ) : (
         <>
-          {mediaType && !mediaUrl && <div className="w-full h-40 bg-muted/50 animate-pulse" />}
+          {mediaType && !mediaUrl && <div className="w-full h-28 bg-muted/50 animate-pulse" />}
           {mediaUrl && (
             mediaType === "video" ? (
-              <video src={mediaUrl} controls preload="none" className="w-full max-h-96 object-contain bg-background" />
+              <video src={mediaUrl} controls preload="none" className="w-full max-h-64 object-contain bg-background" />
             ) : mediaType === "link" ? (
-              <a href={mediaUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-3 bg-muted/50 text-primary hover:text-accent transition-colors">
-                <ExternalLink className="w-4 h-4" /> <span className="text-sm truncate">{mediaUrl}</span>
+              <a href={mediaUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 p-2 bg-muted/50 text-primary hover:text-accent transition-colors">
+                <ExternalLink className="w-3 h-3" /> <span className="text-xs truncate">{mediaUrl}</span>
               </a>
             ) : (
-              <img src={mediaUrl} alt={post.title} loading="lazy" decoding="async" className="w-full max-h-96 object-contain bg-background" />
+              <img src={mediaUrl} alt={post.title} loading="lazy" decoding="async" className="w-full max-h-64 object-contain bg-background" />
             )
           )}
         </>
       )}
-      <div className="p-4">
+      <div className="p-2.5">
         <div className="flex items-center justify-between mb-2">
           <UserBadge userId={post.userId} profiles={profiles} />
           <div className="flex items-center gap-1">
