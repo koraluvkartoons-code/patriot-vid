@@ -173,11 +173,11 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
           </div>
         ) : (
           <Link to={`/post/${post.id}`} className="block hover:opacity-90">
-            <h2 className="text-foreground font-bold text-lg mb-1">{post.title}</h2>
-            {post.description && <p className="text-muted-foreground text-sm mb-2">{post.description}</p>}
+            <h2 className="text-foreground font-bold text-base mb-0.5">{post.title}</h2>
+            {post.description && <p className="text-muted-foreground text-xs mb-1.5">{post.description}</p>}
           </Link>
         )}
-        <div className="flex items-center gap-4 text-sm">
+        <div className="flex items-center gap-3 text-xs">
           <button onClick={handleLike} className={`flex items-center gap-1 transition-colors ${liked ? "text-primary" : "text-muted-foreground hover:text-primary"}`}>
             <Heart className={`w-4 h-4 ${liked ? "fill-primary" : ""}`} /> {post.likes.length}
           </button>
