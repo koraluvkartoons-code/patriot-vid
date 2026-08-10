@@ -94,20 +94,35 @@ export async function fetchPosts(limit = 20, offset = 0, order: "newest" | "olde
   }));
 }
 
-export async function fetchPostMedia(id: string) {
+export async function searchPosts(term: string, limit = 20, offset = 0): Promise<Post[]> {
+  const q = term.trim();
+  if (!q) return [];
   const { data, error } = await supabase
     .from("posts")
-    .select("media_url, media_type")
-    .eq("id", id)
-    .single();
+    .select("id,user_id,title,description,media_type,media,category,likes,created_at,is_pinned")
+    .or(`title.ilike.%${q}%,description.ilike.%${q}%`)
+    .order("is_pinned", { ascending: false })
+    .order("created_at", { ascending: false })
+    .range(offset, offset + limit - 1);
 
   if (error) throw error;
 
-  return {
-    mediaUrl: data.media_url || undefined,
-    mediaType: data.media_type || undefined,
-  };
+  return (data || []).map(p => ({
+    id: p.id,
+    userId: p.user_id,
+    title: p.title,
+    description: p.description || "",
+    mediaUrl: undefined,
+    mediaType: p.media_type || undefined,
+    media: parseMedia(p.media),
+    category: p.category || undefined,
+    likes: p.likes || [],
+    createdAt: p.created_at,
+    isPinned: p.is_pinned || false,
+  }));
 }
+
+export async function fetchPostMedia(id: string) {
 
 export async function togglePinPost(id: string, pinned: boolean) {
   await supabase.from("posts").update({ is_pinned: pinned }).eq("id", id);
