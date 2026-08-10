@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { getCurrentUserId, type Post, type UserProfile } from "@/lib/store";
-import { fetchPosts, fetchProfiles, fetchCategories } from "@/lib/api";
+import { fetchPosts, fetchProfiles, fetchCategories, searchPosts } from "@/lib/api";
 import { supabase } from "@/integrations/supabase/client";
 import UserSetupDialog from "@/components/UserSetupDialog";
 import CreatePost from "@/components/CreatePost";
