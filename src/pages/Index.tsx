@@ -111,6 +111,9 @@ export default function Index() {
             </h1>
           </div>
           <div className="flex items-center gap-1">
+            <Button size="sm" variant="ghost" onClick={() => { setSearchOpen(o => !o); if (searchOpen) { setSearching(false); setSearchTerm(""); loadData(); } }} className="text-foreground hover:text-primary h-8">
+              <Search className="w-4 h-4" />
+            </Button>
             <Link to="/live"><Button size="sm" variant="ghost" className="text-red-400 hover:text-red-300 h-8"><Radio className="w-4 h-4 mr-1" /><span className="text-xs hidden sm:inline">Go Live</span></Button></Link>
             <Link to="/streams"><Button size="sm" variant="ghost" className="text-foreground hover:text-primary h-8"><Film className="w-4 h-4 mr-1" /><span className="text-xs hidden sm:inline">Streams</span></Button></Link>
             {(isAdmin || isMod) && (
