@@ -130,6 +130,33 @@ export default function Index() {
       </header>
 
       <main className="container max-w-2xl mx-auto px-4 py-4 space-y-3">
+        {searchOpen && (
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                autoFocus
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") { setSearching(true); loadData(); } }}
+                placeholder="Search posts..."
+                className="pl-9 pr-9"
+              />
+              {searchTerm && (
+                <button onClick={() => { setSearchTerm(""); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+            <Button size="sm" onClick={() => { setSearching(true); loadData(); }} className="text-foreground">Search</Button>
+            <Button size="sm" variant="ghost" onClick={() => { setSearchOpen(false); setSearching(false); setSearchTerm(""); loadData(); }} className="text-foreground hover:text-primary">
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
+        )}
+        {searching && (
+          <p className="text-xs text-muted-foreground">Showing results for "{searchTerm.trim()}"</p>
+        )}
         {liveStreams.length > 0 && (
           <div className="space-y-2">
             {liveStreams.map(s => (
