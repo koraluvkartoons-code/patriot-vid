@@ -33,8 +33,13 @@ export default function Index() {
 
   const loadData = useCallback(async () => {
     setLoading(true);
+    const term = searchTerm.trim();
+    const isSearch = searching && term.length > 0;
+
     const [postsResult, profilesResult, catsResult] = await Promise.allSettled([
-      fetchPosts(PAGE_SIZE, 0, order, activeCategory || undefined),
+      isSearch
+        ? searchPosts(term, PAGE_SIZE, 0)
+        : fetchPosts(PAGE_SIZE, 0, order, activeCategory || undefined),
       fetchProfiles(),
       fetchCategories(),
     ]);
@@ -53,19 +58,23 @@ export default function Index() {
     }
 
     setLoading(false);
-  }, [order, activeCategory]);
+  }, [order, activeCategory, searchTerm, searching]);
 
   const loadMore = useCallback(async () => {
     if (loadingMore || !hasMore) return;
     setLoadingMore(true);
     try {
-      const more = await fetchPosts(PAGE_SIZE, posts.length, order, activeCategory || undefined);
+      const term = searchTerm.trim();
+      const isSearch = searching && term.length > 0;
+      const more = isSearch
+        ? await searchPosts(term, PAGE_SIZE, posts.length)
+        : await fetchPosts(PAGE_SIZE, posts.length, order, activeCategory || undefined);
       setPosts(prev => [...prev, ...more]);
       setHasMore(more.length === PAGE_SIZE);
     } finally {
       setLoadingMore(false);
     }
-  }, [posts.length, loadingMore, hasMore, order, activeCategory]);
+  }, [posts.length, loadingMore, hasMore, order, activeCategory, searchTerm, searching]);
 
   useEffect(() => { loadData(); }, [loadData]);
 
