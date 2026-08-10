@@ -1,14 +1,15 @@
 import { useState, useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { getCurrentUserId, type Post, type UserProfile } from "@/lib/store";
-import { fetchPosts, fetchProfiles, fetchCategories } from "@/lib/api";
+import { fetchPosts, fetchProfiles, fetchCategories, searchPosts } from "@/lib/api";
 import { supabase } from "@/integrations/supabase/client";
 import UserSetupDialog from "@/components/UserSetupDialog";
 import CreatePost from "@/components/CreatePost";
 import PostCard from "@/components/PostCard";
 import AdminPanel from "@/components/AdminPanel";
-import { Shield, User, Radio, Film } from "lucide-react";
+import { Shield, User, Radio, Film, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import eagleImg from "@/assets/eagle.png";
 
 export default function Index() {
@@ -21,6 +22,9 @@ export default function Index() {
   const [liveStreams, setLiveStreams] = useState<any[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searching, setSearching] = useState(false);
 
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -29,8 +33,13 @@ export default function Index() {
 
   const loadData = useCallback(async () => {
     setLoading(true);
+    const term = searchTerm.trim();
+    const isSearch = searching && term.length > 0;
+
     const [postsResult, profilesResult, catsResult] = await Promise.allSettled([
-      fetchPosts(PAGE_SIZE, 0, order, activeCategory || undefined),
+      isSearch
+        ? searchPosts(term, PAGE_SIZE, 0)
+        : fetchPosts(PAGE_SIZE, 0, order, activeCategory || undefined),
       fetchProfiles(),
       fetchCategories(),
     ]);
@@ -49,19 +58,23 @@ export default function Index() {
     }
 
     setLoading(false);
-  }, [order, activeCategory]);
+  }, [order, activeCategory, searchTerm, searching]);
 
   const loadMore = useCallback(async () => {
     if (loadingMore || !hasMore) return;
     setLoadingMore(true);
     try {
-      const more = await fetchPosts(PAGE_SIZE, posts.length, order, activeCategory || undefined);
+      const term = searchTerm.trim();
+      const isSearch = searching && term.length > 0;
+      const more = isSearch
+        ? await searchPosts(term, PAGE_SIZE, posts.length)
+        : await fetchPosts(PAGE_SIZE, posts.length, order, activeCategory || undefined);
       setPosts(prev => [...prev, ...more]);
       setHasMore(more.length === PAGE_SIZE);
     } finally {
       setLoadingMore(false);
     }
-  }, [posts.length, loadingMore, hasMore, order, activeCategory]);
+  }, [posts.length, loadingMore, hasMore, order, activeCategory, searchTerm, searching]);
 
   useEffect(() => { loadData(); }, [loadData]);
 
@@ -98,6 +111,9 @@ export default function Index() {
             </h1>
           </div>
           <div className="flex items-center gap-1">
+            <Button size="sm" variant="ghost" onClick={() => { setSearchOpen(o => !o); if (searchOpen) { setSearching(false); setSearchTerm(""); loadData(); } }} className="text-foreground hover:text-primary h-8">
+              <Search className="w-4 h-4" />
+            </Button>
             <Link to="/live"><Button size="sm" variant="ghost" className="text-red-400 hover:text-red-300 h-8"><Radio className="w-4 h-4 mr-1" /><span className="text-xs hidden sm:inline">Go Live</span></Button></Link>
             <Link to="/streams"><Button size="sm" variant="ghost" className="text-foreground hover:text-primary h-8"><Film className="w-4 h-4 mr-1" /><span className="text-xs hidden sm:inline">Streams</span></Button></Link>
             {(isAdmin || isMod) && (
@@ -114,6 +130,33 @@ export default function Index() {
       </header>
 
       <main className="container max-w-2xl mx-auto px-4 py-4 space-y-3">
+        {searchOpen && (
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                autoFocus
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") { setSearching(true); loadData(); } }}
+                placeholder="Search posts..."
+                className="pl-9 pr-9"
+              />
+              {searchTerm && (
+                <button onClick={() => { setSearchTerm(""); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+            <Button size="sm" onClick={() => { setSearching(true); loadData(); }} className="text-foreground">Search</Button>
+            <Button size="sm" variant="ghost" onClick={() => { setSearchOpen(false); setSearching(false); setSearchTerm(""); loadData(); }} className="text-foreground hover:text-primary">
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
+        )}
+        {searching && (
+          <p className="text-xs text-muted-foreground">Showing results for "{searchTerm.trim()}"</p>
+        )}
         {liveStreams.length > 0 && (
           <div className="space-y-2">
             {liveStreams.map(s => (
@@ -181,7 +224,7 @@ export default function Index() {
 
         {!loading && posts.length === 0 && (
           <div className="text-center py-16">
-            <p className="text-muted-foreground text-lg">No posts yet. Be the first!</p>
+            <p className="text-muted-foreground text-lg">{searching ? "No posts found." : "No posts yet. Be the first!"}</p>
           </div>
         )}
 
