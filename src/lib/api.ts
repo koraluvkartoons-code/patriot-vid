@@ -123,6 +123,19 @@ export async function searchPosts(term: string, limit = 20, offset = 0): Promise
 }
 
 export async function fetchPostMedia(id: string) {
+  const { data, error } = await supabase
+    .from("posts")
+    .select("media_url, media_type")
+    .eq("id", id)
+    .single();
+
+  if (error) throw error;
+
+  return {
+    mediaUrl: data.media_url || undefined,
+    mediaType: data.media_type || undefined,
+  };
+}
 
 export async function togglePinPost(id: string, pinned: boolean) {
   await supabase.from("posts").update({ is_pinned: pinned }).eq("id", id);
