@@ -224,7 +224,7 @@ export default function Index() {
 
         {!loading && posts.length === 0 && (
           <div className="text-center py-16">
-            <p className="text-muted-foreground text-lg">No posts yet. Be the first!</p>
+            <p className="text-muted-foreground text-lg">{searching ? "No posts found." : "No posts yet. Be the first!"}</p>
           </div>
         )}
 
