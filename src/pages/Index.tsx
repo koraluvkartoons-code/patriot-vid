@@ -7,8 +7,9 @@ import UserSetupDialog from "@/components/UserSetupDialog";
 import CreatePost from "@/components/CreatePost";
 import PostCard from "@/components/PostCard";
 import AdminPanel from "@/components/AdminPanel";
-import { Shield, User, Radio, Film } from "lucide-react";
+import { Shield, User, Radio, Film, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import eagleImg from "@/assets/eagle.png";
 
 export default function Index() {
