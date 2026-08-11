@@ -158,7 +158,7 @@ export default function Index() {
             <span className="flex items-center gap-1 text-term-green">
               <span className="w-2 h-2 rounded-full bg-term-green animate-pulse" /> ONLINE
             </span>
-            <span className="text-accent hidden xs:inline">{utc}Z</span>
+            <span className="text-accent">{utc}Z</span>
             <span className="text-muted-foreground">{viewers}👁</span>
           </div>
         </div>
