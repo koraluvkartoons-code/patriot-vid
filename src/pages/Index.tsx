@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { getCurrentUserId, type Post, type UserProfile } from "@/lib/store";
 import { fetchPosts, fetchProfiles, fetchCategories, searchPosts } from "@/lib/api";
@@ -7,10 +7,10 @@ import UserSetupDialog from "@/components/UserSetupDialog";
 import CreatePost from "@/components/CreatePost";
 import PostCard from "@/components/PostCard";
 import AdminPanel from "@/components/AdminPanel";
-import { Shield, User, Radio, Film, Search, X } from "lucide-react";
+import { tagClass, tagLabel } from "@/lib/tags";
+import { Shield, User, Radio, Film, Archive, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import eagleImg from "@/assets/eagle.png";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 export default function Index() {
   const [userId, setUserId] = useState(getCurrentUserId);
@@ -22,9 +22,13 @@ export default function Index() {
   const [liveStreams, setLiveStreams] = useState<any[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const [searchOpen, setSearchOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [searching, setSearching] = useState(false);
+  const [cmd, setCmd] = useState("");
+  const [scanlines, setScanlines] = useState(true);
+  const [clock, setClock] = useState(() => new Date());
+  const [viewers, setViewers] = useState(1);
+  const cmdRef = useRef<HTMLInputElement>(null);
 
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -78,6 +82,10 @@ export default function Index() {
 
   useEffect(() => { loadData(); }, [loadData]);
 
+  useEffect(() => {
+    const t = setInterval(() => setClock(new Date()), 1000);
+    return () => clearInterval(t);
+  }, []);
 
   useEffect(() => {
     const loadLive = async () => {
@@ -91,6 +99,17 @@ export default function Index() {
     return () => { supabase.removeChannel(ch); };
   }, []);
 
+  // live viewer presence
+  useEffect(() => {
+    const ch = supabase.channel("byteticker-presence", { config: { presence: { key: Math.random().toString(36).slice(2) } } });
+    ch.on("presence", { event: "sync" }, () => {
+      setViewers(Object.keys(ch.presenceState()).length || 1);
+    }).subscribe(async (status) => {
+      if (status === "SUBSCRIBED") await ch.track({ online_at: new Date().toISOString() });
+    });
+    return () => { supabase.removeChannel(ch); };
+  }, []);
+
   const currentUser = userId ? profiles[userId] : null;
   const isAdmin = userId === "PatriotAdmin";
   const isMod = currentUser?.isModerator;
@@ -99,147 +118,168 @@ export default function Index() {
     if (!userId) setShowSetup(true);
   };
 
+  const runCommand = () => {
+    const raw = cmd.trim();
+    if (!raw) return;
+    if (raw.startsWith("/")) {
+      const name = raw.slice(1).trim().toLowerCase();
+      setSearching(false);
+      setSearchTerm("");
+      if (name === "all" || name === "clear") setActiveCategory(null);
+      else {
+        const match = categories.find(c => c.toLowerCase() === name) || categories.find(c => c.toLowerCase().includes(name));
+        setActiveCategory(match || null);
+      }
+    } else {
+      setActiveCategory(null);
+      setSearchTerm(raw);
+      setSearching(true);
+    }
+    setCmd("");
+  };
+
+  const utc = clock.toISOString().slice(11, 19);
+
+  const archives = posts.reduce<Record<string, Post[]>>((acc, p) => {
+    const day = new Date(p.createdAt).toISOString().slice(0, 10);
+    (acc[day] ||= []).push(p);
+    return acc;
+  }, {});
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className={`min-h-screen bg-background pb-16 ${scanlines ? "scanlines" : ""}`}>
       <header className="gradient-hero sticky top-0 z-40 border-b border-border">
-        <div className="container max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <img src={eagleImg} alt="Eagle" className="w-10 h-10 object-contain" />
-            <h1 className="text-foreground text-2xl font-black tracking-tight">
-              <span className="animate-shimmer">Patriot</span>
-              <span className="text-primary">.Vid</span>
-            </h1>
+        <div className="container max-w-3xl mx-auto px-3 py-2 flex items-center justify-between gap-2">
+          <h1 className="text-sm sm:text-base font-extrabold tracking-tight truncate">
+            <span className="animate-shimmer">ByteTicker</span>
+            <span className="text-muted-foreground"> // LIVE_FEED_v1.0</span>
+          </h1>
+          <div className="flex items-center gap-2 text-[11px] shrink-0">
+            <span className="flex items-center gap-1 text-term-green">
+              <span className="w-2 h-2 rounded-full bg-term-green animate-pulse" /> ONLINE
+            </span>
+            <span className="text-accent hidden xs:inline">{utc}Z</span>
+            <span className="text-muted-foreground">{viewers}👁</span>
           </div>
-          <div className="flex items-center gap-1">
-            <Button size="sm" variant="ghost" onClick={() => { setSearchOpen(o => !o); if (searchOpen) { setSearching(false); setSearchTerm(""); loadData(); } }} className="text-foreground hover:text-primary h-8">
-              <Search className="w-4 h-4" />
-            </Button>
-            <Link to="/live"><Button size="sm" variant="ghost" className="text-red-400 hover:text-red-300 h-8"><Radio className="w-4 h-4 mr-1" /><span className="text-xs hidden sm:inline">Go Live</span></Button></Link>
-            <Link to="/streams"><Button size="sm" variant="ghost" className="text-foreground hover:text-primary h-8"><Film className="w-4 h-4 mr-1" /><span className="text-xs hidden sm:inline">Streams</span></Button></Link>
-            {(isAdmin || isMod) && (
-              <Button size="sm" variant="ghost" onClick={() => setShowAdmin(true)} className="text-gold hover:text-gold-shine h-8">
-                <Shield className="w-4 h-4" />
-              </Button>
-            )}
-            <Button size="sm" variant="ghost" onClick={() => setShowSetup(true)} className="text-foreground hover:text-primary h-8">
-              <User className="w-4 h-4 mr-1" />
-              <span className="text-xs max-w-[80px] truncate">{userId || "Join"}</span>
-            </Button>
-          </div>
+        </div>
+        <div className="container max-w-3xl mx-auto px-3 pb-2 flex items-center gap-1 overflow-x-auto scrollbar-hide">
+          <Link to="/live"><Button size="sm" variant="ghost" className="h-7 px-2 text-[11px] text-term-red"><Radio className="w-3 h-3 mr-1" />GO_LIVE</Button></Link>
+          <Link to="/streams"><Button size="sm" variant="ghost" className="h-7 px-2 text-[11px] text-foreground hover:text-primary"><Film className="w-3 h-3 mr-1" />STREAMS</Button></Link>
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button size="sm" variant="ghost" className="h-7 px-2 text-[11px] text-foreground hover:text-primary"><Archive className="w-3 h-3 mr-1" />ARCHIVES</Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="bg-card border-border w-[85vw] sm:w-96 overflow-y-auto">
+              <SheetHeader><SheetTitle className="text-primary text-sm">// ARCHIVED_LOGS</SheetTitle></SheetHeader>
+              <div className="mt-4 space-y-4 text-[12px]">
+                {Object.keys(archives).sort().reverse().map(day => (
+                  <div key={day}>
+                    <p className="text-accent mb-1">┌─ {day}</p>
+                    <div className="space-y-1 pl-2 border-l border-border">
+                      {archives[day].map(p => (
+                        <Link key={p.id} to={`/post/${p.id}`} className="block truncate hover:text-primary">
+                          <span className={tagClass(p.category)}>[{tagLabel(p.category)}]</span>{" "}
+                          <span className="text-muted-foreground">{p.title}</span>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+                {Object.keys(archives).length === 0 && <p className="text-muted-foreground">No archived logs loaded.</p>}
+              </div>
+            </SheetContent>
+          </Sheet>
+          {(isAdmin || isMod) && (
+            <Button size="sm" variant="ghost" onClick={() => setShowAdmin(true)} className="h-7 px-2 text-[11px] text-gold hover:text-gold-shine"><Shield className="w-3 h-3 mr-1" />ADMIN</Button>
+          )}
+          <Button size="sm" variant="ghost" onClick={() => setScanlines(s => !s)} className="h-7 px-2 text-[11px] text-muted-foreground hover:text-primary">
+            CRT:{scanlines ? "ON" : "OFF"}
+          </Button>
+          <Button size="sm" variant="ghost" onClick={() => setShowSetup(true)} className="h-7 px-2 text-[11px] text-foreground hover:text-primary ml-auto">
+            <User className="w-3 h-3 mr-1" /><span className="max-w-[70px] truncate">{userId || "LOGIN"}</span>
+          </Button>
         </div>
       </header>
 
-      <main className="container max-w-2xl mx-auto px-4 py-4 space-y-3">
-        {searchOpen && (
-          <div className="flex items-center gap-2">
-            <div className="relative flex-1">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                autoFocus
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter") { setSearching(true); loadData(); } }}
-                placeholder="Search posts..."
-                className="pl-9 pr-9"
-              />
-              {searchTerm && (
-                <button onClick={() => { setSearchTerm(""); }} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                  <X className="w-4 h-4" />
-                </button>
-              )}
-            </div>
-            <Button size="sm" onClick={() => { setSearching(true); loadData(); }} className="text-foreground">Search</Button>
-            <Button size="sm" variant="ghost" onClick={() => { setSearchOpen(false); setSearching(false); setSearchTerm(""); loadData(); }} className="text-foreground hover:text-primary">
-              <X className="w-4 h-4" />
-            </Button>
-          </div>
-        )}
-        {searching && (
-          <p className="text-xs text-muted-foreground">Showing results for "{searchTerm.trim()}"</p>
-        )}
-        {liveStreams.length > 0 && (
-          <div className="space-y-2">
-            {liveStreams.map(s => (
-              <Link key={s.id} to={`/watch/${s.id}`} className="block bg-gradient-to-r from-red-600/20 to-pink-600/20 border border-red-500/40 rounded-lg p-3 hover:from-red-600/30 hover:to-pink-600/30 transition">
-                <div className="flex items-center gap-2">
-                  <span className="text-red-500 animate-pulse font-bold">● LIVE</span>
-                  <span className="font-bold text-foreground truncate">{s.title}</span>
-                  <span className="text-xs text-muted-foreground ml-auto">@{s.host_user_id}</span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
-
-        <CreatePost onNeedSetup={needSetup} onCreated={loadData} categories={categories} />
-
-        <div className="flex items-center gap-2">
-          <Button
-            size="sm"
-            variant={order === "newest" ? "default" : "secondary"}
-            onClick={() => setOrder("newest")}
-            className="text-foreground"
-          >
-            Latest
-          </Button>
-          <Button
-            size="sm"
-            variant={order === "oldest" ? "default" : "secondary"}
-            onClick={() => setOrder("oldest")}
-            className="text-foreground"
-          >
-            Older
-          </Button>
-        </div>
-
-        {categories.length > 0 && (
-          <div className="flex items-center gap-2 flex-wrap">
-            <Button
-              size="sm"
-              variant={activeCategory === null ? "default" : "secondary"}
-              onClick={() => setActiveCategory(null)}
-              className="text-foreground"
-            >
-              All
-            </Button>
+      <main className="container max-w-3xl mx-auto px-3 py-3 space-y-2">
+        <div className="crt-frame rounded-sm p-2 space-y-2">
+          <div className="flex items-center gap-1 flex-wrap text-[11px]">
+            <button
+              onClick={() => { setActiveCategory(null); setSearching(false); setSearchTerm(""); }}
+              className={`px-2 py-1 border rounded-sm ${activeCategory === null && !searching ? "border-primary text-primary bg-primary/10" : "border-border text-muted-foreground hover:text-primary"}`}
+            >[ ALL ]</button>
             {categories.map(c => (
-              <Button
+              <button
                 key={c}
-                size="sm"
-                variant={activeCategory === c ? "default" : "secondary"}
-                onClick={() => setActiveCategory(c)}
-                className="text-foreground"
-              >
-                {c}
-              </Button>
+                onClick={() => { setActiveCategory(c); setSearching(false); setSearchTerm(""); }}
+                className={`px-2 py-1 border rounded-sm uppercase ${activeCategory === c ? "border-primary text-primary bg-primary/10" : "border-border text-muted-foreground hover:text-primary"}`}
+              >[ {c} ]</button>
+            ))}
+            <button
+              onClick={() => setOrder(o => o === "newest" ? "oldest" : "newest")}
+              className="px-2 py-1 border border-border rounded-sm text-accent hover:text-primary ml-auto"
+            >SORT:{order === "newest" ? "NEWEST" : "OLDEST"}</button>
+          </div>
+
+          {searching && searchTerm.trim() && (
+            <p className="text-[11px] text-muted-foreground flex items-center gap-2">
+              grep "{searchTerm.trim()}"
+              <button onClick={() => { setSearching(false); setSearchTerm(""); }} className="text-term-red hover:opacity-80"><X className="w-3 h-3" /></button>
+            </p>
+          )}
+
+          {liveStreams.length > 0 && (
+            <div className="space-y-1">
+              {liveStreams.map(s => (
+                <Link key={s.id} to={`/watch/${s.id}`} className="block border border-term-red/50 bg-term-red/10 rounded-sm px-2 py-1 text-[12px] hover:bg-term-red/20">
+                  <span className="text-term-red animate-pulse font-bold">● LIVE</span>{" "}
+                  <span className="text-foreground">{s.title}</span>{" "}
+                  <span className="text-muted-foreground">@{s.host_user_id}</span>
+                </Link>
+              ))}
+            </div>
+          )}
+
+          <CreatePost onNeedSetup={needSetup} onCreated={loadData} categories={categories} />
+
+          {loading && <p className="text-center py-10 text-muted-foreground text-sm">booting feed<span className="animate-caret">_</span></p>}
+
+          {!loading && posts.length === 0 && (
+            <p className="text-center py-10 text-muted-foreground text-sm">{searching ? "no matching logs." : "log empty. awaiting first entry."}</p>
+          )}
+
+          <div className="space-y-1">
+            {posts.map(post => (
+              <PostCard key={post.id} post={post} onNeedSetup={needSetup} onRefresh={loadData} profiles={profiles} />
             ))}
           </div>
-        )}
 
-        {loading && (
-          <div className="text-center py-16">
-            <p className="text-muted-foreground text-lg">Loading...</p>
-          </div>
-        )}
-
-        {!loading && posts.length === 0 && (
-          <div className="text-center py-16">
-            <p className="text-muted-foreground text-lg">{searching ? "No posts found." : "No posts yet. Be the first!"}</p>
-          </div>
-        )}
-
-        {posts.map(post => (
-          <PostCard key={post.id} post={post} onNeedSetup={needSetup} onRefresh={loadData} profiles={profiles} />
-        ))}
-
-        {!loading && hasMore && (
-          <div className="text-center py-4">
-            <Button onClick={loadMore} disabled={loadingMore} variant="secondary" className="text-foreground">
-              {loadingMore ? "Loading..." : "Load more posts"}
-            </Button>
-          </div>
-        )}
+          {!loading && hasMore && (
+            <div className="text-center py-2">
+              <button onClick={loadMore} disabled={loadingMore} className="px-3 py-1 text-[11px] border border-border rounded-sm text-accent hover:text-primary hover:border-primary">
+                {loadingMore ? "loading..." : "[ LOAD_MORE ]"}
+              </button>
+            </div>
+          )}
+        </div>
       </main>
+
+      <footer className="fixed bottom-0 inset-x-0 z-40 border-t border-border gradient-hero">
+        <div className="container max-w-3xl mx-auto px-3 py-2 flex items-center gap-2 text-[12px]">
+          <span className="text-term-green shrink-0 hidden sm:inline">user@byteticker:~$</span>
+          <span className="text-term-green shrink-0 sm:hidden">~$</span>
+          <input
+            ref={cmdRef}
+            value={cmd}
+            onChange={e => setCmd(e.target.value)}
+            onKeyDown={e => { if (e.key === "Enter") runCommand(); }}
+            placeholder="Type command or search…  (/gaming, /all)"
+            className="flex-1 bg-transparent outline-none text-foreground placeholder:text-muted-foreground"
+            aria-label="Terminal command input"
+          />
+          <span className="text-primary animate-caret">_</span>
+        </div>
+      </footer>
 
       <UserSetupDialog open={showSetup} onComplete={(id) => { setUserId(id); setShowSetup(false); loadData(); }} />
       <AdminPanel open={showAdmin} onClose={() => setShowAdmin(false)} onRefresh={loadData} profiles={profiles} />
