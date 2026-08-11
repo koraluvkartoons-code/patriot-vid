@@ -48,6 +48,13 @@ export default {
           foreground: "hsl(var(--card-foreground))",
         },
         gold: "hsl(var(--gold))",
+        term: {
+          green: "hsl(var(--term-green))",
+          cyan: "hsl(var(--term-cyan))",
+          purple: "hsl(var(--term-purple))",
+          yellow: "hsl(var(--term-yellow))",
+          red: "hsl(var(--term-red))",
+        },
         "gold-shine": "hsl(var(--gold-shine))",
         "neon-purple": "hsl(var(--neon-purple))",
         "hot-pink": "hsl(var(--hot-pink))",
@@ -62,6 +69,10 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+      },
+      fontFamily: {
+        mono: ["JetBrains Mono", "ui-monospace", "SFMono-Regular", "monospace"],
+        sans: ["JetBrains Mono", "ui-monospace", "monospace"],
       },
       borderRadius: {
         lg: "var(--radius)",
