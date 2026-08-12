@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { getCurrentUserId, type PostMedia } from "@/lib/store";
 import { createPost, uploadMedia } from "@/lib/api";
-import { ImagePlus, Video, Link, X, Loader2 } from "lucide-react";
+import { ImagePlus, Video, Link, X, Loader2, CalendarClock } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 interface Props {
@@ -23,6 +23,8 @@ export default function CreatePost({ onNeedSetup, onCreated, categories = [] }: 
   const [desc, setDesc] = useState("");
   const [category, setCategory] = useState("");
   const [linkUrl, setLinkUrl] = useState("");
+  const [scheduleAt, setScheduleAt] = useState("");
+  const [showSchedule, setShowSchedule] = useState(false);
   const [files, setFiles] = useState<Pending[]>([]);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -87,6 +89,8 @@ export default function CreatePost({ onNeedSetup, onCreated, categories = [] }: 
 
       if (linkUrl.trim()) media.push({ url: linkUrl.trim(), type: "link" });
 
+      const scheduledIso = scheduleAt ? new Date(scheduleAt).toISOString() : undefined;
+
       await createPost({
         userId: uid,
         title: title.trim(),
@@ -96,10 +100,16 @@ export default function CreatePost({ onNeedSetup, onCreated, categories = [] }: 
         mediaType: media[0]?.type,
         media,
         category: category.trim() || undefined,
+        createdAt: scheduledIso,
       });
+      if (scheduledIso && new Date(scheduledIso) > new Date()) {
+        toast({ title: "Post scheduled", description: `Goes live ${new Date(scheduledIso).toLocaleString()}` });
+      }
       clearAll();
       setTitle("");
       setDesc("");
+      setScheduleAt("");
+      setShowSchedule(false);
       onCreated();
     } finally {
       setUploading(false);
@@ -148,6 +158,13 @@ export default function CreatePost({ onNeedSetup, onCreated, categories = [] }: 
         <Input placeholder="Paste URL..." value={linkUrl} onChange={(e) => setLinkUrl(e.target.value)} className="bg-muted border-border text-foreground mb-2" />
       )}
 
+      {showSchedule && (
+        <div className="mb-2">
+          <label className="block text-xs text-muted-foreground mb-1">Publish date &amp; time (future = scheduled)</label>
+          <Input type="datetime-local" value={scheduleAt} onChange={(e) => setScheduleAt(e.target.value)} className="bg-muted border-border text-foreground" />
+        </div>
+      )}
+
       <div className="flex items-center gap-2 flex-wrap">
         <input ref={fileRef} type="file" multiple className="hidden" accept="image/*,video/*" onChange={handleFiles} />
         <Button size="sm" variant="ghost" onClick={() => { fileRef.current!.accept = "image/*"; fileRef.current?.click(); }} className="text-primary hover:text-accent" disabled={uploading}>
@@ -159,9 +176,12 @@ export default function CreatePost({ onNeedSetup, onCreated, categories = [] }: 
         <Button size="sm" variant="ghost" onClick={() => setShowLink(!showLink)} className="text-primary hover:text-accent" disabled={uploading}>
           <Link className="w-4 h-4 mr-1" /> Link
         </Button>
+        <Button size="sm" variant="ghost" onClick={() => setShowSchedule(!showSchedule)} className="text-primary hover:text-accent" disabled={uploading}>
+          <CalendarClock className="w-4 h-4 mr-1" /> Schedule
+        </Button>
         <div className="flex-1" />
         <Button onClick={submit} disabled={!title.trim() || uploading} className="gradient-btn text-foreground font-semibold">
-          {uploading ? <><Loader2 className="w-4 h-4 mr-1 animate-spin" /> {files.length ? `Uploading ${progress}/${files.length}` : "Posting..."}</> : "Post"}
+          {uploading ? <><Loader2 className="w-4 h-4 mr-1 animate-spin" /> {files.length ? `Uploading ${progress}/${files.length}` : "Posting..."}</> : (scheduleAt && new Date(scheduleAt) > new Date() ? "Schedule" : "Post")}
         </Button>
       </div>
     </div>
