@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { getCurrentUserId, type PostMedia } from "@/lib/store";
 import { createPost, uploadMedia } from "@/lib/api";
-import { ImagePlus, Video, Link, X, Loader2 } from "lucide-react";
+import { ImagePlus, Video, Link, X, Loader2, CalendarClock } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 interface Props {
@@ -183,7 +183,6 @@ export default function CreatePost({ onNeedSetup, onCreated, categories = [] }: 
         <Button onClick={submit} disabled={!title.trim() || uploading} className="gradient-btn text-foreground font-semibold">
           {uploading ? <><Loader2 className="w-4 h-4 mr-1 animate-spin" /> {files.length ? `Uploading ${progress}/${files.length}` : "Posting..."}</> : (scheduleAt && new Date(scheduleAt) > new Date() ? "Schedule" : "Post")}
         </Button>
-      </div>
       </div>
     </div>
   );
