@@ -89,6 +89,8 @@ export default function CreatePost({ onNeedSetup, onCreated, categories = [] }: 
 
       if (linkUrl.trim()) media.push({ url: linkUrl.trim(), type: "link" });
 
+      const scheduledIso = scheduleAt ? new Date(scheduleAt).toISOString() : undefined;
+
       await createPost({
         userId: uid,
         title: title.trim(),
@@ -98,10 +100,16 @@ export default function CreatePost({ onNeedSetup, onCreated, categories = [] }: 
         mediaType: media[0]?.type,
         media,
         category: category.trim() || undefined,
+        createdAt: scheduledIso,
       });
+      if (scheduledIso && new Date(scheduledIso) > new Date()) {
+        toast({ title: "Post scheduled", description: `Goes live ${new Date(scheduledIso).toLocaleString()}` });
+      }
       clearAll();
       setTitle("");
       setDesc("");
+      setScheduleAt("");
+      setShowSchedule(false);
       onCreated();
     } finally {
       setUploading(false);
