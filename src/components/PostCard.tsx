@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { type Post, type UserProfile, getCurrentUserId } from "@/lib/store";
-import { fetchPostMedia, updatePost, togglePostLike, togglePinPost, deletePost, repostPost } from "@/lib/api";
+import { fetchPostMedia, updatePost, togglePostLike, togglePinPost, deletePost } from "@/lib/api";
 import { tagClass, tagLabel, logTime } from "@/lib/tags";
 import UserBadge from "./UserBadge";
 import CommentSection from "./CommentSection";
-import MediaLightbox from "./MediaLightbox";
-import { Heart, MessageCircle, Edit, ExternalLink, Pin, Trash2, Link2, ChevronRight, ChevronDown, Repeat2 } from "lucide-react";
+import { Heart, MessageCircle, Edit, ExternalLink, Pin, Trash2, Link2, ChevronRight, ChevronDown } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -35,34 +34,12 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
   const [mediaUrl, setMediaUrl] = useState(post.mediaUrl);
   const [mediaType, setMediaType] = useState(post.mediaType);
   const gallery = post.media && post.media.length > 1 ? post.media : (post.media?.length === 1 && !post.mediaUrl ? post.media : []);
-  const [lightbox, setLightbox] = useState<number | null>(null);
   const currentUser = getCurrentUserId();
   const isAdmin = currentUser === "PatriotAdmin";
   const isOwner = currentUser === post.userId;
   const liked = currentUser ? post.likes.includes(currentUser) : false;
   const hasMedia = gallery.length > 0 || !!mediaType;
   const isLong = post.description.length > 90 || hasMedia;
-  const isScheduled = new Date(post.createdAt).getTime() > Date.now();
-  const viewable = (gallery.length > 0
-    ? gallery
-    : (mediaUrl && mediaType !== "link" ? [{ url: mediaUrl, type: mediaType }] : [])
-  ).filter(m => m.type !== "link");
-
-  const handleRepost = async () => {
-    if (!currentUser) { onNeedSetup(); return; }
-    await repostPost({
-      userId: currentUser,
-      originalUser: post.userId,
-      title: post.title,
-      description: post.description,
-      media: gallery.length ? gallery : (mediaUrl ? [{ url: mediaUrl, type: (mediaType as "image" | "video" | "link") || "image" }] : []),
-      mediaType,
-      category: post.category,
-    });
-    toast({ title: "Reposted", description: "Shared to your feed." });
-    onRefresh();
-  };
-
 
   useEffect(() => {
     let cancelled = false;
@@ -140,7 +117,6 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
             <span className="text-muted-foreground">[{logTime(post.createdAt)}]</span>
             <span className={`${tagClass(post.category)} font-bold`}>[{tagLabel(post.category)}]</span>
             {post.isPinned && <span className="text-primary text-[11px]">[PINNED]</span>}
-            {isScheduled && <span className="text-accent text-[11px]">[SCHEDULED]</span>}
             <Link to={`/post/${post.id}`} className="text-foreground font-semibold hover:text-primary break-words">
               {post.title}
             </Link>
@@ -187,7 +163,7 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
                         <ExternalLink className="w-3 h-3" /> <span className="text-xs truncate">{m.url}</span>
                       </a>
                     ) : (
-                      <img key={i} src={m.url} alt={post.title} loading="lazy" decoding="async" onClick={() => setLightbox(viewable.findIndex(v => v.url === m.url))} className={`w-full bg-background rounded-sm cursor-zoom-in ${gallery.length === 1 ? "max-h-64 object-contain" : "h-32 object-cover"}`} />
+                      <img key={i} src={m.url} alt={post.title} loading="lazy" decoding="async" className={`w-full bg-background rounded-sm ${gallery.length === 1 ? "max-h-64 object-contain" : "h-32 object-cover"}`} />
                     )
                   ))}
                 </div>
@@ -202,7 +178,7 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
                         <ExternalLink className="w-3 h-3" /> <span className="text-xs truncate">{mediaUrl}</span>
                       </a>
                     ) : (
-                      <img src={mediaUrl} alt={post.title} loading="lazy" decoding="async" onClick={() => setLightbox(0)} className="w-full max-h-64 object-contain bg-background rounded-sm cursor-zoom-in" />
+                      <img src={mediaUrl} alt={post.title} loading="lazy" decoding="async" className="w-full max-h-64 object-contain bg-background rounded-sm" />
                     )
                   )}
                 </>
@@ -230,9 +206,6 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
                 <button onClick={() => setShowComments(!showComments)} className="flex items-center gap-1 text-muted-foreground hover:text-accent transition-colors">
                   <MessageCircle className="w-3.5 h-3.5" /> Comments
                 </button>
-                <button onClick={handleRepost} title="Repost" className="flex items-center gap-1 text-muted-foreground hover:text-term-green transition-colors">
-                  <Repeat2 className="w-3.5 h-3.5" /> Repost
-                </button>
                 <Link to={`/post/${post.id}`} className="text-muted-foreground ml-auto hover:text-primary">{new Date(post.createdAt).toLocaleString()}</Link>
               </div>
 
@@ -240,10 +213,6 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
                 <div className="pt-2 border-t border-border">
                   <CommentSection postId={post.id} onNeedSetup={onNeedSetup} profiles={profiles} />
                 </div>
-              )}
-
-              {lightbox !== null && viewable.length > 0 && (
-                <MediaLightbox items={viewable} index={Math.max(0, lightbox)} onClose={() => setLightbox(null)} />
               )}
             </div>
           )}

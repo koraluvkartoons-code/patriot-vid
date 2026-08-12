@@ -64,19 +64,13 @@ export async function fetchCategories(): Promise<string[]> {
   return [...set].sort((a, b) => a.localeCompare(b));
 }
 
-export async function fetchPosts(limit = 20, offset = 0, order: "newest" | "oldest" = "newest", category?: string, viewerId?: string | null): Promise<Post[]> {
+export async function fetchPosts(limit = 20, offset = 0, order: "newest" | "oldest" = "newest", category?: string): Promise<Post[]> {
   const ascending = order === "oldest";
   let query = supabase
     .from("posts")
     .select("id,user_id,title,description,media_type,media,category,likes,created_at,is_pinned");
 
   if (category) query = query.eq("category", category);
-
-  // Scheduled posts (future date) stay hidden until their time — except for their author
-  const now = new Date().toISOString();
-  query = viewerId
-    ? query.or(`created_at.lte.${now},user_id.eq.${viewerId}`)
-    : query.lte("created_at", now);
 
   const { data, error } = await query
     .order("is_pinned", { ascending: false })
@@ -147,7 +141,7 @@ export async function togglePinPost(id: string, pinned: boolean) {
   await supabase.from("posts").update({ is_pinned: pinned }).eq("id", id);
 }
 
-export async function createPost(post: { userId: string; title: string; description: string; mediaUrl?: string; mediaType?: string; media?: PostMedia[]; category?: string; createdAt?: string }) {
+export async function createPost(post: { userId: string; title: string; description: string; mediaUrl?: string; mediaType?: string; media?: PostMedia[]; category?: string }) {
   await supabase.from("posts").insert({
     user_id: post.userId,
     title: post.title,
@@ -157,19 +151,6 @@ export async function createPost(post: { userId: string; title: string; descript
     media: (post.media || []) as unknown as never,
     category: post.category?.trim() || null,
     likes: [],
-    ...(post.createdAt ? { created_at: post.createdAt } : {}),
-  });
-}
-
-export async function repostPost(post: { title: string; description: string; media?: PostMedia[]; mediaType?: string; category?: string; userId: string; originalUser: string }) {
-  await createPost({
-    userId: post.userId,
-    title: post.title,
-    description: `♻ Reposted from @${post.originalUser}${post.description ? `\n\n${post.description}` : ""}`,
-    media: post.media || [],
-    mediaUrl: post.media?.[0]?.url,
-    mediaType: post.media?.[0]?.type || post.mediaType,
-    category: post.category,
   });
 }
 

@@ -43,7 +43,7 @@ export default function Index() {
     const [postsResult, profilesResult, catsResult] = await Promise.allSettled([
       isSearch
         ? searchPosts(term, PAGE_SIZE, 0)
-        : fetchPosts(PAGE_SIZE, 0, order, activeCategory || undefined, userId),
+        : fetchPosts(PAGE_SIZE, 0, order, activeCategory || undefined),
       fetchProfiles(),
       fetchCategories(),
     ]);
@@ -62,7 +62,7 @@ export default function Index() {
     }
 
     setLoading(false);
-  }, [order, activeCategory, searchTerm, searching, userId]);
+  }, [order, activeCategory, searchTerm, searching]);
 
   const loadMore = useCallback(async () => {
     if (loadingMore || !hasMore) return;
@@ -72,21 +72,15 @@ export default function Index() {
       const isSearch = searching && term.length > 0;
       const more = isSearch
         ? await searchPosts(term, PAGE_SIZE, posts.length)
-        : await fetchPosts(PAGE_SIZE, posts.length, order, activeCategory || undefined, userId);
+        : await fetchPosts(PAGE_SIZE, posts.length, order, activeCategory || undefined);
       setPosts(prev => [...prev, ...more]);
       setHasMore(more.length === PAGE_SIZE);
     } finally {
       setLoadingMore(false);
     }
-  }, [posts.length, loadingMore, hasMore, order, activeCategory, searchTerm, searching, userId]);
+  }, [posts.length, loadingMore, hasMore, order, activeCategory, searchTerm, searching]);
 
   useEffect(() => { loadData(); }, [loadData]);
-
-  // pick up scheduled posts as soon as their publish time passes
-  useEffect(() => {
-    const t = setInterval(() => { if (!searching) loadData(); }, 60000);
-    return () => clearInterval(t);
-  }, [loadData, searching]);
 
   useEffect(() => {
     const t = setInterval(() => setClock(new Date()), 1000);
