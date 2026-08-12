@@ -35,12 +35,34 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
   const [mediaUrl, setMediaUrl] = useState(post.mediaUrl);
   const [mediaType, setMediaType] = useState(post.mediaType);
   const gallery = post.media && post.media.length > 1 ? post.media : (post.media?.length === 1 && !post.mediaUrl ? post.media : []);
+  const [lightbox, setLightbox] = useState<number | null>(null);
   const currentUser = getCurrentUserId();
   const isAdmin = currentUser === "PatriotAdmin";
   const isOwner = currentUser === post.userId;
   const liked = currentUser ? post.likes.includes(currentUser) : false;
   const hasMedia = gallery.length > 0 || !!mediaType;
   const isLong = post.description.length > 90 || hasMedia;
+  const isScheduled = new Date(post.createdAt).getTime() > Date.now();
+  const viewable = (gallery.length > 0
+    ? gallery
+    : (mediaUrl && mediaType !== "link" ? [{ url: mediaUrl, type: mediaType }] : [])
+  ).filter(m => m.type !== "link");
+
+  const handleRepost = async () => {
+    if (!currentUser) { onNeedSetup(); return; }
+    await repostPost({
+      userId: currentUser,
+      originalUser: post.userId,
+      title: post.title,
+      description: post.description,
+      media: gallery.length ? gallery : (mediaUrl ? [{ url: mediaUrl, type: (mediaType as "image" | "video" | "link") || "image" }] : []),
+      mediaType,
+      category: post.category,
+    });
+    toast({ title: "Reposted", description: "Shared to your feed." });
+    onRefresh();
+  };
+
 
   useEffect(() => {
     let cancelled = false;
