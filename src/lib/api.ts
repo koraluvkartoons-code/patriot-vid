@@ -64,13 +64,19 @@ export async function fetchCategories(): Promise<string[]> {
   return [...set].sort((a, b) => a.localeCompare(b));
 }
 
-export async function fetchPosts(limit = 20, offset = 0, order: "newest" | "oldest" = "newest", category?: string): Promise<Post[]> {
+export async function fetchPosts(limit = 20, offset = 0, order: "newest" | "oldest" = "newest", category?: string, viewerId?: string | null): Promise<Post[]> {
   const ascending = order === "oldest";
   let query = supabase
     .from("posts")
     .select("id,user_id,title,description,media_type,media,category,likes,created_at,is_pinned");
 
   if (category) query = query.eq("category", category);
+
+  // Scheduled posts (future date) stay hidden until their time — except for their author
+  const now = new Date().toISOString();
+  query = viewerId
+    ? query.or(`created_at.lte.${now},user_id.eq.${viewerId}`)
+    : query.lte("created_at", now);
 
   const { data, error } = await query
     .order("is_pinned", { ascending: false })
