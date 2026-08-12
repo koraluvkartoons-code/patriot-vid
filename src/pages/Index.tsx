@@ -43,7 +43,7 @@ export default function Index() {
     const [postsResult, profilesResult, catsResult] = await Promise.allSettled([
       isSearch
         ? searchPosts(term, PAGE_SIZE, 0)
-        : fetchPosts(PAGE_SIZE, 0, order, activeCategory || undefined),
+        : fetchPosts(PAGE_SIZE, 0, order, activeCategory || undefined, userId),
       fetchProfiles(),
       fetchCategories(),
     ]);
