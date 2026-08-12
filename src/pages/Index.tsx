@@ -82,6 +82,12 @@ export default function Index() {
 
   useEffect(() => { loadData(); }, [loadData]);
 
+  // pick up scheduled posts as soon as their publish time passes
+  useEffect(() => {
+    const t = setInterval(() => { if (!searching) loadData(); }, 60000);
+    return () => clearInterval(t);
+  }, [loadData, searching]);
+
   useEffect(() => {
     const t = setInterval(() => setClock(new Date()), 1000);
     return () => clearInterval(t);
