@@ -187,7 +187,7 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
                         <ExternalLink className="w-3 h-3" /> <span className="text-xs truncate">{m.url}</span>
                       </a>
                     ) : (
-                      <img key={i} src={m.url} alt={post.title} loading="lazy" decoding="async" className={`w-full bg-background rounded-sm ${gallery.length === 1 ? "max-h-64 object-contain" : "h-32 object-cover"}`} />
+                      <img key={i} src={m.url} alt={post.title} loading="lazy" decoding="async" onClick={() => setLightbox(viewable.findIndex(v => v.url === m.url))} className={`w-full bg-background rounded-sm cursor-zoom-in ${gallery.length === 1 ? "max-h-64 object-contain" : "h-32 object-cover"}`} />
                     )
                   ))}
                 </div>
@@ -202,7 +202,7 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
                         <ExternalLink className="w-3 h-3" /> <span className="text-xs truncate">{mediaUrl}</span>
                       </a>
                     ) : (
-                      <img src={mediaUrl} alt={post.title} loading="lazy" decoding="async" className="w-full max-h-64 object-contain bg-background rounded-sm" />
+                      <img src={mediaUrl} alt={post.title} loading="lazy" decoding="async" onClick={() => setLightbox(0)} className="w-full max-h-64 object-contain bg-background rounded-sm cursor-zoom-in" />
                     )
                   )}
                 </>
@@ -230,6 +230,9 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
                 <button onClick={() => setShowComments(!showComments)} className="flex items-center gap-1 text-muted-foreground hover:text-accent transition-colors">
                   <MessageCircle className="w-3.5 h-3.5" /> Comments
                 </button>
+                <button onClick={handleRepost} title="Repost" className="flex items-center gap-1 text-muted-foreground hover:text-term-green transition-colors">
+                  <Repeat2 className="w-3.5 h-3.5" /> Repost
+                </button>
                 <Link to={`/post/${post.id}`} className="text-muted-foreground ml-auto hover:text-primary">{new Date(post.createdAt).toLocaleString()}</Link>
               </div>
 
@@ -237,6 +240,10 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
                 <div className="pt-2 border-t border-border">
                   <CommentSection postId={post.id} onNeedSetup={onNeedSetup} profiles={profiles} />
                 </div>
+              )}
+
+              {lightbox !== null && viewable.length > 0 && (
+                <MediaLightbox items={viewable} index={Math.max(0, lightbox)} onClose={() => setLightbox(null)} />
               )}
             </div>
           )}
