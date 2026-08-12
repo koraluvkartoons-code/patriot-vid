@@ -147,7 +147,7 @@ export async function togglePinPost(id: string, pinned: boolean) {
   await supabase.from("posts").update({ is_pinned: pinned }).eq("id", id);
 }
 
-export async function createPost(post: { userId: string; title: string; description: string; mediaUrl?: string; mediaType?: string; media?: PostMedia[]; category?: string }) {
+export async function createPost(post: { userId: string; title: string; description: string; mediaUrl?: string; mediaType?: string; media?: PostMedia[]; category?: string; createdAt?: string }) {
   await supabase.from("posts").insert({
     user_id: post.userId,
     title: post.title,
@@ -157,6 +157,19 @@ export async function createPost(post: { userId: string; title: string; descript
     media: (post.media || []) as unknown as never,
     category: post.category?.trim() || null,
     likes: [],
+    ...(post.createdAt ? { created_at: post.createdAt } : {}),
+  });
+}
+
+export async function repostPost(post: { title: string; description: string; media?: PostMedia[]; mediaType?: string; category?: string; userId: string; originalUser: string }) {
+  await createPost({
+    userId: post.userId,
+    title: post.title,
+    description: `♻ Reposted from @${post.originalUser}${post.description ? `\n\n${post.description}` : ""}`,
+    media: post.media || [],
+    mediaUrl: post.media?.[0]?.url,
+    mediaType: post.media?.[0]?.type || post.mediaType,
+    category: post.category,
   });
 }
 
