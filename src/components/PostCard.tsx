@@ -140,6 +140,7 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
             <span className="text-muted-foreground">[{logTime(post.createdAt)}]</span>
             <span className={`${tagClass(post.category)} font-bold`}>[{tagLabel(post.category)}]</span>
             {post.isPinned && <span className="text-primary text-[11px]">[PINNED]</span>}
+            {isScheduled && <span className="text-accent text-[11px]">[SCHEDULED]</span>}
             <Link to={`/post/${post.id}`} className="text-foreground font-semibold hover:text-primary break-words">
               {post.title}
             </Link>
