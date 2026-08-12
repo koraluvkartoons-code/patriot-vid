@@ -62,7 +62,7 @@ export default function Index() {
     }
 
     setLoading(false);
-  }, [order, activeCategory, searchTerm, searching]);
+  }, [order, activeCategory, searchTerm, searching, userId]);
 
   const loadMore = useCallback(async () => {
     if (loadingMore || !hasMore) return;
@@ -72,13 +72,13 @@ export default function Index() {
       const isSearch = searching && term.length > 0;
       const more = isSearch
         ? await searchPosts(term, PAGE_SIZE, posts.length)
-        : await fetchPosts(PAGE_SIZE, posts.length, order, activeCategory || undefined);
+        : await fetchPosts(PAGE_SIZE, posts.length, order, activeCategory || undefined, userId);
       setPosts(prev => [...prev, ...more]);
       setHasMore(more.length === PAGE_SIZE);
     } finally {
       setLoadingMore(false);
     }
-  }, [posts.length, loadingMore, hasMore, order, activeCategory, searchTerm, searching]);
+  }, [posts.length, loadingMore, hasMore, order, activeCategory, searchTerm, searching, userId]);
 
   useEffect(() => { loadData(); }, [loadData]);
 
