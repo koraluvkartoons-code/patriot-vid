@@ -2,10 +2,10 @@ import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { getCurrentUserId, type UserProfile, type Comment as CommentType } from "@/lib/store";
-import { fetchComments, createComment } from "@/lib/api";
+import { fetchComments, createComment, deleteComment } from "@/lib/api";
 import UserBadge from "./UserBadge";
 import GiphyPicker from "./GiphyPicker";
-import { ImagePlus } from "lucide-react";
+import { ImagePlus, Trash2 } from "lucide-react";
 
 interface Props {
   postId: string;
@@ -48,13 +48,29 @@ export default function CommentSection({ postId, onNeedSetup, profiles }: Props)
     reader.readAsDataURL(f);
   };
 
+  const me = getCurrentUserId();
+  const canDelete = (c: CommentType) => !!me && (me === c.userId || me === "PatriotAdmin" || !!profiles[me]?.isModerator);
+
+  const removeComment = async (id: string) => {
+    if (!confirm("Delete this comment?")) return;
+    await deleteComment(id);
+    loadComments();
+  };
+
   return (
     <div className="space-y-3">
       {comments.map(c => (
         <div key={c.id} className="bg-muted/50 rounded-lg p-3">
           <div className="flex items-center justify-between mb-1">
             <UserBadge userId={c.userId} size="sm" profiles={profiles} />
-            <span className="text-[10px] text-muted-foreground">{new Date(c.createdAt).toLocaleString()}</span>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] text-muted-foreground">{new Date(c.createdAt).toLocaleString()}</span>
+              {canDelete(c) && (
+                <button onClick={() => removeComment(c.id)} title="Delete comment" aria-label="Delete comment">
+                  <Trash2 className="w-3.5 h-3.5 text-muted-foreground hover:text-destructive" />
+                </button>
+              )}
+            </div>
           </div>
           {c.text && <p className="text-foreground text-sm">{c.text}</p>}
           {c.mediaUrl && (

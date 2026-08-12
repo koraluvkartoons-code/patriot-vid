@@ -153,9 +153,11 @@ export default function LiveChat({ streamId, guestName, guestSessionId, isModera
                 <span className="text-[10px] text-zinc-500">{new Date(m.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
                 <div className="flex-1" />
                 <button onClick={() => setReplyTo(m)} className="opacity-0 group-hover:opacity-100 text-pink-300/60 hover:text-pink-300"><Reply className="w-3 h-3" /></button>
+                {!m.is_deleted && (isModerator || m.guest_session_id === guestSessionId) && (
+                  <button onClick={() => { if (confirm("Delete this chat message?")) modAction("delete", { message_id: m.id }); }} className="opacity-100 sm:opacity-0 group-hover:opacity-100 text-red-400" title="Delete"><Trash2 className="w-3 h-3" /></button>
+                )}
                 {isModerator && !m.is_deleted && (
                   <>
-                    <button onClick={() => modAction("delete", { message_id: m.id })} className="opacity-0 group-hover:opacity-100 text-red-400" title="Delete"><Trash2 className="w-3 h-3" /></button>
                     <button onClick={() => modAction("timeout", { guest_session_id: m.guest_session_id, stream_id: streamId, seconds: 300 })} className="opacity-0 group-hover:opacity-100 text-yellow-400" title="5min timeout"><Clock className="w-3 h-3" /></button>
                     <button onClick={() => modAction("ban_ip", { message_id: m.id, minutes: 60 })} className="opacity-0 group-hover:opacity-100 text-red-500" title="1h IP ban"><Ban className="w-3 h-3" /></button>
                   </>
