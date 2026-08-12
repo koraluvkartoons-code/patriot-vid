@@ -158,6 +158,13 @@ export default function CreatePost({ onNeedSetup, onCreated, categories = [] }: 
         <Input placeholder="Paste URL..." value={linkUrl} onChange={(e) => setLinkUrl(e.target.value)} className="bg-muted border-border text-foreground mb-2" />
       )}
 
+      {showSchedule && (
+        <div className="mb-2">
+          <label className="block text-xs text-muted-foreground mb-1">Publish date &amp; time (future = scheduled)</label>
+          <Input type="datetime-local" value={scheduleAt} onChange={(e) => setScheduleAt(e.target.value)} className="bg-muted border-border text-foreground" />
+        </div>
+      )}
+
       <div className="flex items-center gap-2 flex-wrap">
         <input ref={fileRef} type="file" multiple className="hidden" accept="image/*,video/*" onChange={handleFiles} />
         <Button size="sm" variant="ghost" onClick={() => { fileRef.current!.accept = "image/*"; fileRef.current?.click(); }} className="text-primary hover:text-accent" disabled={uploading}>
@@ -169,10 +176,14 @@ export default function CreatePost({ onNeedSetup, onCreated, categories = [] }: 
         <Button size="sm" variant="ghost" onClick={() => setShowLink(!showLink)} className="text-primary hover:text-accent" disabled={uploading}>
           <Link className="w-4 h-4 mr-1" /> Link
         </Button>
+        <Button size="sm" variant="ghost" onClick={() => setShowSchedule(!showSchedule)} className="text-primary hover:text-accent" disabled={uploading}>
+          <CalendarClock className="w-4 h-4 mr-1" /> Schedule
+        </Button>
         <div className="flex-1" />
         <Button onClick={submit} disabled={!title.trim() || uploading} className="gradient-btn text-foreground font-semibold">
-          {uploading ? <><Loader2 className="w-4 h-4 mr-1 animate-spin" /> {files.length ? `Uploading ${progress}/${files.length}` : "Posting..."}</> : "Post"}
+          {uploading ? <><Loader2 className="w-4 h-4 mr-1 animate-spin" /> {files.length ? `Uploading ${progress}/${files.length}` : "Posting..."}</> : (scheduleAt && new Date(scheduleAt) > new Date() ? "Schedule" : "Post")}
         </Button>
+      </div>
       </div>
     </div>
   );
