@@ -40,18 +40,22 @@ export default function Index() {
     const term = searchTerm.trim();
     const isSearch = searching && term.length > 0;
 
-    const [postsResult, profilesResult, catsResult] = await Promise.allSettled([
+    const [postsResult, profilesResult, catsResult, repostsResult] = await Promise.allSettled([
       isSearch
         ? searchPosts(term, PAGE_SIZE, 0)
         : fetchPosts(PAGE_SIZE, 0, order, activeCategory || undefined),
       fetchProfiles(),
       fetchCategories(),
+      isSearch || activeCategory ? Promise.resolve([] as Repost[]) : fetchFeedReposts(30),
     ]);
 
     if (postsResult.status === "fulfilled") {
       setPosts(postsResult.value);
       setHasMore(postsResult.value.length === PAGE_SIZE);
     }
+
+    setReposts(repostsResult.status === "fulfilled" ? repostsResult.value : []);
+
 
     if (profilesResult.status === "fulfilled") {
       setProfiles(profilesResult.value);
