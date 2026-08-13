@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { type Post, type UserProfile, getCurrentUserId } from "@/lib/store";
-import { fetchPostMedia, updatePost, togglePostLike, togglePinPost, deletePost } from "@/lib/api";
+import { fetchPostMedia, updatePost, togglePostLike, togglePinPost, deletePost, addRepost, removeRepost, fetchRepostsFor } from "@/lib/api";
 import { tagClass, tagLabel, logTime } from "@/lib/tags";
 import UserBadge from "./UserBadge";
 import CommentSection from "./CommentSection";
-import { Heart, MessageCircle, Edit, ExternalLink, Pin, Trash2, Link2, ChevronRight, ChevronDown } from "lucide-react";
+import Lightbox from "./Lightbox";
+import { Heart, MessageCircle, Edit, ExternalLink, Pin, Trash2, Link2, ChevronRight, ChevronDown, Repeat2, Quote } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
 
 interface Props {
@@ -16,10 +18,12 @@ interface Props {
   onNeedSetup: () => void;
   onRefresh: () => void;
   profiles: Record<string, UserProfile>;
+  compact?: boolean;
+  hideActions?: boolean;
 }
 
-export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Props) {
-  const [expanded, setExpanded] = useState(false);
+export default function PostCard({ post, onNeedSetup, onRefresh, profiles, compact = false, hideActions = false }: Props) {
+  const [expanded, setExpanded] = useState(compact);
   const [showComments, setShowComments] = useState(false);
   const [editing, setEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(post.title);
@@ -33,6 +37,10 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
   const [editCategory, setEditCategory] = useState(post.category || "");
   const [mediaUrl, setMediaUrl] = useState(post.mediaUrl);
   const [mediaType, setMediaType] = useState(post.mediaType);
+  const [lightbox, setLightbox] = useState<number | null>(null);
+  const [reposters, setReposters] = useState<string[]>([]);
+  const [quoteOpen, setQuoteOpen] = useState(false);
+  const [quoteText, setQuoteText] = useState("");
   const gallery = post.media && post.media.length > 1 ? post.media : (post.media?.length === 1 && !post.mediaUrl ? post.media : []);
   const currentUser = getCurrentUserId();
   const isAdmin = currentUser === "PatriotAdmin";
@@ -40,6 +48,11 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
   const liked = currentUser ? post.likes.includes(currentUser) : false;
   const hasMedia = gallery.length > 0 || !!mediaType;
   const isLong = post.description.length > 90 || hasMedia;
+  const reposted = currentUser ? reposters.includes(currentUser) : false;
+
+  const photoUrls = gallery.length > 0
+    ? gallery.filter(m => m.type === "image").map(m => m.url)
+    : (mediaUrl && mediaType === "image" ? [mediaUrl] : []);
 
   useEffect(() => {
     let cancelled = false;
@@ -68,10 +81,42 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
     };
   }, [post.id, post.mediaType, post.mediaUrl]);
 
+  const loadReposts = async () => {
+    try {
+      const map = await fetchRepostsFor([post.id]);
+      setReposters(map[post.id] || []);
+    } catch { /* ignore */ }
+  };
+
+  useEffect(() => { if (!hideActions) loadReposts(); /* eslint-disable-next-line */ }, [post.id, hideActions]);
+
   const handleLike = async () => {
     if (!currentUser) { onNeedSetup(); return; }
     await togglePostLike(post.id, currentUser);
     onRefresh();
+  };
+
+  const handleRepost = async () => {
+    if (!currentUser) { onNeedSetup(); return; }
+    if (reposted) {
+      await removeRepost(post.id, currentUser);
+      toast({ title: "Repost removed" });
+    } else {
+      await addRepost(post.id, currentUser, "");
+      toast({ title: "Reposted" });
+    }
+    await loadReposts();
+    onRefresh();
+  };
+
+  const submitQuote = async () => {
+    if (!currentUser) { onNeedSetup(); return; }
+    await addRepost(post.id, currentUser, quoteText.trim());
+    setQuoteOpen(false);
+    setQuoteText("");
+    await loadReposts();
+    onRefresh();
+    toast({ title: "Quote posted" });
   };
 
   const handlePin = async () => {
@@ -105,13 +150,15 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
   return (
     <article className={`gradient-card border-l-2 border-y border-r border-border/60 rounded-sm text-[13px] leading-relaxed transition-colors hover:bg-muted/30 ${post.isPinned ? "border-l-primary" : "border-l-border"}`}>
       <div className="flex items-start gap-1.5 px-2 py-1.5">
-        <button
-          onClick={() => setExpanded(e => !e)}
-          aria-label={expanded ? "Collapse entry" : "Expand entry"}
-          className="mt-0.5 text-muted-foreground hover:text-primary shrink-0"
-        >
-          {expanded ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
-        </button>
+        {!compact && (
+          <button
+            onClick={() => setExpanded(e => !e)}
+            aria-label={expanded ? "Collapse entry" : "Expand entry"}
+            className="mt-0.5 text-muted-foreground hover:text-primary shrink-0"
+          >
+            {expanded ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+          </button>
+        )}
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-baseline gap-x-1.5">
             <span className="text-muted-foreground">[{logTime(post.createdAt)}]</span>
@@ -137,20 +184,22 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
             <div className="mt-1.5 space-y-2">
               <div className="flex items-center justify-between gap-2">
                 <UserBadge userId={post.userId} profiles={profiles} />
-                <div className="flex items-center gap-1">
-                  <button onClick={copyLink} title="Copy link to post">
-                    <Link2 className="w-3.5 h-3.5 text-muted-foreground hover:text-accent" />
-                  </button>
-                  {(isOwner || isAdmin) && (
-                    <>
-                      <button onClick={handlePin} title={post.isPinned ? "Unpin" : "Pin"}>
-                        <Pin className={`w-3.5 h-3.5 ${post.isPinned ? "text-primary fill-primary" : "text-muted-foreground hover:text-primary"}`} />
-                      </button>
-                      <button onClick={() => setEditing(!editing)}><Edit className="w-3.5 h-3.5 text-muted-foreground hover:text-accent" /></button>
-                      <button onClick={handleDelete} title="Delete"><Trash2 className="w-3.5 h-3.5 text-muted-foreground hover:text-destructive" /></button>
-                    </>
-                  )}
-                </div>
+                {!hideActions && (
+                  <div className="flex items-center gap-1">
+                    <button onClick={copyLink} title="Copy link to post">
+                      <Link2 className="w-3.5 h-3.5 text-muted-foreground hover:text-accent" />
+                    </button>
+                    {(isOwner || isAdmin) && (
+                      <>
+                        <button onClick={handlePin} title={post.isPinned ? "Unpin" : "Pin"}>
+                          <Pin className={`w-3.5 h-3.5 ${post.isPinned ? "text-primary fill-primary" : "text-muted-foreground hover:text-primary"}`} />
+                        </button>
+                        <button onClick={() => setEditing(!editing)}><Edit className="w-3.5 h-3.5 text-muted-foreground hover:text-accent" /></button>
+                        <button onClick={handleDelete} title="Delete"><Trash2 className="w-3.5 h-3.5 text-muted-foreground hover:text-destructive" /></button>
+                      </>
+                    )}
+                  </div>
+                )}
               </div>
 
               {gallery.length > 0 ? (
@@ -163,7 +212,15 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
                         <ExternalLink className="w-3 h-3" /> <span className="text-xs truncate">{m.url}</span>
                       </a>
                     ) : (
-                      <img key={i} src={m.url} alt={post.title} loading="lazy" decoding="async" className={`w-full bg-background rounded-sm ${gallery.length === 1 ? "max-h-64 object-contain" : "h-32 object-cover"}`} />
+                      <img
+                        key={i}
+                        src={m.url}
+                        alt={post.title}
+                        loading="lazy"
+                        decoding="async"
+                        onClick={() => setLightbox(photoUrls.indexOf(m.url))}
+                        className={`w-full bg-background rounded-sm cursor-zoom-in ${gallery.length === 1 ? "max-h-64 object-contain" : "h-32 object-cover"}`}
+                      />
                     )
                   ))}
                 </div>
@@ -178,7 +235,7 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
                         <ExternalLink className="w-3 h-3" /> <span className="text-xs truncate">{mediaUrl}</span>
                       </a>
                     ) : (
-                      <img src={mediaUrl} alt={post.title} loading="lazy" decoding="async" className="w-full max-h-64 object-contain bg-background rounded-sm" />
+                      <img src={mediaUrl} alt={post.title} loading="lazy" decoding="async" onClick={() => setLightbox(0)} className="w-full max-h-64 object-contain bg-background rounded-sm cursor-zoom-in" />
                     )
                   )}
                 </>
@@ -199,15 +256,27 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
                 </div>
               )}
 
-              <div className="flex items-center gap-3 text-[11px]">
-                <button onClick={handleLike} className={`flex items-center gap-1 transition-colors ${liked ? "text-primary" : "text-muted-foreground hover:text-primary"}`}>
-                  <Heart className={`w-3.5 h-3.5 ${liked ? "fill-primary" : ""}`} /> {post.likes.length}
-                </button>
-                <button onClick={() => setShowComments(!showComments)} className="flex items-center gap-1 text-muted-foreground hover:text-accent transition-colors">
-                  <MessageCircle className="w-3.5 h-3.5" /> Comments
-                </button>
-                <Link to={`/post/${post.id}`} className="text-muted-foreground ml-auto hover:text-primary">{new Date(post.createdAt).toLocaleString()}</Link>
-              </div>
+              {!hideActions && (
+                <div className="flex items-center gap-3 text-[11px]">
+                  <button onClick={handleLike} className={`flex items-center gap-1 transition-colors ${liked ? "text-primary" : "text-muted-foreground hover:text-primary"}`}>
+                    <Heart className={`w-3.5 h-3.5 ${liked ? "fill-primary" : ""}`} /> {post.likes.length}
+                  </button>
+                  <button
+                    onClick={handleRepost}
+                    title={reposted ? "Undo repost" : "Repost"}
+                    className={`flex items-center gap-1 transition-colors ${reposted ? "text-term-green" : "text-muted-foreground hover:text-term-green"}`}
+                  >
+                    <Repeat2 className="w-3.5 h-3.5" /> {reposted ? "Unrepost" : "Repost"} {reposters.length > 0 && `(${reposters.length})`}
+                  </button>
+                  <button onClick={() => { if (!currentUser) { onNeedSetup(); return; } setQuoteOpen(true); }} className="flex items-center gap-1 text-muted-foreground hover:text-accent transition-colors">
+                    <Quote className="w-3.5 h-3.5" /> Quote
+                  </button>
+                  <button onClick={() => setShowComments(!showComments)} className="flex items-center gap-1 text-muted-foreground hover:text-accent transition-colors">
+                    <MessageCircle className="w-3.5 h-3.5" /> Comments
+                  </button>
+                  <Link to={`/post/${post.id}`} className="text-muted-foreground ml-auto hover:text-primary">{new Date(post.createdAt).toLocaleString()}</Link>
+                </div>
+              )}
 
               {showComments && (
                 <div className="pt-2 border-t border-border">
@@ -218,6 +287,30 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles }: Pro
           )}
         </div>
       </div>
+
+      {lightbox !== null && photoUrls.length > 0 && (
+        <Lightbox images={photoUrls} index={Math.max(0, lightbox)} onClose={() => setLightbox(null)} />
+      )}
+
+      <Dialog open={quoteOpen} onOpenChange={setQuoteOpen}>
+        <DialogContent className="bg-card border-border">
+          <DialogHeader><DialogTitle className="text-primary text-sm">// QUOTE_POST</DialogTitle></DialogHeader>
+          <Textarea
+            value={quoteText}
+            onChange={e => setQuoteText(e.target.value)}
+            placeholder="Add your comment..."
+            maxLength={1000}
+            className="bg-muted border-border text-foreground min-h-[80px]"
+          />
+          <div className="border border-border rounded-sm p-2 text-[11px] text-muted-foreground">
+            <span className="text-accent">@{post.userId}</span> — {post.title}
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button size="sm" variant="ghost" onClick={() => setQuoteOpen(false)} className="text-muted-foreground">Cancel</Button>
+            <Button size="sm" onClick={submitQuote} disabled={!quoteText.trim()} className="gradient-btn">Post quote</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </article>
   );
 }

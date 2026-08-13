@@ -1,12 +1,15 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { getCurrentUserId, type Post, type UserProfile } from "@/lib/store";
-import { fetchPosts, fetchProfiles, fetchCategories, searchPosts } from "@/lib/api";
+import { getCurrentUserId, type Post, type UserProfile, type Repost } from "@/lib/store";
+import { fetchPosts, fetchProfiles, fetchCategories, searchPosts, fetchFeedReposts } from "@/lib/api";
 import { supabase } from "@/integrations/supabase/client";
 import UserSetupDialog from "@/components/UserSetupDialog";
 import CreatePost from "@/components/CreatePost";
 import PostCard from "@/components/PostCard";
+import RepostCard from "@/components/RepostCard";
+import ScheduledPosts from "@/components/ScheduledPosts";
 import AdminPanel from "@/components/AdminPanel";
+
 import { tagClass, tagLabel } from "@/lib/tags";
 import { Shield, User, Radio, Film, Archive, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,6 +20,8 @@ export default function Index() {
   const [showSetup, setShowSetup] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
   const [posts, setPosts] = useState<Post[]>([]);
+  const [reposts, setReposts] = useState<Repost[]>([]);
+
   const [profiles, setProfiles] = useState<Record<string, UserProfile>>({});
   const [loading, setLoading] = useState(true);
   const [liveStreams, setLiveStreams] = useState<any[]>([]);
@@ -40,18 +45,22 @@ export default function Index() {
     const term = searchTerm.trim();
     const isSearch = searching && term.length > 0;
 
-    const [postsResult, profilesResult, catsResult] = await Promise.allSettled([
+    const [postsResult, profilesResult, catsResult, repostsResult] = await Promise.allSettled([
       isSearch
         ? searchPosts(term, PAGE_SIZE, 0)
         : fetchPosts(PAGE_SIZE, 0, order, activeCategory || undefined),
       fetchProfiles(),
       fetchCategories(),
+      isSearch || activeCategory ? Promise.resolve([] as Repost[]) : fetchFeedReposts(30),
     ]);
 
     if (postsResult.status === "fulfilled") {
       setPosts(postsResult.value);
       setHasMore(postsResult.value.length === PAGE_SIZE);
     }
+
+    setReposts(repostsResult.status === "fulfilled" ? repostsResult.value : []);
+
 
     if (profilesResult.status === "fulfilled") {
       setProfiles(profilesResult.value);
@@ -242,17 +251,28 @@ export default function Index() {
 
           <CreatePost onNeedSetup={needSetup} onCreated={loadData} categories={categories} />
 
+          {userId && <ScheduledPosts userId={userId} onChanged={loadData} />}
+
           {loading && <p className="text-center py-10 text-muted-foreground text-sm">booting feed<span className="animate-caret">_</span></p>}
 
-          {!loading && posts.length === 0 && (
+          {!loading && posts.length === 0 && reposts.length === 0 && (
             <p className="text-center py-10 text-muted-foreground text-sm">{searching ? "no matching logs." : "log empty. awaiting first entry."}</p>
           )}
 
           <div className="space-y-1">
-            {posts.map(post => (
-              <PostCard key={post.id} post={post} onNeedSetup={needSetup} onRefresh={loadData} profiles={profiles} />
-            ))}
+            {[
+              ...posts.map(p => ({ kind: "post" as const, at: p.createdAt, key: `p-${p.id}`, post: p })),
+              ...reposts.map(r => ({ kind: "repost" as const, at: r.createdAt, key: `r-${r.id}`, repost: r })),
+            ]
+              .sort((a, b) => order === "oldest"
+                ? new Date(a.at).getTime() - new Date(b.at).getTime()
+                : new Date(b.at).getTime() - new Date(a.at).getTime())
+              .map(item => item.kind === "post"
+                ? <PostCard key={item.key} post={item.post} onNeedSetup={needSetup} onRefresh={loadData} profiles={profiles} />
+                : <RepostCard key={item.key} repost={item.repost} onNeedSetup={needSetup} onRefresh={loadData} profiles={profiles} />
+              )}
           </div>
+
 
           {!loading && hasMore && (
             <div className="text-center py-2">

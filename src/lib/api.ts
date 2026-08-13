@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import type { UserProfile, Post, Comment, PostMedia } from "@/lib/store";
+import type { UserProfile, Post, Comment, PostMedia, Repost } from "@/lib/store";
 
 // ===== MEDIA UPLOAD =====
 export async function uploadMedia(file: File): Promise<string> {
@@ -56,6 +56,37 @@ function parseMedia(raw: unknown): PostMedia[] {
   return (raw as PostMedia[]).filter(m => m && typeof m.url === "string");
 }
 
+const POST_COLS = "id,user_id,title,description,media_type,media,category,likes,created_at,is_pinned,scheduled_at";
+
+type RawPost = {
+  id: string; user_id: string; title: string; description: string | null;
+  media_type: string | null; media: unknown; category: string | null;
+  likes: string[] | null; created_at: string; is_pinned: boolean | null;
+  scheduled_at?: string | null; media_url?: string | null;
+};
+
+export function mapPost(p: RawPost): Post {
+  return {
+    id: p.id,
+    userId: p.user_id,
+    title: p.title,
+    description: p.description || "",
+    mediaUrl: p.media_url || undefined,
+    mediaType: p.media_type || undefined,
+    media: parseMedia(p.media),
+    category: p.category || undefined,
+    likes: p.likes || [],
+    createdAt: p.created_at,
+    isPinned: p.is_pinned || false,
+    scheduledAt: p.scheduled_at || undefined,
+  };
+}
+
+// only posts whose scheduled time has arrived (or that were never scheduled)
+function publishedFilter(q: any) {
+  return q.or(`scheduled_at.is.null,scheduled_at.lte.${new Date().toISOString()}`);
+}
+
 export async function fetchCategories(): Promise<string[]> {
   const { data, error } = await supabase.from("posts").select("category").not("category", "is", null);
   if (error) throw error;
@@ -66,11 +97,10 @@ export async function fetchCategories(): Promise<string[]> {
 
 export async function fetchPosts(limit = 20, offset = 0, order: "newest" | "oldest" = "newest", category?: string): Promise<Post[]> {
   const ascending = order === "oldest";
-  let query = supabase
-    .from("posts")
-    .select("id,user_id,title,description,media_type,media,category,likes,created_at,is_pinned");
+  let query: any = supabase.from("posts").select(POST_COLS);
 
   if (category) query = query.eq("category", category);
+  query = publishedFilter(query);
 
   const { data, error } = await query
     .order("is_pinned", { ascending: false })
@@ -79,47 +109,34 @@ export async function fetchPosts(limit = 20, offset = 0, order: "newest" | "olde
 
   if (error) throw error;
 
-  return (data || []).map(p => ({
-    id: p.id,
-    userId: p.user_id,
-    title: p.title,
-    description: p.description || "",
-    mediaUrl: undefined,
-    mediaType: p.media_type || undefined,
-    media: parseMedia(p.media),
-    category: p.category || undefined,
-    likes: p.likes || [],
-    createdAt: p.created_at,
-    isPinned: p.is_pinned || false,
-  }));
+  return (data || []).map(mapPost);
 }
 
 export async function searchPosts(term: string, limit = 20, offset = 0): Promise<Post[]> {
   const q = term.trim();
   if (!q) return [];
-  const { data, error } = await supabase
-    .from("posts")
-    .select("id,user_id,title,description,media_type,media,category,likes,created_at,is_pinned")
-    .or(`title.ilike.%${q}%,description.ilike.%${q}%`)
+  const { data, error } = await publishedFilter(
+    supabase.from("posts").select(POST_COLS).or(`title.ilike.%${q}%,description.ilike.%${q}%`)
+  )
     .order("is_pinned", { ascending: false })
     .order("created_at", { ascending: false })
     .range(offset, offset + limit - 1);
 
   if (error) throw error;
 
-  return (data || []).map(p => ({
-    id: p.id,
-    userId: p.user_id,
-    title: p.title,
-    description: p.description || "",
-    mediaUrl: undefined,
-    mediaType: p.media_type || undefined,
-    media: parseMedia(p.media),
-    category: p.category || undefined,
-    likes: p.likes || [],
-    createdAt: p.created_at,
-    isPinned: p.is_pinned || false,
-  }));
+  return (data || []).map(mapPost);
+}
+
+// ===== SCHEDULED POSTS =====
+export async function fetchScheduledPosts(userId: string): Promise<Post[]> {
+  const { data, error } = await supabase
+    .from("posts")
+    .select(POST_COLS)
+    .eq("user_id", userId)
+    .gt("scheduled_at", new Date().toISOString())
+    .order("scheduled_at", { ascending: true });
+  if (error) throw error;
+  return (data || []).map(mapPost);
 }
 
 export async function fetchPostMedia(id: string) {
@@ -141,7 +158,7 @@ export async function togglePinPost(id: string, pinned: boolean) {
   await supabase.from("posts").update({ is_pinned: pinned }).eq("id", id);
 }
 
-export async function createPost(post: { userId: string; title: string; description: string; mediaUrl?: string; mediaType?: string; media?: PostMedia[]; category?: string }) {
+export async function createPost(post: { userId: string; title: string; description: string; mediaUrl?: string; mediaType?: string; media?: PostMedia[]; category?: string; scheduledAt?: string }) {
   await supabase.from("posts").insert({
     user_id: post.userId,
     title: post.title,
@@ -150,16 +167,18 @@ export async function createPost(post: { userId: string; title: string; descript
     media_type: post.mediaType || null,
     media: (post.media || []) as unknown as never,
     category: post.category?.trim() || null,
+    scheduled_at: post.scheduledAt || null,
     likes: [],
   });
 }
 
-export async function updatePost(id: string, title: string, description: string, createdAt?: string, category?: string | null) {
-  const patch: { title: string; description: string; updated_at: string; created_at?: string; category?: string | null } = {
+export async function updatePost(id: string, title: string, description: string, createdAt?: string, category?: string | null, scheduledAt?: string | null) {
+  const patch: any = {
     title, description, updated_at: new Date().toISOString(),
   };
   if (createdAt) patch.created_at = createdAt;
   if (category !== undefined) patch.category = category && category.trim() ? category.trim() : null;
+  if (scheduledAt !== undefined) patch.scheduled_at = scheduledAt;
   await supabase.from("posts").update(patch).eq("id", id);
 }
 
@@ -175,6 +194,48 @@ export async function togglePostLike(postId: string, userId: string) {
   if (likes.includes(userId)) likes = likes.filter(l => l !== userId);
   else likes.push(userId);
   await supabase.from("posts").update({ likes }).eq("id", postId);
+}
+
+// ===== REPOSTS =====
+export async function fetchFeedReposts(limit = 30): Promise<Repost[]> {
+  const { data, error } = await supabase
+    .from("reposts")
+    .select(`id,post_id,user_id,quote_text,created_at, posts(${POST_COLS})`)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  if (error) throw error;
+  const now = Date.now();
+  return (data || [])
+    .map((r: any) => ({
+      id: r.id,
+      postId: r.post_id,
+      userId: r.user_id,
+      quoteText: r.quote_text || "",
+      createdAt: r.created_at,
+      post: r.posts ? mapPost(r.posts) : undefined,
+    }))
+    .filter(r => r.post && (!r.post.scheduledAt || new Date(r.post.scheduledAt).getTime() <= now));
+}
+
+export async function fetchRepostsFor(postIds: string[]): Promise<Record<string, string[]>> {
+  if (!postIds.length) return {};
+  const { data, error } = await supabase.from("reposts").select("post_id,user_id").in("post_id", postIds);
+  if (error) throw error;
+  const map: Record<string, string[]> = {};
+  for (const r of data || []) (map[r.post_id] ||= []).push(r.user_id);
+  return map;
+}
+
+export async function addRepost(postId: string, userId: string, quoteText = "") {
+  const { error } = await supabase.from("reposts").upsert(
+    { post_id: postId, user_id: userId, quote_text: quoteText },
+    { onConflict: "post_id,user_id" }
+  );
+  if (error) throw error;
+}
+
+export async function removeRepost(postId: string, userId: string) {
+  await supabase.from("reposts").delete().eq("post_id", postId).eq("user_id", userId);
 }
 
 // ===== COMMENTS =====

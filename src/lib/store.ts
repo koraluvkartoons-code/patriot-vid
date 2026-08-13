@@ -390,6 +390,16 @@ export interface Post {
   likes: string[];
   createdAt: string;
   isPinned?: boolean;
+  scheduledAt?: string;
+}
+
+export interface Repost {
+  id: string;
+  postId: string;
+  userId: string;
+  quoteText: string;
+  createdAt: string;
+  post?: Post;
 }
 
 export interface Comment {
