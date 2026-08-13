@@ -1,5 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
-import type { UserProfile, Post, Comment, PostMedia } from "@/lib/store";
+import type { UserProfile, Post, Comment, PostMedia, Repost } from "@/lib/store";
 
 // ===== MEDIA UPLOAD =====
 export async function uploadMedia(file: File): Promise<string> {
@@ -173,7 +173,7 @@ export async function createPost(post: { userId: string; title: string; descript
 }
 
 export async function updatePost(id: string, title: string, description: string, createdAt?: string, category?: string | null, scheduledAt?: string | null) {
-  const patch: Record<string, unknown> = {
+  const patch: any = {
     title, description, updated_at: new Date().toISOString(),
   };
   if (createdAt) patch.created_at = createdAt;
