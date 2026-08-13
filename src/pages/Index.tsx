@@ -1,12 +1,15 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { getCurrentUserId, type Post, type UserProfile } from "@/lib/store";
-import { fetchPosts, fetchProfiles, fetchCategories, searchPosts } from "@/lib/api";
+import { getCurrentUserId, type Post, type UserProfile, type Repost } from "@/lib/store";
+import { fetchPosts, fetchProfiles, fetchCategories, searchPosts, fetchFeedReposts } from "@/lib/api";
 import { supabase } from "@/integrations/supabase/client";
 import UserSetupDialog from "@/components/UserSetupDialog";
 import CreatePost from "@/components/CreatePost";
 import PostCard from "@/components/PostCard";
+import RepostCard from "@/components/RepostCard";
+import ScheduledPosts from "@/components/ScheduledPosts";
 import AdminPanel from "@/components/AdminPanel";
+
 import { tagClass, tagLabel } from "@/lib/tags";
 import { Shield, User, Radio, Film, Archive, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
