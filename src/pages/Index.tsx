@@ -20,6 +20,8 @@ export default function Index() {
   const [showSetup, setShowSetup] = useState(false);
   const [showAdmin, setShowAdmin] = useState(false);
   const [posts, setPosts] = useState<Post[]>([]);
+  const [reposts, setReposts] = useState<Repost[]>([]);
+
   const [profiles, setProfiles] = useState<Record<string, UserProfile>>({});
   const [loading, setLoading] = useState(true);
   const [liveStreams, setLiveStreams] = useState<any[]>([]);
