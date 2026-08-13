@@ -2,10 +2,11 @@ import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { getCurrentUserId, type UserProfile, type Comment as CommentType } from "@/lib/store";
-import { fetchComments, createComment } from "@/lib/api";
+import { fetchComments, createComment, deleteComment } from "@/lib/api";
 import UserBadge from "./UserBadge";
 import GiphyPicker from "./GiphyPicker";
-import { ImagePlus } from "lucide-react";
+import { ImagePlus, Trash2 } from "lucide-react";
+
 
 interface Props {
   postId: string;
