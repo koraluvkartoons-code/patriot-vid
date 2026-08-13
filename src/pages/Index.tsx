@@ -251,17 +251,28 @@ export default function Index() {
 
           <CreatePost onNeedSetup={needSetup} onCreated={loadData} categories={categories} />
 
+          {userId && <ScheduledPosts userId={userId} onChanged={loadData} />}
+
           {loading && <p className="text-center py-10 text-muted-foreground text-sm">booting feed<span className="animate-caret">_</span></p>}
 
-          {!loading && posts.length === 0 && (
+          {!loading && posts.length === 0 && reposts.length === 0 && (
             <p className="text-center py-10 text-muted-foreground text-sm">{searching ? "no matching logs." : "log empty. awaiting first entry."}</p>
           )}
 
           <div className="space-y-1">
-            {posts.map(post => (
-              <PostCard key={post.id} post={post} onNeedSetup={needSetup} onRefresh={loadData} profiles={profiles} />
-            ))}
+            {[
+              ...posts.map(p => ({ kind: "post" as const, at: p.createdAt, key: `p-${p.id}`, post: p })),
+              ...reposts.map(r => ({ kind: "repost" as const, at: r.createdAt, key: `r-${r.id}`, repost: r })),
+            ]
+              .sort((a, b) => order === "oldest"
+                ? new Date(a.at).getTime() - new Date(b.at).getTime()
+                : new Date(b.at).getTime() - new Date(a.at).getTime())
+              .map(item => item.kind === "post"
+                ? <PostCard key={item.key} post={item.post} onNeedSetup={needSetup} onRefresh={loadData} profiles={profiles} />
+                : <RepostCard key={item.key} repost={item.repost} onNeedSetup={needSetup} onRefresh={loadData} profiles={profiles} />
+              )}
           </div>
+
 
           {!loading && hasMore && (
             <div className="text-center py-2">
