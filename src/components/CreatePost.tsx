@@ -4,8 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { getCurrentUserId, type PostMedia } from "@/lib/store";
 import { createPost, uploadMedia } from "@/lib/api";
-import ImageCropper from "./ImageCropper";
-import { ImagePlus, Video, Link, X, Loader2, Crop, CalendarClock } from "lucide-react";
+import { ImagePlus, Video, Link, X, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 interface Props {
@@ -28,9 +27,6 @@ export default function CreatePost({ onNeedSetup, onCreated, categories = [] }: 
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [showLink, setShowLink] = useState(false);
-  const [showSchedule, setShowSchedule] = useState(false);
-  const [scheduleAt, setScheduleAt] = useState("");
-  const [cropIndex, setCropIndex] = useState<number | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const photoCount = files.filter(f => f.type === "image").length;
@@ -77,12 +73,6 @@ export default function CreatePost({ onNeedSetup, onCreated, categories = [] }: 
     if (!uid) { onNeedSetup(); return; }
     if (!title.trim()) return;
 
-    const scheduledIso = showSchedule && scheduleAt ? new Date(scheduleAt).toISOString() : undefined;
-    if (scheduledIso && new Date(scheduledIso).getTime() <= Date.now()) {
-      toast({ title: "Pick a future time", description: "Scheduled posts must be set in the future." });
-      return;
-    }
-
     setUploading(true);
     setProgress(0);
     try {
@@ -106,14 +96,10 @@ export default function CreatePost({ onNeedSetup, onCreated, categories = [] }: 
         mediaType: media[0]?.type,
         media,
         category: category.trim() || undefined,
-        scheduledAt: scheduledIso,
       });
       clearAll();
       setTitle("");
       setDesc("");
-      setScheduleAt("");
-      setShowSchedule(false);
-      if (scheduledIso) toast({ title: "Post scheduled", description: new Date(scheduledIso).toLocaleString() });
       onCreated();
     } finally {
       setUploading(false);
@@ -147,14 +133,9 @@ export default function CreatePost({ onNeedSetup, onCreated, categories = [] }: 
               ) : (
                 <img src={f.preview} alt="" loading="lazy" className="h-24 w-full rounded-lg object-cover bg-muted" />
               )}
-              <button onClick={() => removeAt(i)} className="absolute top-1 right-1 bg-background/80 rounded-full p-1" aria-label="Remove">
+              <button onClick={() => removeAt(i)} className="absolute top-1 right-1 bg-background/80 rounded-full p-1">
                 <X className="w-3 h-3 text-foreground" />
               </button>
-              {f.type === "image" && (
-                <button onClick={() => setCropIndex(i)} className="absolute bottom-1 right-1 bg-background/80 rounded-full p-1" title="Crop photo" aria-label="Crop photo">
-                  <Crop className="w-3 h-3 text-primary" />
-                </button>
-              )}
             </div>
           ))}
         </div>
@@ -165,13 +146,6 @@ export default function CreatePost({ onNeedSetup, onCreated, categories = [] }: 
 
       {showLink && (
         <Input placeholder="Paste URL..." value={linkUrl} onChange={(e) => setLinkUrl(e.target.value)} className="bg-muted border-border text-foreground mb-2" />
-      )}
-
-      {showSchedule && (
-        <div className="mb-2">
-          <label className="block text-xs text-muted-foreground mb-1">Publish at</label>
-          <Input type="datetime-local" value={scheduleAt} onChange={e => setScheduleAt(e.target.value)} className="bg-muted border-border text-foreground" />
-        </div>
       )}
 
       <div className="flex items-center gap-2 flex-wrap">
@@ -185,30 +159,11 @@ export default function CreatePost({ onNeedSetup, onCreated, categories = [] }: 
         <Button size="sm" variant="ghost" onClick={() => setShowLink(!showLink)} className="text-primary hover:text-accent" disabled={uploading}>
           <Link className="w-4 h-4 mr-1" /> Link
         </Button>
-        <Button size="sm" variant="ghost" onClick={() => setShowSchedule(s => !s)} className={showSchedule ? "text-accent" : "text-primary hover:text-accent"} disabled={uploading}>
-          <CalendarClock className="w-4 h-4 mr-1" /> Schedule
-        </Button>
         <div className="flex-1" />
         <Button onClick={submit} disabled={!title.trim() || uploading} className="gradient-btn text-foreground font-semibold">
-          {uploading ? <><Loader2 className="w-4 h-4 mr-1 animate-spin" /> {files.length ? `Uploading ${progress}/${files.length}` : "Posting..."}</> : (showSchedule && scheduleAt ? "Schedule" : "Post")}
+          {uploading ? <><Loader2 className="w-4 h-4 mr-1 animate-spin" /> {files.length ? `Uploading ${progress}/${files.length}` : "Posting..."}</> : "Post"}
         </Button>
       </div>
-
-      {cropIndex !== null && files[cropIndex] && (
-        <ImageCropper
-          file={files[cropIndex].file}
-          src={files[cropIndex].preview}
-          onCancel={() => setCropIndex(null)}
-          onCropped={(file, preview) => {
-            setFiles(prev => prev.map((f, i) => {
-              if (i !== cropIndex) return f;
-              URL.revokeObjectURL(f.preview);
-              return { ...f, file, preview };
-            }));
-            setCropIndex(null);
-          }}
-        />
-      )}
     </div>
   );
 }

@@ -84,14 +84,10 @@ Deno.serve(async (req) => {
     }
 
     if (action === "delete") {
-      const { message_id, guest_session_id } = body;
-      let q = supabase.from("chat_messages").update({ is_deleted: true, text: "[removed]", media_url: null }).eq("id", message_id);
-      // self-delete: restrict to the caller's own message
-      if (guest_session_id) q = q.eq("guest_session_id", guest_session_id);
-      await q;
+      const { message_id } = body;
+      await supabase.from("chat_messages").update({ is_deleted: true, text: "[removed]", media_url: null }).eq("id", message_id);
       return new Response(JSON.stringify({ ok: true }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
-
 
     if (action === "timeout") {
       const { guest_session_id, stream_id, seconds } = body;
