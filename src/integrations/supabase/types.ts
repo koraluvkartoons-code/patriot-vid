@@ -166,6 +166,7 @@ export type Database = {
           media_type: string | null
           media_url: string | null
           scheduled_at: string | null
+          site: string
           title: string
           updated_at: string
           user_id: string
@@ -182,6 +183,7 @@ export type Database = {
           media_type?: string | null
           media_url?: string | null
           scheduled_at?: string | null
+          site?: string
           title: string
           updated_at?: string
           user_id: string
@@ -198,6 +200,7 @@ export type Database = {
           media_type?: string | null
           media_url?: string | null
           scheduled_at?: string | null
+          site?: string
           title?: string
           updated_at?: string
           user_id?: string
