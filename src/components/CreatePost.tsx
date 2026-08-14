@@ -12,6 +12,7 @@ interface Props {
   onNeedSetup: () => void;
   onCreated: () => void;
   categories?: string[];
+  site?: string;
 }
 
 const MAX_PHOTOS = 10;
@@ -19,7 +20,7 @@ const MAX_VIDEOS = 10;
 
 type Pending = { file: File; type: "image" | "video"; preview: string };
 
-export default function CreatePost({ onNeedSetup, onCreated, categories = [] }: Props) {
+export default function CreatePost({ onNeedSetup, onCreated, categories = [], site = "main" }: Props) {
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
   const [category, setCategory] = useState("");
@@ -107,6 +108,7 @@ export default function CreatePost({ onNeedSetup, onCreated, categories = [] }: 
         media,
         category: category.trim() || undefined,
         scheduledAt: scheduledIso,
+        site,
       });
       clearAll();
       setTitle("");
