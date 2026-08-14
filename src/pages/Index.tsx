@@ -11,7 +11,7 @@ import ScheduledPosts from "@/components/ScheduledPosts";
 import AdminPanel from "@/components/AdminPanel";
 
 import { tagClass, tagLabel } from "@/lib/tags";
-import { Shield, User, Radio, Film, Archive, X } from "lucide-react";
+import { Shield, User, Radio, Film, Archive, X, Gamepad2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
@@ -34,6 +34,7 @@ export default function Index() {
   const [clock, setClock] = useState(() => new Date());
   const [viewers, setViewers] = useState(1);
   const cmdRef = useRef<HTMLInputElement>(null);
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -90,6 +91,17 @@ export default function Index() {
   }, [posts.length, loadingMore, hasMore, order, activeCategory, searchTerm, searching]);
 
   useEffect(() => { loadData(); }, [loadData]);
+
+  // auto-load older posts when the sentinel scrolls into view
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el || !hasMore || loading) return;
+    const io = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) loadMore();
+    }, { rootMargin: "600px" });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [loadMore, hasMore, loading]);
 
   useEffect(() => {
     const t = setInterval(() => setClock(new Date()), 1000);
@@ -173,6 +185,7 @@ export default function Index() {
         </div>
         <div className="container max-w-3xl mx-auto px-3 pb-2 flex items-center gap-1 overflow-x-auto scrollbar-hide">
           <Link to="/live"><Button size="sm" variant="ghost" className="h-7 px-2 text-[11px] text-term-red"><Radio className="w-3 h-3 mr-1" />GO_LIVE</Button></Link>
+          <Link to="/polianigames"><Button size="sm" variant="ghost" className="h-7 px-2 text-[11px] text-term-purple hover:text-primary"><Gamepad2 className="w-3 h-3 mr-1" />POLIANIGAMES</Button></Link>
           <Link to="/streams"><Button size="sm" variant="ghost" className="h-7 px-2 text-[11px] text-foreground hover:text-primary"><Film className="w-3 h-3 mr-1" />STREAMS</Button></Link>
           <Sheet>
             <SheetTrigger asChild>
@@ -264,15 +277,22 @@ export default function Index() {
               ...posts.map(p => ({ kind: "post" as const, at: p.createdAt, key: `p-${p.id}`, post: p })),
               ...reposts.map(r => ({ kind: "repost" as const, at: r.createdAt, key: `r-${r.id}`, repost: r })),
             ]
-              .sort((a, b) => order === "oldest"
-                ? new Date(a.at).getTime() - new Date(b.at).getTime()
-                : new Date(b.at).getTime() - new Date(a.at).getTime())
+              .sort((a, b) => {
+                const ap = a.kind === "post" && a.post.isPinned ? 1 : 0;
+                const bp = b.kind === "post" && b.post.isPinned ? 1 : 0;
+                if (ap !== bp) return bp - ap;
+                return order === "oldest"
+                  ? new Date(a.at).getTime() - new Date(b.at).getTime()
+                  : new Date(b.at).getTime() - new Date(a.at).getTime();
+              })
               .map(item => item.kind === "post"
                 ? <PostCard key={item.key} post={item.post} onNeedSetup={needSetup} onRefresh={loadData} profiles={profiles} />
                 : <RepostCard key={item.key} repost={item.repost} onNeedSetup={needSetup} onRefresh={loadData} profiles={profiles} />
               )}
           </div>
 
+
+          <div ref={sentinelRef} className="h-1" />
 
           {!loading && hasMore && (
             <div className="text-center py-2">
