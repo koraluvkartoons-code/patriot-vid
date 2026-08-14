@@ -87,17 +87,17 @@ function publishedFilter(q: any) {
   return q.or(`scheduled_at.is.null,scheduled_at.lte.${new Date().toISOString()}`);
 }
 
-export async function fetchCategories(): Promise<string[]> {
-  const { data, error } = await supabase.from("posts").select("category").not("category", "is", null);
+export async function fetchCategories(site = "main"): Promise<string[]> {
+  const { data, error } = await supabase.from("posts").select("category").eq("site", site).not("category", "is", null);
   if (error) throw error;
   const set = new Set<string>();
   for (const r of data || []) if (r.category) set.add(r.category);
   return [...set].sort((a, b) => a.localeCompare(b));
 }
 
-export async function fetchPosts(limit = 20, offset = 0, order: "newest" | "oldest" = "newest", category?: string): Promise<Post[]> {
+export async function fetchPosts(limit = 20, offset = 0, order: "newest" | "oldest" = "newest", category?: string, site = "main"): Promise<Post[]> {
   const ascending = order === "oldest";
-  let query: any = supabase.from("posts").select(POST_COLS);
+  let query: any = supabase.from("posts").select(POST_COLS).eq("site", site);
 
   if (category) query = query.eq("category", category);
   query = publishedFilter(query);
@@ -112,11 +112,11 @@ export async function fetchPosts(limit = 20, offset = 0, order: "newest" | "olde
   return (data || []).map(mapPost);
 }
 
-export async function searchPosts(term: string, limit = 20, offset = 0): Promise<Post[]> {
+export async function searchPosts(term: string, limit = 20, offset = 0, site = "main"): Promise<Post[]> {
   const q = term.trim();
   if (!q) return [];
   const { data, error } = await publishedFilter(
-    supabase.from("posts").select(POST_COLS).or(`title.ilike.%${q}%,description.ilike.%${q}%`)
+    supabase.from("posts").select(POST_COLS).eq("site", site).or(`title.ilike.%${q}%,description.ilike.%${q}%`)
   )
     .order("is_pinned", { ascending: false })
     .order("created_at", { ascending: false })
@@ -158,7 +158,7 @@ export async function togglePinPost(id: string, pinned: boolean) {
   await supabase.from("posts").update({ is_pinned: pinned }).eq("id", id);
 }
 
-export async function createPost(post: { userId: string; title: string; description: string; mediaUrl?: string; mediaType?: string; media?: PostMedia[]; category?: string; scheduledAt?: string }) {
+export async function createPost(post: { userId: string; title: string; description: string; mediaUrl?: string; mediaType?: string; media?: PostMedia[]; category?: string; scheduledAt?: string; site?: string }) {
   await supabase.from("posts").insert({
     user_id: post.userId,
     title: post.title,
@@ -168,6 +168,7 @@ export async function createPost(post: { userId: string; title: string; descript
     media: (post.media || []) as unknown as never,
     category: post.category?.trim() || null,
     scheduled_at: post.scheduledAt || null,
+    site: post.site || "main",
     likes: [],
   });
 }
