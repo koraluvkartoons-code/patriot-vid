@@ -1,0 +1,6 @@
+{
+  "name": "ByteTicker",
+  "description": "Retro terminal-style live ticker for gaming, anime, and breaking culture updates in real time.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

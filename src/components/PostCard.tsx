@@ -6,6 +6,7 @@ import { tagClass, tagLabel, logTime } from "@/lib/tags";
 import UserBadge from "./UserBadge";
 import CommentSection from "./CommentSection";
 import Lightbox from "./Lightbox";
+import RpgPostScene from "./rpg/RpgPostScene";
 import { Heart, MessageCircle, Edit, ExternalLink, Pin, Trash2, Link2, ChevronRight, ChevronDown, Repeat2, Quote } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -20,10 +21,46 @@ interface Props {
   profiles: Record<string, UserProfile>;
   compact?: boolean;
   hideActions?: boolean;
+  variant?: "default" | "rpg";
 }
 
-export default function PostCard({ post, onNeedSetup, onRefresh, profiles, compact = false, hideActions = false }: Props) {
-  const [expanded, setExpanded] = useState(compact);
+function linkify(text: string) {
+  if (!text) return null;
+  const urlRegex = /((?:https?:\/\/|www\.)[^\s<]+[^\s<.,:;"')\]]|(?:[a-zA-Z0-9-]+\.)+(?:com|org|net|io|tv|app|gg|co|edu|gov)(?:\/[^\s<.,:;"')\]]*)?)/gi;
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = urlRegex.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(<span key={`txt-${lastIndex}`}>{text.substring(lastIndex, match.index)}</span>);
+    }
+    const rawUrl = match[0];
+    const href = rawUrl.startsWith("http://") || rawUrl.startsWith("https://") ? rawUrl : `https://${rawUrl}`;
+    parts.push(
+      <a
+        key={`link-${match.index}`}
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={(e) => e.stopPropagation()}
+        className="text-primary hover:text-accent underline underline-offset-2 break-all font-semibold"
+      >
+        {rawUrl}
+      </a>
+    );
+    lastIndex = match.index + rawUrl.length;
+  }
+
+  if (lastIndex < text.length) {
+    parts.push(<span key={`txt-${lastIndex}`}>{text.substring(lastIndex)}</span>);
+  }
+
+  return parts.length > 0 ? parts : text;
+}
+
+export default function PostCard({ post, onNeedSetup, onRefresh, profiles, compact = false, hideActions = false, variant = "default" }: Props) {
+  const [expanded, setExpanded] = useState(compact || variant === "rpg");
   const [showComments, setShowComments] = useState(false);
   const [editing, setEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(post.title);
@@ -147,6 +184,19 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles, compa
     }
   };
 
+  if (variant === "rpg") {
+    return (
+      <RpgPostScene
+        post={post}
+        onNeedSetup={onNeedSetup}
+        onRefresh={onRefresh}
+        profiles={profiles}
+        compact={compact}
+        hideActions={hideActions}
+      />
+    );
+  }
+
   return (
     <article className={`gradient-card border-l-2 border-y border-r border-border/60 rounded-sm text-[13px] leading-relaxed transition-colors hover:bg-muted/30 ${post.isPinned ? "border-l-primary" : "border-l-border"}`}>
       <div className="flex items-start gap-1.5 px-2 py-1.5">
@@ -169,7 +219,7 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles, compa
             </Link>
             {post.description && (
               <span className={`text-muted-foreground break-words ${expanded ? "" : "truncate max-w-full"}`}>
-                -- {expanded ? post.description : post.description.slice(0, 90) + (post.description.length > 90 ? "…" : "")}
+                -- {expanded ? linkify(post.description) : post.description.slice(0, 90) + (post.description.length > 90 ? "…" : "")}
               </span>
             )}
           </div>

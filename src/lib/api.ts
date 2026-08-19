@@ -56,13 +56,13 @@ function parseMedia(raw: unknown): PostMedia[] {
   return (raw as PostMedia[]).filter(m => m && typeof m.url === "string");
 }
 
-const POST_COLS = "id,user_id,title,description,media_type,media,category,likes,created_at,is_pinned,scheduled_at";
+const POST_COLS = "id,user_id,title,description,media_type,media,category,likes,created_at,is_pinned,scheduled_at,site";
 
 type RawPost = {
   id: string; user_id: string; title: string; description: string | null;
   media_type: string | null; media: unknown; category: string | null;
   likes: string[] | null; created_at: string; is_pinned: boolean | null;
-  scheduled_at?: string | null; media_url?: string | null;
+  scheduled_at?: string | null; media_url?: string | null; site?: string | null;
 };
 
 export function mapPost(p: RawPost): Post {
@@ -79,6 +79,7 @@ export function mapPost(p: RawPost): Post {
     createdAt: p.created_at,
     isPinned: p.is_pinned || false,
     scheduledAt: p.scheduled_at || undefined,
+    site: p.site || undefined,
   };
 }
 
@@ -240,27 +241,68 @@ export async function removeRepost(postId: string, userId: string) {
 }
 
 // ===== COMMENTS =====
+export function parseCommentMedia(mediaUrl?: string | null, mediaType?: string | null): PostMedia[] {
+  if (!mediaUrl) return [];
+  const trimmed = mediaUrl.trim();
+  if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
+    try {
+      const parsed = JSON.parse(trimmed);
+      if (Array.isArray(parsed)) {
+        return parsed.filter(m => m && typeof m.url === "string");
+      }
+    } catch {
+      // fallback
+    }
+  }
+  const type = (mediaType === "video" ? "video" : "image") as "image" | "video";
+  return [{ url: trimmed, type }];
+}
+
 export async function fetchComments(postId: string): Promise<Comment[]> {
   const { data, error } = await supabase.from("comments").select("*").eq("post_id", postId).order("created_at", { ascending: true });
   if (error) throw error;
-  return (data || []).map(c => ({
-    id: c.id,
-    postId: c.post_id,
-    userId: c.user_id,
-    text: c.text || "",
-    mediaUrl: c.media_url || undefined,
-    mediaType: c.media_type || undefined,
-    createdAt: c.created_at,
-  }));
+  return (data || []).map(c => {
+    const media = parseCommentMedia(c.media_url, c.media_type);
+    return {
+      id: c.id,
+      postId: c.post_id,
+      userId: c.user_id,
+      text: c.text || "",
+      mediaUrl: c.media_url || undefined,
+      mediaType: c.media_type || undefined,
+      media,
+      createdAt: c.created_at,
+    };
+  });
 }
 
-export async function createComment(comment: { postId: string; userId: string; text: string; mediaUrl?: string; mediaType?: string }) {
+export async function createComment(comment: {
+  postId: string;
+  userId: string;
+  text: string;
+  mediaUrl?: string;
+  mediaType?: string;
+  media?: PostMedia[];
+}) {
+  let mediaUrl = comment.mediaUrl || null;
+  let mediaType = comment.mediaType || null;
+
+  if (comment.media && comment.media.length > 0) {
+    if (comment.media.length === 1) {
+      mediaUrl = comment.media[0].url;
+      mediaType = comment.media[0].type;
+    } else {
+      mediaUrl = JSON.stringify(comment.media);
+      mediaType = "multiple";
+    }
+  }
+
   await supabase.from("comments").insert({
     post_id: comment.postId,
     user_id: comment.userId,
     text: comment.text,
-    media_url: comment.mediaUrl || null,
-    media_type: comment.mediaType || null,
+    media_url: mediaUrl,
+    media_type: mediaType,
   });
 }
 

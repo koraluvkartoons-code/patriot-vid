@@ -23,6 +23,7 @@ export default function PoliAniGames() {
   const [searching, setSearching] = useState(false);
   const [query, setQuery] = useState("");
   const [order, setOrder] = useState<"newest" | "oldest">("newest");
+  const [viewMode, setViewMode] = useState<"rpg" | "default">("rpg");
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -123,10 +124,19 @@ export default function PoliAniGames() {
                 className={`px-2 py-1 border rounded-sm uppercase text-rainbow-neon ${activeTerm === t ? "border-white/60" : "border-white/20 opacity-70 hover:opacity-100"}`}
               >[ {t} ]</button>
             ))}
-            <button
-              onClick={() => setOrder(o => o === "newest" ? "oldest" : "newest")}
-              className="px-2 py-1 border border-white/20 rounded-sm text-rainbow-neon ml-auto"
-            >SORT:{order === "newest" ? "NEWEST" : "OLDEST"}</button>
+            <div className="flex items-center gap-1 ml-auto">
+              <button
+                onClick={() => setViewMode(v => v === "rpg" ? "default" : "rpg")}
+                className={`px-2 py-1 border rounded-sm text-[11px] font-bold ${viewMode === "rpg" ? "border-amber-400 text-yellow-300 bg-amber-950/40" : "border-white/20 text-rainbow-neon"}`}
+                title="Toggle between 16-bit RPG Scene presentation and Classic mode"
+              >
+                {viewMode === "rpg" ? "⚔️ 16-BIT RPG MODE" : "📜 CLASSIC MODE"}
+              </button>
+              <button
+                onClick={() => setOrder(o => o === "newest" ? "oldest" : "newest")}
+                className="px-2 py-1 border border-white/20 rounded-sm text-rainbow-neon"
+              >SORT:{order === "newest" ? "NEWEST" : "OLDEST"}</button>
+            </div>
           </div>
 
           <div className="flex items-center gap-2">
@@ -150,9 +160,9 @@ export default function PoliAniGames() {
             <p className="text-center py-10 text-white/70 text-sm">nothing here yet — add the first post.</p>
           )}
 
-          <div className="space-y-1">
+          <div className="space-y-3">
             {sorted.map(p => (
-              <PostCard key={p.id} post={p} onNeedSetup={needSetup} onRefresh={loadData} profiles={profiles} />
+              <PostCard key={p.id} post={p} onNeedSetup={needSetup} onRefresh={loadData} profiles={profiles} variant={viewMode} />
             ))}
           </div>
 

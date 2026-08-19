@@ -123,16 +123,32 @@ export default function CreatePost({ onNeedSetup, onCreated, categories = [], si
     }
   };
 
+  const isPoliAni = site === "polianigames";
+
   return (
-    <div className="gradient-card border border-border rounded-xl p-4 glow-purple">
-      <h3 className="text-foreground font-semibold mb-3">Create Post</h3>
-      <Input placeholder="Title..." value={title} onChange={(e) => setTitle(e.target.value)} className="bg-muted border-border text-foreground mb-2" maxLength={120} />
-      <Textarea placeholder="What's on your mind?" value={desc} onChange={(e) => setDesc(e.target.value)} className="bg-muted border-border text-foreground mb-2 min-h-[60px]" maxLength={2000} />
+    <div className={isPoliAni ? "bg-transparent border-0 p-1 sm:p-2 space-y-2" : "gradient-card border border-border rounded-xl p-4 glow-purple"}>
+      <h3 className={isPoliAni ? "text-rainbow-neon font-bold text-sm" : "text-foreground font-semibold mb-3"}>
+        {isPoliAni ? "// CREATE POST" : "Create Post"}
+      </h3>
+      <Input
+        placeholder="Title..."
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        className={isPoliAni ? "bg-black/30 border-white/20 text-white placeholder:text-white/60 mb-2 focus:bg-black/50" : "bg-muted border-border text-foreground mb-2"}
+        maxLength={120}
+      />
+      <Textarea
+        placeholder="What's on your mind?"
+        value={desc}
+        onChange={(e) => setDesc(e.target.value)}
+        className={isPoliAni ? "bg-black/30 border-white/20 text-white placeholder:text-white/60 mb-2 min-h-[60px] focus:bg-black/50" : "bg-muted border-border text-foreground mb-2 min-h-[60px]"}
+        maxLength={2000}
+      />
       <Input
         placeholder="Category (optional)"
         value={category}
         onChange={(e) => setCategory(e.target.value)}
-        className="bg-muted border-border text-foreground mb-2"
+        className={isPoliAni ? "bg-black/30 border-white/20 text-white placeholder:text-white/60 mb-2 focus:bg-black/50" : "bg-muted border-border text-foreground mb-2"}
         maxLength={40}
         list="post-categories"
       />
@@ -145,15 +161,15 @@ export default function CreatePost({ onNeedSetup, onCreated, categories = [], si
           {files.map((f, i) => (
             <div key={f.preview} className="relative">
               {f.type === "video" ? (
-                <video src={f.preview} className="h-24 w-full rounded-lg object-cover bg-muted" preload="metadata" muted />
+                <video src={f.preview} className="h-24 w-full rounded-lg object-cover bg-black/40 border border-white/20" preload="metadata" muted />
               ) : (
-                <img src={f.preview} alt="" loading="lazy" className="h-24 w-full rounded-lg object-cover bg-muted" />
+                <img src={f.preview} alt="" loading="lazy" className="h-24 w-full rounded-lg object-cover bg-black/40 border border-white/20" />
               )}
-              <button onClick={() => removeAt(i)} className="absolute top-1 right-1 bg-background/80 rounded-full p-1" aria-label="Remove">
+              <button onClick={() => removeAt(i)} className="absolute top-1 right-1 bg-black/80 rounded-full p-1 hover:bg-destructive" aria-label="Remove">
                 <X className="w-3 h-3 text-foreground" />
               </button>
               {f.type === "image" && (
-                <button onClick={() => setCropIndex(i)} className="absolute bottom-1 right-1 bg-background/80 rounded-full p-1" title="Crop photo" aria-label="Crop photo">
+                <button onClick={() => setCropIndex(i)} className="absolute bottom-1 right-1 bg-black/80 rounded-full p-1" title="Crop photo" aria-label="Crop photo">
                   <Crop className="w-3 h-3 text-primary" />
                 </button>
               )}
@@ -162,36 +178,76 @@ export default function CreatePost({ onNeedSetup, onCreated, categories = [], si
         </div>
       )}
       {files.length > 0 && (
-        <p className="text-xs text-muted-foreground mb-2">{photoCount}/{MAX_PHOTOS} photos · {videoCount}/{MAX_VIDEOS} videos</p>
+        <p className={isPoliAni ? "text-xs text-white/70 mb-2 font-mono" : "text-xs text-muted-foreground mb-2"}>
+          {photoCount}/{MAX_PHOTOS} photos · {videoCount}/{MAX_VIDEOS} videos
+        </p>
       )}
 
       {showLink && (
-        <Input placeholder="Paste URL..." value={linkUrl} onChange={(e) => setLinkUrl(e.target.value)} className="bg-muted border-border text-foreground mb-2" />
+        <Input
+          placeholder="Paste URL..."
+          value={linkUrl}
+          onChange={(e) => setLinkUrl(e.target.value)}
+          className={isPoliAni ? "bg-black/30 border-white/20 text-white placeholder:text-white/60 mb-2" : "bg-muted border-border text-foreground mb-2"}
+        />
       )}
 
       {showSchedule && (
         <div className="mb-2">
-          <label className="block text-xs text-muted-foreground mb-1">Publish at</label>
-          <Input type="datetime-local" value={scheduleAt} onChange={e => setScheduleAt(e.target.value)} className="bg-muted border-border text-foreground" />
+          <label className={isPoliAni ? "block text-xs text-white/70 mb-1" : "block text-xs text-muted-foreground mb-1"}>Publish at</label>
+          <Input
+            type="datetime-local"
+            value={scheduleAt}
+            onChange={e => setScheduleAt(e.target.value)}
+            className={isPoliAni ? "bg-black/30 border-white/20 text-white" : "bg-muted border-border text-foreground"}
+          />
         </div>
       )}
 
       <div className="flex items-center gap-2 flex-wrap">
         <input ref={fileRef} type="file" multiple className="hidden" accept="image/*,video/*" onChange={handleFiles} />
-        <Button size="sm" variant="ghost" onClick={() => { fileRef.current!.accept = "image/*"; fileRef.current?.click(); }} className="text-primary hover:text-accent" disabled={uploading}>
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => { if (fileRef.current) { fileRef.current.accept = "image/*"; fileRef.current.click(); } }}
+          className={isPoliAni ? "text-rainbow-neon border border-white/10 bg-black/20 hover:bg-black/40 h-8 px-2.5 text-xs" : "text-primary hover:text-accent"}
+          disabled={uploading}
+        >
           <ImagePlus className="w-4 h-4 mr-1" /> Photos
         </Button>
-        <Button size="sm" variant="ghost" onClick={() => { fileRef.current!.accept = "video/*"; fileRef.current?.click(); }} className="text-primary hover:text-accent" disabled={uploading}>
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => { if (fileRef.current) { fileRef.current.accept = "video/*"; fileRef.current.click(); } }}
+          className={isPoliAni ? "text-rainbow-neon border border-white/10 bg-black/20 hover:bg-black/40 h-8 px-2.5 text-xs" : "text-primary hover:text-accent"}
+          disabled={uploading}
+        >
           <Video className="w-4 h-4 mr-1" /> Videos
         </Button>
-        <Button size="sm" variant="ghost" onClick={() => setShowLink(!showLink)} className="text-primary hover:text-accent" disabled={uploading}>
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => setShowLink(!showLink)}
+          className={isPoliAni ? "text-rainbow-neon border border-white/10 bg-black/20 hover:bg-black/40 h-8 px-2.5 text-xs" : "text-primary hover:text-accent"}
+          disabled={uploading}
+        >
           <Link className="w-4 h-4 mr-1" /> Link
         </Button>
-        <Button size="sm" variant="ghost" onClick={() => setShowSchedule(s => !s)} className={showSchedule ? "text-accent" : "text-primary hover:text-accent"} disabled={uploading}>
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => setShowSchedule(s => !s)}
+          className={isPoliAni ? "text-rainbow-neon border border-white/10 bg-black/20 hover:bg-black/40 h-8 px-2.5 text-xs" : (showSchedule ? "text-accent" : "text-primary hover:text-accent")}
+          disabled={uploading}
+        >
           <CalendarClock className="w-4 h-4 mr-1" /> Schedule
         </Button>
         <div className="flex-1" />
-        <Button onClick={submit} disabled={!title.trim() || uploading} className="gradient-btn text-foreground font-semibold">
+        <Button
+          onClick={submit}
+          disabled={!title.trim() || uploading}
+          className={isPoliAni ? "border border-white/30 text-white font-bold bg-black/40 hover:bg-black/60 hover:border-white/60 h-8 px-4 text-xs" : "gradient-btn text-foreground font-semibold"}
+        >
           {uploading ? <><Loader2 className="w-4 h-4 mr-1 animate-spin" /> {files.length ? `Uploading ${progress}/${files.length}` : "Posting..."}</> : (showSchedule && scheduleAt ? "Schedule" : "Post")}
         </Button>
       </div>
