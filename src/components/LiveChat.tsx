@@ -31,43 +31,11 @@ interface Props {
 }
 
 function linkify(text: string) {
-  if (!text) return null;
-  // Match URLs starting with http://, https://, www., or ending in common TLDs
-  const urlRegex = /((?:https?:\/\/|www\.)[^\s<]+[^\s<.,:;"')\]]|(?:[a-zA-Z0-9-]+\.)+(?:com|org|net|io|tv|app|gg|co|edu|gov)(?:\/[^\s<.,:;"')\]]*)?)/gi;
-  
-  const parts: React.ReactNode[] = [];
-  let lastIndex = 0;
-  let match: RegExpExecArray | null;
-
-  while ((match = urlRegex.exec(text)) !== null) {
-    if (match.index > lastIndex) {
-      parts.push(<span key={`txt-${lastIndex}`}>{text.substring(lastIndex, match.index)}</span>);
-    }
-    const rawUrl = match[0];
-    const href = rawUrl.startsWith("http://") || rawUrl.startsWith("https://") 
-      ? rawUrl 
-      : `https://${rawUrl}`;
-      
-    parts.push(
-      <a
-        key={`link-${match.index}`}
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={(e) => e.stopPropagation()}
-        className="text-cyan-300 hover:text-yellow-300 font-semibold underline underline-offset-2 break-all transition-colors duration-150"
-      >
-        {rawUrl}
-      </a>
-    );
-    lastIndex = match.index + rawUrl.length;
-  }
-
-  if (lastIndex < text.length) {
-    parts.push(<span key={`txt-${lastIndex}`}>{text.substring(lastIndex)}</span>);
-  }
-
-  return parts.length > 0 ? parts : text;
+  const re = /(https?:\/\/[^\s]+)/g;
+  const parts = text.split(re);
+  return parts.map((p, i) =>
+    re.test(p) ? <a key={i} href={p} target="_blank" rel="noreferrer" className="underline text-primary">{p}</a> : <span key={i}>{p}</span>
+  );
 }
 
 export default function LiveChat({ streamId, guestName, guestSessionId, isModerator, profiles, hostUserId }: Props) {
@@ -115,21 +83,12 @@ export default function LiveChat({ streamId, guestName, guestSessionId, isModera
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [msgs]);
 
-  const checkIsAdmin = (name: string) => {
-    if (!name) return false;
-    const n = name.trim().toLowerCase();
-    return n === "patriotadmin" || n === "admin" || n === "jakoralh" || n.includes("admin") || !!profiles[name]?.isAdmin;
-  };
-
-  const currentActiveUser = getCurrentUserId() || guestName;
-  const isCurrentUserAdmin = checkIsAdmin(currentActiveUser);
-
   const send = async () => {
     if (!text.trim() && !media) return;
     const body = {
       action: "send",
       stream_id: streamId,
-      guest_name: currentActiveUser,
+      guest_name: guestName,
       guest_session_id: guestSessionId,
       text: text.trim(),
       media_url: media?.url,
@@ -163,14 +122,14 @@ export default function LiveChat({ streamId, guestName, guestSessionId, isModera
   const renderUserBadges = (name: string) => {
     const isHost = name === hostUserId;
     const prof = profiles[name];
-    const isAdminUser = checkIsAdmin(name);
+    const isAdminUser = name === "PatriotAdmin" || name === "admin" || prof?.isAdmin;
     const isModUser = (!isAdminUser && (isModerator || prof?.isModerator));
 
     return (
       <span className="inline-flex items-center gap-1">
         {isAdminUser && (
           <span
-            className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-gradient-to-r from-red-600 via-amber-500 to-yellow-400 text-black text-[9px] font-black tracking-wider uppercase shadow-[0_0_10px_rgba(234,179,8,0.8)] border border-yellow-200 animate-pulse"
+            className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded bg-gradient-to-r from-red-600 via-amber-500 to-yellow-400 text-black text-[9px] font-black tracking-wider uppercase shadow-[0_0_8px_rgba(234,179,8,0.7)] border border-yellow-200"
             title="Verified Admin"
           >
             👑 ADMIN
@@ -178,7 +137,7 @@ export default function LiveChat({ streamId, guestName, guestSessionId, isModera
         )}
         {isModUser && (
           <span
-            className="inline-flex items-center gap-0.5 px-1 py-0.5 rounded bg-indigo-900/80 text-cyan-300 text-[9px] font-bold border border-cyan-400/60"
+            className="inline-flex items-center gap-0.5 px-1 py-0.2 rounded bg-indigo-900/80 text-cyan-300 text-[9px] font-bold border border-cyan-400/60"
             title="Moderator"
           >
             🛡️ MOD
@@ -186,7 +145,7 @@ export default function LiveChat({ streamId, guestName, guestSessionId, isModera
         )}
         {isHost && (
           <span
-            className="inline-flex items-center gap-0.5 px-1 py-0.5 rounded bg-pink-950/80 text-pink-300 text-[9px] font-bold border border-pink-500/50"
+            className="inline-flex items-center gap-0.5 px-1 py-0.2 rounded bg-pink-950/80 text-pink-300 text-[9px] font-bold border border-pink-500/50"
             title="Stream Host"
           >
             🎙️ HOST
@@ -202,13 +161,11 @@ export default function LiveChat({ streamId, guestName, guestSessionId, isModera
 
   return (
     <div className="flex flex-col h-full bg-black rounded-lg border border-primary/30 overflow-hidden">
-      <div className="px-3 py-2 border-b border-primary/30 flex items-center justify-between bg-zinc-950">
+      <div className="px-3 py-2 border-b border-primary/30 flex items-center justify-between">
         <span className="text-pink-400 font-bold text-sm">LIVE CHAT</span>
-        <div className="flex items-center gap-1.5">
-          <span className={`text-xs ${isCurrentUserAdmin ? "text-yellow-300 font-bold" : "text-pink-200"}`}>
-            {currentActiveUser}
-          </span>
-          {renderUserBadges(currentActiveUser)}
+        <div className="flex items-center gap-1">
+          <span className="text-xs text-pink-200">{guestName}</span>
+          {renderUserBadges(guestName)}
         </div>
       </div>
 
@@ -216,7 +173,6 @@ export default function LiveChat({ streamId, guestName, guestSessionId, isModera
         {msgs.map(m => {
           const replied = m.reply_to ? msgs.find(x => x.id === m.reply_to) : null;
           const isHost = m.guest_name === hostUserId;
-          const isMsgAdmin = checkIsAdmin(m.guest_name);
           return (
             <div key={m.id} className="rounded-2xl bg-zinc-900 px-3 py-1.5 group">
               {replied && (
@@ -227,7 +183,7 @@ export default function LiveChat({ streamId, guestName, guestSessionId, isModera
               <div className="flex items-center gap-1.5 flex-wrap">
                 <span
                   className={`text-xs font-bold ${
-                    isMsgAdmin
+                    m.guest_name === "PatriotAdmin" || m.guest_name === "admin" || profiles[m.guest_name]?.isAdmin
                       ? "text-yellow-300 drop-shadow-[0_0_6px_rgba(253,224,71,0.6)] font-black"
                       : isHost
                       ? "text-pink-400"
@@ -250,8 +206,9 @@ export default function LiveChat({ streamId, guestName, guestSessionId, isModera
                     <button onClick={() => modAction("ban_ip", { message_id: m.id, minutes: 60 })} className="opacity-0 group-hover:opacity-100 text-red-500" title="1h IP ban"><Ban className="w-3 h-3" /></button>
                   </>
                 )}
+
               </div>
-              {m.text && <div className="text-pink-100 text-sm break-words mt-0.5">{linkify(m.text)}</div>}
+              {m.text && <div className="text-pink-100 text-sm break-words">{linkify(m.text)}</div>}
               {m.media_url && (
                 m.media_type === "video"
                   ? <video src={m.media_url} controls className="max-h-40 rounded mt-1" />
@@ -286,7 +243,7 @@ export default function LiveChat({ streamId, guestName, guestSessionId, isModera
           {AVAILABLE_BADGES.map(b => (
             <button key={b.id} title={b.name} onClick={async () => {
               await supabase.functions.invoke("chat-action", {
-                body: { action: "send", stream_id: streamId, guest_name: currentActiveUser, guest_session_id: guestSessionId, text: "", media_url: b.image, media_type: "image" }
+                body: { action: "send", stream_id: streamId, guest_name: guestName, guest_session_id: guestSessionId, text: "", media_url: b.image, media_type: "image" }
               });
               setShowStickers(false);
             }}>
@@ -299,30 +256,14 @@ export default function LiveChat({ streamId, guestName, guestSessionId, isModera
         <div className="p-2 bg-zinc-900 border-t border-primary/30">
           <GiphyPicker onSelect={async (url) => {
             await supabase.functions.invoke("chat-action", {
-              body: { action: "send", stream_id: streamId, guest_name: currentActiveUser, guest_session_id: guestSessionId, text: "", media_url: url, media_type: "gif" }
+              body: { action: "send", stream_id: streamId, guest_name: guestName, guest_session_id: guestSessionId, text: "", media_url: url, media_type: "gif" }
             });
             setShowGif(false);
           }} onClose={() => setShowGif(false)} />
         </div>
       )}
 
-      {/* Active typing identity indicator */}
-      <div className="px-3 py-1 bg-zinc-900/95 border-t border-pink-500/20 flex items-center justify-between text-[11px]">
-        <div className="flex items-center gap-1.5 truncate">
-          <span className="text-zinc-400">Typing as:</span>
-          <span className={`font-semibold truncate ${isCurrentUserAdmin ? "text-yellow-300 font-bold" : "text-pink-300"}`}>
-            {currentActiveUser}
-          </span>
-          {renderUserBadges(currentActiveUser)}
-        </div>
-        {text.length > 0 && (
-          <span className="text-[10px] text-zinc-500 font-mono flex-shrink-0">
-            {text.length}/500
-          </span>
-        )}
-      </div>
-
-      <div className="p-2 border-t border-pink-500/30 flex items-center gap-1 bg-zinc-950">
+      <div className="p-2 border-t border-primary/30 flex items-center gap-1 bg-zinc-950">
         <input ref={fileRef} type="file" accept="image/*,video/*" hidden onChange={onFile} />
         <Button size="sm" variant="ghost" onClick={() => fileRef.current?.click()} className="text-pink-400 h-8 px-2"><ImagePlus className="w-4 h-4" /></Button>
         <Button size="sm" variant="ghost" onClick={() => setShowGif(s => !s)} className="text-pink-400 h-8 px-2 font-bold text-xs">GIF</Button>
@@ -332,11 +273,11 @@ export default function LiveChat({ streamId, guestName, guestSessionId, isModera
           value={text}
           onChange={e => setText(e.target.value)}
           onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
-          placeholder={isCurrentUserAdmin ? "👑 Admin: Type a message or link…" : "Say something or drop a link…"}
-          className={`bg-zinc-900 border-pink-500/30 text-pink-100 placeholder:text-pink-300/40 h-8 text-sm ${isCurrentUserAdmin ? "focus-visible:ring-yellow-400/50" : ""}`}
+          placeholder="Say something…"
+          className="bg-zinc-900 border-pink-500/30 text-pink-100 placeholder:text-pink-300/40 h-8 text-sm"
           maxLength={500}
         />
-        <Button size="sm" onClick={send} className="bg-pink-600 hover:bg-pink-500 text-white h-8 text-xs font-semibold">Send</Button>
+        <Button size="sm" onClick={send} className="bg-pink-600 hover:bg-pink-500 text-white h-8 text-xs">Send</Button>
       </div>
     </div>
   );

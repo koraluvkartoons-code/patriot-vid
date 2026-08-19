@@ -24,41 +24,6 @@ interface Props {
   variant?: "default" | "rpg";
 }
 
-function linkify(text: string) {
-  if (!text) return null;
-  const urlRegex = /((?:https?:\/\/|www\.)[^\s<]+[^\s<.,:;"')\]]|(?:[a-zA-Z0-9-]+\.)+(?:com|org|net|io|tv|app|gg|co|edu|gov)(?:\/[^\s<.,:;"')\]]*)?)/gi;
-  const parts: React.ReactNode[] = [];
-  let lastIndex = 0;
-  let match: RegExpExecArray | null;
-
-  while ((match = urlRegex.exec(text)) !== null) {
-    if (match.index > lastIndex) {
-      parts.push(<span key={`txt-${lastIndex}`}>{text.substring(lastIndex, match.index)}</span>);
-    }
-    const rawUrl = match[0];
-    const href = rawUrl.startsWith("http://") || rawUrl.startsWith("https://") ? rawUrl : `https://${rawUrl}`;
-    parts.push(
-      <a
-        key={`link-${match.index}`}
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={(e) => e.stopPropagation()}
-        className="text-primary hover:text-accent underline underline-offset-2 break-all font-semibold"
-      >
-        {rawUrl}
-      </a>
-    );
-    lastIndex = match.index + rawUrl.length;
-  }
-
-  if (lastIndex < text.length) {
-    parts.push(<span key={`txt-${lastIndex}`}>{text.substring(lastIndex)}</span>);
-  }
-
-  return parts.length > 0 ? parts : text;
-}
-
 export default function PostCard({ post, onNeedSetup, onRefresh, profiles, compact = false, hideActions = false, variant = "default" }: Props) {
   const [expanded, setExpanded] = useState(compact || variant === "rpg");
   const [showComments, setShowComments] = useState(false);
@@ -219,7 +184,7 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles, compa
             </Link>
             {post.description && (
               <span className={`text-muted-foreground break-words ${expanded ? "" : "truncate max-w-full"}`}>
-                -- {expanded ? linkify(post.description) : post.description.slice(0, 90) + (post.description.length > 90 ? "…" : "")}
+                -- {expanded ? post.description : post.description.slice(0, 90) + (post.description.length > 90 ? "…" : "")}
               </span>
             )}
           </div>

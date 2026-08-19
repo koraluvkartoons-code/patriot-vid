@@ -36,41 +36,6 @@ import Lightbox from "@/components/Lightbox";
 import { getCategoryBust, CATEGORY_META, normalizeCategory, PixelHeroBust } from "./rpgSprites";
 import { getRpgBackground } from "./rpgBackgrounds";
 
-function linkify(text: string) {
-  if (!text) return null;
-  const urlRegex = /((?:https?:\/\/|www\.)[^\s<]+[^\s<.,:;"')\]]|(?:[a-zA-Z0-9-]+\.)+(?:com|org|net|io|tv|app|gg|co|edu|gov)(?:\/[^\s<.,:;"')\]]*)?)/gi;
-  const parts: React.ReactNode[] = [];
-  let lastIndex = 0;
-  let match: RegExpExecArray | null;
-
-  while ((match = urlRegex.exec(text)) !== null) {
-    if (match.index > lastIndex) {
-      parts.push(<span key={`txt-${lastIndex}`}>{text.substring(lastIndex, match.index)}</span>);
-    }
-    const rawUrl = match[0];
-    const href = rawUrl.startsWith("http://") || rawUrl.startsWith("https://") ? rawUrl : `https://${rawUrl}`;
-    parts.push(
-      <a
-        key={`link-${match.index}`}
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={(e) => e.stopPropagation()}
-        className="text-cyan-300 hover:text-yellow-300 underline underline-offset-2 break-all font-semibold"
-      >
-        {rawUrl}
-      </a>
-    );
-    lastIndex = match.index + rawUrl.length;
-  }
-
-  if (lastIndex < text.length) {
-    parts.push(<span key={`txt-${lastIndex}`}>{text.substring(lastIndex)}</span>);
-  }
-
-  return parts.length > 0 ? parts : text;
-}
-
 interface Props {
   post: Post;
   onNeedSetup: () => void;
@@ -381,14 +346,12 @@ export default function RpgPostScene({
             {/* Optional Description / Dialogue Body */}
             {post.description && (
               <div className="bg-black/40 border border-white/15 rounded p-2 sm:p-2.5 text-xs sm:text-sm text-slate-100/95 leading-relaxed rpg-dialog-text">
-                <div className="whitespace-pre-wrap break-words">
-                  {linkify(
-                    expandedText || post.description.length <= 200
-                      ? post.description
-                      : post.description.slice(0, 200) + "…"
-                  )}
+                <p className="whitespace-pre-wrap break-words">
+                  {expandedText || post.description.length <= 200
+                    ? post.description
+                    : post.description.slice(0, 200) + "…"}
                   <span className="rpg-cursor-indicator ml-1.5 font-bold">▼</span>
-                </div>
+                </p>
                 {post.description.length > 200 && !expandedText && (
                   <button
                     onClick={() => setExpandedText(true)}

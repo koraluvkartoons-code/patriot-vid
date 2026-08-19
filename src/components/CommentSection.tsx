@@ -24,41 +24,6 @@ type PendingMedia = {
 const MAX_COMMENT_PHOTOS = 10;
 const MAX_COMMENT_VIDEOS = 10;
 
-function linkify(text: string) {
-  if (!text) return null;
-  const urlRegex = /((?:https?:\/\/|www\.)[^\s<]+[^\s<.,:;"')\]]|(?:[a-zA-Z0-9-]+\.)+(?:com|org|net|io|tv|app|gg|co|edu|gov)(?:\/[^\s<.,:;"')\]]*)?)/gi;
-  const parts: React.ReactNode[] = [];
-  let lastIndex = 0;
-  let match: RegExpExecArray | null;
-
-  while ((match = urlRegex.exec(text)) !== null) {
-    if (match.index > lastIndex) {
-      parts.push(<span key={`txt-${lastIndex}`}>{text.substring(lastIndex, match.index)}</span>);
-    }
-    const rawUrl = match[0];
-    const href = rawUrl.startsWith("http://") || rawUrl.startsWith("https://") ? rawUrl : `https://${rawUrl}`;
-    parts.push(
-      <a
-        key={`link-${match.index}`}
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={(e) => e.stopPropagation()}
-        className="text-primary hover:text-accent underline underline-offset-2 break-all font-semibold"
-      >
-        {rawUrl}
-      </a>
-    );
-    lastIndex = match.index + rawUrl.length;
-  }
-
-  if (lastIndex < text.length) {
-    parts.push(<span key={`txt-${lastIndex}`}>{text.substring(lastIndex)}</span>);
-  }
-
-  return parts.length > 0 ? parts : text;
-}
-
 export default function CommentSection({ postId, onNeedSetup, profiles }: Props) {
   const [text, setText] = useState("");
   const [pendingMedia, setPendingMedia] = useState<PendingMedia[]>([]);
@@ -219,7 +184,7 @@ export default function CommentSection({ postId, onNeedSetup, profiles }: Props)
               </div>
             </div>
 
-            {c.text && <div className="text-foreground text-sm whitespace-pre-wrap">{linkify(c.text)}</div>}
+            {c.text && <p className="text-foreground text-sm whitespace-pre-wrap">{c.text}</p>}
 
             {/* Display multiple photos if attached */}
             {images.length > 0 && (
