@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { fetchProfiles } from "@/lib/api";
 import type { Post, UserProfile } from "@/lib/store";
 import PostCard from "@/components/PostCard";
+import PoliAniRpgCard from "@/components/PoliAniRpgCard";
 import UserSetupDialog from "@/components/UserSetupDialog";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
@@ -36,6 +37,7 @@ export default function PostPage() {
         mediaUrl: data.media_url || undefined,
         mediaType: data.media_type || undefined,
         media: Array.isArray(data.media) ? (data.media as any[]).filter(m => m && typeof m.url === "string") : [],
+        isPoliAniGames: data.site === "polianigames",
         category: data.category || undefined,
         likes: data.likes || [],
         createdAt: data.created_at,
@@ -69,7 +71,11 @@ export default function PostPage() {
         {loading && <p className="text-center text-muted-foreground py-16">Loading...</p>}
         {!loading && notFound && <p className="text-center text-muted-foreground py-16">Post not found.</p>}
         {!loading && post && (
-          <PostCard post={post} onNeedSetup={() => setShowSetup(true)} onRefresh={load} profiles={profiles} />
+          post.isPoliAniGames ? (
+            <PoliAniRpgCard post={post} onNeedSetup={() => setShowSetup(true)} onRefresh={load} profiles={profiles} />
+          ) : (
+            <PostCard post={post} onNeedSetup={() => setShowSetup(true)} onRefresh={load} profiles={profiles} />
+          )
         )}
       </main>
       <UserSetupDialog open={showSetup} onComplete={() => { setShowSetup(false); load(); }} />

@@ -27,7 +27,7 @@ export async function fetchProfiles(): Promise<Record<string, UserProfile>> {
   }
   // Always ensure admin
   if (!map["PatriotAdmin"]) {
-    map["PatriotAdmin"] = { displayName: "PatriotAdmin", avatar: "", badges: ["presidential-seal", "rainbow-spurdo", "basedtriot-bear", "master-chief", "cobson-soyjak", "yakub", "dreads-hoodie"], isAdmin: true };
+    map["PatriotAdmin"] = { displayName: "PatriotAdmin", avatar: "", badges: ["presidential-seal", "rainbow-spurdo", "basedtriot-bear", "master-chief", "cobson-soyjak", "yakub", "750first-flag", "tyrone-chad"], isAdmin: true };
   }
   return map;
 }

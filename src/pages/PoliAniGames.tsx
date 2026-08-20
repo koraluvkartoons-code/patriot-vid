@@ -5,9 +5,10 @@ import { fetchPosts, fetchProfiles, fetchCategories, searchPosts } from "@/lib/a
 import UserSetupDialog from "@/components/UserSetupDialog";
 import CreatePost from "@/components/CreatePost";
 import PostCard from "@/components/PostCard";
+import PoliAniRpgCard from "@/components/PoliAniRpgCard";
 import PAGlobe from "@/components/PAGlobe";
 import bgAsset from "@/assets/polianigames-bg.jpg.asset.json";
-import { ArrowLeft, User, X } from "lucide-react";
+import { ArrowLeft, User, X, Gamepad2, LayoutList } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const SITE = "polianigames";
@@ -24,6 +25,7 @@ export default function PoliAniGames() {
   const [searching, setSearching] = useState(false);
   const [query, setQuery] = useState("");
   const [order, setOrder] = useState<"newest" | "oldest">("newest");
+  const [viewMode, setViewMode] = useState<"rpg" | "classic">("rpg");
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -138,6 +140,27 @@ export default function PoliAniGames() {
               onClick={() => setOrder(o => o === "newest" ? "oldest" : "newest")}
               className="px-2 py-1 border border-white/20 rounded-sm text-rainbow-neon ml-auto"
             >SORT:{order === "newest" ? "NEWEST" : "OLDEST"}</button>
+            <button
+              onClick={() => setViewMode(v => v === "rpg" ? "classic" : "rpg")}
+              className={`px-2 py-1 border rounded-sm font-bold flex items-center gap-1 transition-all ${
+                viewMode === "rpg"
+                  ? "border-yellow-400/80 bg-yellow-500/20 text-yellow-300 shadow-[0_0_10px_rgba(250,204,21,0.3)]"
+                  : "border-white/30 text-white/80 hover:text-white"
+              }`}
+              title="Toggle between 16-Bit RPG presentation and classic list view"
+            >
+              {viewMode === "rpg" ? (
+                <>
+                  <Gamepad2 className="w-3.5 h-3.5 text-yellow-400" />
+                  <span>[ 16-BIT RPG MODE ]</span>
+                </>
+              ) : (
+                <>
+                  <LayoutList className="w-3.5 h-3.5" />
+                  <span>[ CLASSIC VIEW ]</span>
+                </>
+              )}
+            </button>
           </div>
 
           <div className="flex items-center gap-2">
@@ -161,9 +184,13 @@ export default function PoliAniGames() {
             <p className="text-center py-10 text-white/70 text-sm">nothing here yet — add the first post.</p>
           )}
 
-          <div className="space-y-1">
+          <div className={viewMode === "rpg" ? "space-y-3" : "space-y-1"}>
             {sorted.map(p => (
-              <PostCard key={p.id} post={p} onNeedSetup={needSetup} onRefresh={loadData} profiles={profiles} />
+              viewMode === "rpg" ? (
+                <PoliAniRpgCard key={p.id} post={p} onNeedSetup={needSetup} onRefresh={loadData} profiles={profiles} />
+              ) : (
+                <PostCard key={p.id} post={p} onNeedSetup={needSetup} onRefresh={loadData} profiles={profiles} />
+              )
             ))}
           </div>
 

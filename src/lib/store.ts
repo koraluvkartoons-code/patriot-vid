@@ -169,13 +169,13 @@ import kekFlag from "@/assets/badges/kek-flag.png";
 import masterChief from "@/assets/badges/master-chief.png";
 import basedtriotBear from "@/assets/badges/basedtriot-bear.svg";
 import cobsonSoyjak from "@/assets/badges/cobson-soyjak.png";
-import tyroneChad from "@/assets/badges/tyrone-chad.jpg";
-import dreadsHoodie from "@/assets/badges/dreads-hoodie.jpg";
-import presidentialSeal from "@/assets/badges/presidential-seal.png";
+import tyroneChad from "@/assets/badges/dreads-hoodie.png";
+import dreadsHoodie from "@/assets/badges/dreads-hoodie.png";
+import yakub from "@/assets/badges/yakub.png";
+import presidentialSeal from "@/assets/badges/presidential-seal.svg";
 import rainbowSpurdo from "@/assets/badges/rainbow-spurdo.svg";
-const yakub = tyroneChad;
 
-export { presidentialSeal, rainbowSpurdo, basedtriotBear, masterChief, cobsonSoyjak, yakub, tyroneChad, dreadsHoodie };
+export { presidentialSeal, rainbowSpurdo, basedtriotBear, masterChief, cobsonSoyjak, yakub, tyroneChad, dreadsHoodie, flag750first };
 
 export interface Badge {
   id: string;
@@ -355,7 +355,7 @@ export const AVAILABLE_BADGES: Badge[] = [
   { id: "master-chief", name: "Master Chief", image: masterChief },
   { id: "basedtriot-bear", name: "Basedtriot Bear", image: basedtriotBear },
   { id: "cobson-soyjak", name: "Cobson Soyjak", image: cobsonSoyjak },
-  { id: "tyrone-chad", name: "Yakub", image: tyroneChad },
+  { id: "tyrone-chad", name: "Tyrone Chad", image: tyroneChad },
   { id: "yakub", name: "Yakub", image: yakub },
   { id: "dreads-hoodie", name: "Tyrone Chad", image: dreadsHoodie },
   { id: "presidential-seal", name: "Presidential Seal", image: presidentialSeal },
@@ -387,6 +387,7 @@ export interface Post {
   likes: string[];
   createdAt: string;
   isPinned?: boolean;
+  isPoliAniGames?: boolean;
   scheduledAt?: string;
 }
 
