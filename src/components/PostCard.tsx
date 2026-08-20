@@ -6,7 +6,6 @@ import { tagClass, tagLabel, logTime } from "@/lib/tags";
 import UserBadge from "./UserBadge";
 import CommentSection from "./CommentSection";
 import Lightbox from "./Lightbox";
-import RpgPostScene from "./rpg/RpgPostScene";
 import { Heart, MessageCircle, Edit, ExternalLink, Pin, Trash2, Link2, ChevronRight, ChevronDown, Repeat2, Quote } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -21,11 +20,10 @@ interface Props {
   profiles: Record<string, UserProfile>;
   compact?: boolean;
   hideActions?: boolean;
-  variant?: "default" | "rpg";
 }
 
-export default function PostCard({ post, onNeedSetup, onRefresh, profiles, compact = false, hideActions = false, variant = "default" }: Props) {
-  const [expanded, setExpanded] = useState(compact || variant === "rpg");
+export default function PostCard({ post, onNeedSetup, onRefresh, profiles, compact = false, hideActions = false }: Props) {
+  const [expanded, setExpanded] = useState(compact);
   const [showComments, setShowComments] = useState(false);
   const [editing, setEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(post.title);
@@ -148,19 +146,6 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles, compa
       toast({ title: "Copy failed", description: url });
     }
   };
-
-  if (variant === "rpg") {
-    return (
-      <RpgPostScene
-        post={post}
-        onNeedSetup={onNeedSetup}
-        onRefresh={onRefresh}
-        profiles={profiles}
-        compact={compact}
-        hideActions={hideActions}
-      />
-    );
-  }
 
   return (
     <article className={`gradient-card border-l-2 border-y border-r border-border/60 rounded-sm text-[13px] leading-relaxed transition-colors hover:bg-muted/30 ${post.isPinned ? "border-l-primary" : "border-l-border"}`}>

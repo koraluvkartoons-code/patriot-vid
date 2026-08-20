@@ -4,7 +4,7 @@ import spongebobTongue from "@/assets/badges/spongebob-tongue.png";
 import thinkingPepe from "@/assets/badges/thinking-pepe.png";
 import smugPepe from "@/assets/badges/smug-pepe.png";
 import surprisedSpongebob from "@/assets/badges/surprised-spongebob.png";
-const smugPepeDark = smugPepe;
+import smugPepeDark from "@/assets/badges/smug-pepe.png";
 import angryPepe from "@/assets/badges/angry-pepe.png";
 import punchingPepe from "@/assets/badges/punching-pepe.png";
 import kermitGun from "@/assets/badges/kermit-gun.png";
@@ -35,7 +35,7 @@ import patriotLion from "@/assets/badges/patriot-lion.png";
 import amongUsBat from "@/assets/badges/among-us-bat.png";
 import saitamaLook from "@/assets/badges/saitama-look.png";
 import trumpFist from "@/assets/badges/trump-fist.png";
-const trumpPoint = trumpFist;
+import trumpPoint from "@/assets/badges/trump-fist.png";
 import npcCurrentThing from "@/assets/badges/npc-current-thing.png";
 import pepega from "@/assets/badges/pepega.png";
 import hypersPepe from "@/assets/badges/hypers-pepe.png";
@@ -48,8 +48,7 @@ import trumpShrek from "@/assets/badges/trump-shrek.png";
 import turtleShock from "@/assets/badges/turtle-shock.png";
 import kanyeLaugh from "@/assets/badges/kanye-laugh.png";
 import magaJesus from "@/assets/badges/maga-jesus.png";
-import jesusCross from "@/assets/badges/jesus-cross.png";
-const jesusMosaic = jesusCross;
+import jesusMosaic from "@/assets/badges/maga-jesus.png";
 import narutoFist from "@/assets/badges/naruto-fist.png";
 import marioYoshi from "@/assets/badges/mario-yoshi.png";
 import kirbyHehe from "@/assets/badges/kirby-hehe.png";
@@ -71,7 +70,7 @@ import dancingTriangle from "@/assets/badges/dancing-triangle.gif";
 import homerBushes from "@/assets/badges/homer-bushes.gif";
 import veggieTalesTomato from "@/assets/badges/veggie-tales-tomato.png";
 import usaFlag from "@/assets/badges/usa-flag.png";
-const gumballCaveman = laughingGuy;
+import gumballCaveman from "@/assets/badges/angry-darwin.png";
 import evilPatrick from "@/assets/badges/evil-patrick.png";
 import angryDarwin from "@/assets/badges/angry-darwin.png";
 import thonkEmoji from "@/assets/badges/thonk-emoji.png";
@@ -82,13 +81,12 @@ import doraSmirk from "@/assets/badges/dora-smirk.png";
 import monkeyPuppet from "@/assets/badges/monkey-puppet.png";
 import dogeCool from "@/assets/badges/doge-cool.png";
 import baldGuyStare from "@/assets/badges/bald-guy-stare.png";
-const buffDoge = dogeCool;
+import buffDoge from "@/assets/badges/doge-cool.png";
 import mcdonaldsArches from "@/assets/badges/mcdonalds-arches.png";
 import frySquint from "@/assets/badges/fry-squint.png";
 import soyjakPointing from "@/assets/badges/soyjak-pointing.png";
 import amongUsRed from "@/assets/badges/among-us-red.png";
-import paperMario from "@/assets/badges/paper-mario.png";
-const marioMushroom = paperMario;
+import marioMushroom from "@/assets/badges/mario-stretched.png";
 import trumpThumbsup from "@/assets/badges/trump-thumbsup.png";
 import helloKitty from "@/assets/badges/hello-kitty.png";
 import pepeBan from "@/assets/badges/pepe-ban.png";
@@ -111,9 +109,10 @@ import vaderMoney from "@/assets/badges/vader-money.png";
 import americaFirst from "@/assets/badges/america-first.png";
 import ultraMaga from "@/assets/badges/ultra-maga.png";
 import basedtriots from "@/assets/badges/basedtriots.png";
-const flag750first = americaFirst;
+import flag750first from "@/assets/badges/750first-flag.png";
 import polianigames from "@/assets/badges/polianigames.png";
 import starOfDavid from "@/assets/badges/star-of-david.png";
+import jesusCross from "@/assets/badges/jesus-cross.png";
 import pepePropeller from "@/assets/badges/pepe-propeller.png";
 import rainbowPepe from "@/assets/badges/rainbow-pepe.png";
 import clownPepeAk from "@/assets/badges/clown-pepe-ak.png";
@@ -121,7 +120,7 @@ import bigBrainPepe from "@/assets/badges/big-brain-pepe.png";
 import spoderman from "@/assets/badges/spoderman.png";
 import pepeCross from "@/assets/badges/pepe-cross.png";
 import ashtarCommand from "@/assets/badges/ashtar-command.png";
-const thousandYardStare = thousandYard;
+import thousandYardStare from "@/assets/badges/thousand-yard.png";
 import vaultBoy from "@/assets/badges/vault-boy.png";
 import streamerSmirk from "@/assets/badges/streamer-smirk.png";
 import charlieKirk from "@/assets/badges/nick-fuentes.png";
@@ -167,20 +166,16 @@ import patrickCommunism from "@/assets/badges/patrick-communism.png";
 import shrekPeter from "@/assets/badges/shrek-peter.png";
 import pepePropeller2 from "@/assets/badges/pepe-propeller.png";
 import kekFlag from "@/assets/badges/kek-flag.png";
-import masterChiefAsset from "@/assets/badges/master-chief.gif.asset.json";
-import basedtriotBearAsset from "@/assets/badges/basedtriot-bear.png.asset.json";
-import cobsonSoyjakAsset from "@/assets/badges/cobson-soyjak.png.asset.json";
-import tyroneChadAsset from "@/assets/badges/tyrone-chad.jpg.asset.json";
-import dreadsHoodieAsset from "@/assets/badges/dreads-hoodie.jpg.asset.json";
-import presidentialSealAsset from "@/assets/badges/presidential-seal.png.asset.json";
-import rainbowSpurdoAsset from "@/assets/badges/rainbow-spurdo.png.asset.json";
-const masterChief = masterChiefAsset.url;
-const basedtriotBear = basedtriotBearAsset.url;
-const cobsonSoyjak = cobsonSoyjakAsset.url;
-const tyroneChad = tyroneChadAsset.url;
-const dreadsHoodie = dreadsHoodieAsset.url;
-const presidentialSeal = presidentialSealAsset.url;
-const rainbowSpurdo = rainbowSpurdoAsset.url;
+import masterChief from "@/assets/badges/master-chief.png";
+import basedtriotBear from "@/assets/badges/basedtriot-bear.svg";
+import cobsonSoyjak from "@/assets/badges/cobson-soyjak.png";
+import tyroneChad from "@/assets/badges/tyrone-chad.jpg";
+import dreadsHoodie from "@/assets/badges/dreads-hoodie.jpg";
+import presidentialSeal from "@/assets/badges/presidential-seal.png";
+import rainbowSpurdo from "@/assets/badges/rainbow-spurdo.svg";
+const yakub = tyroneChad;
+
+export { presidentialSeal, rainbowSpurdo, basedtriotBear, masterChief, cobsonSoyjak, yakub, tyroneChad, dreadsHoodie };
 
 export interface Badge {
   id: string;
@@ -361,6 +356,7 @@ export const AVAILABLE_BADGES: Badge[] = [
   { id: "basedtriot-bear", name: "Basedtriot Bear", image: basedtriotBear },
   { id: "cobson-soyjak", name: "Cobson Soyjak", image: cobsonSoyjak },
   { id: "tyrone-chad", name: "Yakub", image: tyroneChad },
+  { id: "yakub", name: "Yakub", image: yakub },
   { id: "dreads-hoodie", name: "Tyrone Chad", image: dreadsHoodie },
   { id: "presidential-seal", name: "Presidential Seal", image: presidentialSeal },
   { id: "rainbow-spurdo", name: "Rainbow Spurdo", image: rainbowSpurdo },
@@ -392,7 +388,6 @@ export interface Post {
   createdAt: string;
   isPinned?: boolean;
   scheduledAt?: string;
-  site?: string;
 }
 
 export interface Repost {
@@ -411,7 +406,6 @@ export interface Comment {
   text: string;
   mediaUrl?: string;
   mediaType?: string;
-  media?: PostMedia[];
   createdAt: string;
 }
 

@@ -1,0 +1,148 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 768" width="100%" height="100%">
+  <defs>
+    <!-- Smooth continuous horizontal rainbow gradient matching the photo -->
+    <linearGradient id="rainbowFill" x1="0%" y1="20%" x2="100%" y2="60%">
+      <stop offset="0%" stop-color="#ff002b"/>
+      <stop offset="10%" stop-color="#ff2200"/>
+      <stop offset="22%" stop-color="#ff7700"/>
+      <stop offset="34%" stop-color="#ffea00"/>
+      <stop offset="46%" stop-color="#73e600"/>
+      <stop offset="56%" stop-color="#00e676"/>
+      <stop offset="68%" stop-color="#00b0ff"/>
+      <stop offset="80%" stop-color="#2979ff"/>
+      <stop offset="90%" stop-color="#651fff"/>
+      <stop offset="96%" stop-color="#d500f9"/>
+      <stop offset="100%" stop-color="#ff1744"/>
+    </linearGradient>
+
+    <!-- Glossy top rim shine -->
+    <linearGradient id="topShine" x1="20%" y1="0%" x2="40%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="30%" stop-color="#ffffff" stop-opacity="0.6"/>
+      <stop offset="70%" stop-color="#ffffff" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Snout Left Gradient -->
+    <linearGradient id="snoutLeft" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="25%" stop-color="#ffff8d"/>
+      <stop offset="70%" stop-color="#ffea00"/>
+      <stop offset="100%" stop-color="#ffd600"/>
+    </linearGradient>
+
+    <!-- Snout Right Gradient -->
+    <linearGradient id="snoutRight" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="30%" stop-color="#ffff8d"/>
+      <stop offset="80%" stop-color="#ffd600"/>
+      <stop offset="100%" stop-color="#ffc400"/>
+    </linearGradient>
+
+    <!-- Mouth Pink Gradient -->
+    <linearGradient id="mouthPink" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ff80ab"/>
+      <stop offset="50%" stop-color="#ff4081"/>
+      <stop offset="100%" stop-color="#f50057"/>
+    </linearGradient>
+
+    <!-- 4-point sparkle star component -->
+    <g id="star-sparkle">
+      <path d="M 0,-32 Q 0,0 32,0 Q 0,0 0,32 Q 0,0 -32,0 Q 0,0 0,-32 Z" fill="#ffffff"/>
+      <path d="M 0,-18 Q 0,0 18,0 Q 0,0 0,18 Q 0,0 -18,0 Q 0,0 0,-18 Z" fill="#ffffff"/>
+      <circle cx="0" cy="0" r="5" fill="#ffffff"/>
+      <!-- Soft aura glow -->
+      <circle cx="0" cy="0" r="14" fill="#ffffff" fill-opacity="0.4"/>
+    </g>
+
+    <g id="star-sparkle-sm">
+      <path d="M 0,-20 Q 0,0 20,0 Q 0,0 0,20 Q 0,0 -20,0 Q 0,0 0,-20 Z" fill="#ffffff"/>
+      <circle cx="0" cy="0" r="3.5" fill="#ffffff"/>
+      <circle cx="0" cy="0" r="9" fill="#ffffff" fill-opacity="0.35"/>
+    </g>
+  </defs>
+
+  <!-- Spurdo Main Head Outline & Base -->
+  <g id="spurdo-head">
+    <!-- Outer solid black contour -->
+    <path d="M 280,35 C 440,15 560,25 600,52 C 615,35 690,15 820,38 C 930,55 1005,140 1000,270 C 995,380 970,490 910,590 C 850,690 730,735 550,742 C 370,750 200,740 110,660 C 40,600 10,500 15,390 C 20,290 60,190 140,110 C 180,70 230,42 280,35 Z"
+      fill="#000000" stroke="#000000" stroke-width="16" stroke-linejoin="round" stroke-linecap="round"/>
+
+    <!-- Rainbow Body Fill -->
+    <path d="M 285,42 C 440,24 558,34 597,58 C 612,42 685,24 812,45 C 918,62 990,144 985,270 C 980,375 955,482 898,578 C 840,674 724,720 550,727 C 375,735 210,725 124,648 C 58,590 29,495 34,390 C 39,295 77,200 152,124 C 190,86 238,58 285,42 Z"
+      fill="url(#rainbowFill)"/>
+
+    <!-- 3D Jelly Rim Lighting / Glow -->
+    <path d="M 285,42 C 440,24 558,34 597,58 C 612,42 685,24 812,45 C 918,62 990,144 985,270 C 980,375 955,482 898,578 C 840,674 724,720 550,727 C 375,735 210,725 124,648 C 58,590 29,495 34,390 C 39,295 77,200 152,124 C 190,86 238,58 285,42 Z"
+      fill="none" stroke="#ffffff" stroke-width="8" stroke-opacity="0.4" stroke-linecap="round"/>
+
+    <!-- Glossy White Highlight on Top-Left Dome -->
+    <path d="M 290,50 C 370,40 470,45 540,65 C 500,85 410,95 330,95 C 260,95 200,80 170,68 C 205,56 245,51 290,50 Z"
+      fill="url(#topShine)"/>
+    <ellipse cx="360" cy="58" rx="75" ry="14" transform="rotate(-6, 360, 58)" fill="#ffffff" fill-opacity="0.85"/>
+
+    <!-- Forehead Wrinkles (Classic Spurdo marks) -->
+    <!-- Top-left wrinkle -->
+    <path d="M 390,105 C 440,82 485,78 540,92" fill="none" stroke="#000000" stroke-width="14" stroke-linecap="round"/>
+    <!-- Middle forehead wrinkle -->
+    <path d="M 390,185 C 480,125 580,135 695,240" fill="none" stroke="#000000" stroke-width="15" stroke-linecap="round"/>
+    <!-- Upper-right wrinkle -->
+    <path d="M 690,85 C 750,55 830,70 895,135" fill="none" stroke="#000000" stroke-width="14" stroke-linecap="round"/>
+    <!-- Right temple wrinkle -->
+    <path d="M 825,145 C 875,130 925,155 960,215" fill="none" stroke="#000000" stroke-width="13" stroke-linecap="round"/>
+
+    <!-- Left Eye (Big solid round black dot) -->
+    <ellipse cx="605" cy="318" rx="42" ry="44" fill="#000000"/>
+    <ellipse cx="618" cy="306" rx="10" ry="8" fill="#ffffff" fill-opacity="0.2"/>
+
+    <!-- Right Eye (Big solid round black dot) -->
+    <ellipse cx="895" cy="312" rx="38" ry="42" fill="#000000"/>
+    <ellipse cx="906" cy="302" rx="9" ry="7" fill="#ffffff" fill-opacity="0.2"/>
+
+    <!-- Mouth Cavity / Smile -->
+    <path d="M 525,485 C 540,640 730,685 860,490 C 820,630 670,665 540,510 Z"
+      fill="#1a0033" stroke="#000000" stroke-width="14" stroke-linejoin="round" stroke-linecap="round"/>
+    <!-- Mouth Tongue / Pink interior -->
+    <path d="M 535,500 C 555,620 715,660 845,505 C 795,615 660,640 550,520 Z"
+      fill="url(#mouthPink)"/>
+
+    <!-- Left Snout Cheek (Large yellow horizontal pill) -->
+    <ellipse cx="505" cy="425" rx="215" ry="85" transform="rotate(-3, 505, 425)"
+      fill="url(#snoutLeft)" stroke="#000000" stroke-width="14"/>
+    <!-- Left Snout Specular Highlight -->
+    <ellipse cx="485" cy="390" rx="160" ry="38" transform="rotate(-3, 485, 390)" fill="#ffffff" fill-opacity="0.85"/>
+
+    <!-- Right Snout Cheek (Smaller yellow horizontal pill) -->
+    <ellipse cx="870" cy="445" rx="115" ry="46" transform="rotate(7, 870, 445)"
+      fill="url(#snoutRight)" stroke="#000000" stroke-width="13"/>
+    <!-- Right Snout Specular Highlight -->
+    <ellipse cx="865" cy="425" rx="80" ry="20" transform="rotate(7, 865, 425)" fill="#ffffff" fill-opacity="0.85"/>
+
+    <!-- Black Center Nose -->
+    <ellipse cx="760" cy="445" rx="46" ry="34" fill="#000000"/>
+    <ellipse cx="770" cy="436" rx="14" ry="8" fill="#ffffff" fill-opacity="0.3"/>
+
+    <!-- Sparkling 4-Point Diamond Stars matching the photo -->
+    <!-- Top-left sparkle on red edge -->
+    <use href="#star-sparkle" x="140" y="260"/>
+    <!-- Middle-left sparkle on orange edge -->
+    <use href="#star-sparkle" x="32" y="540"/>
+    <!-- Lower-left sparkle on green edge -->
+    <use href="#star-sparkle" x="235" y="695"/>
+    <!-- Top cleft sparkle between red/yellow -->
+    <use href="#star-sparkle" x="680" y="90"/>
+    <!-- Upper-right sparkle on green/blue -->
+    <use href="#star-sparkle" x="870" y="105"/>
+    <!-- Center-right sparkle near cheek -->
+    <use href="#star-sparkle" x="795" y="480"/>
+    <!-- Bottom sparkle on purple/magenta -->
+    <use href="#star-sparkle" x="410" y="905"/>
+    <use href="#star-sparkle" x="410" y="705"/>
+    <use href="#star-sparkle" x="815" y="890"/>
+    <use href="#star-sparkle" x="815" y="690"/>
+    <!-- Smaller accent sparkles -->
+    <use href="#star-sparkle-sm" x="300" y="480"/>
+    <use href="#star-sparkle-sm" x="940" y="510"/>
+    <use href="#star-sparkle-sm" x="975" y="270"/>
+  </g>
+</svg>

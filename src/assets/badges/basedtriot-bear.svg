@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 768" width="100%" height="100%">
+  <!-- Spurdo Sparde Classic Vector by Kevinino -->
+  <!-- Base Head / Body Silhouette -->
+  <g id="spurdo-sparde">
+    <!-- Main Brown Head -->
+    <path d="M 285,38 C 445,18 565,28 604,55 C 618,38 692,18 822,40 C 930,58 1004,142 998,272 C 992,382 968,490 908,590 C 848,690 726,736 550,742 C 370,750 202,740 114,660 C 44,600 12,500 18,390 C 24,290 64,190 144,110 C 184,70 234,44 285,38 Z"
+      fill="#8b5138" stroke="#000000" stroke-width="18" stroke-linejoin="round" stroke-linecap="round"/>
+
+    <!-- Forehead Wrinkles (Classic black hand-drawn vector strokes) -->
+    <!-- Top-left wrinkle -->
+    <path d="M 385,115 C 435,92 480,88 535,102" fill="none" stroke="#000000" stroke-width="16" stroke-linecap="round"/>
+    <!-- Middle curved eyebrow wrinkle -->
+    <path d="M 385,195 C 475,135 575,145 690,250" fill="none" stroke="#000000" stroke-width="17" stroke-linecap="round"/>
+    <!-- Upper right forehead wrinkle -->
+    <path d="M 685,92 C 745,62 825,78 890,142" fill="none" stroke="#000000" stroke-width="16" stroke-linecap="round"/>
+    <!-- Right temple wrinkle -->
+    <path d="M 820,152 C 870,138 920,162 955,222" fill="none" stroke="#000000" stroke-width="15" stroke-linecap="round"/>
+
+    <!-- Left Eye (Solid round black disc) -->
+    <ellipse cx="605" cy="320" rx="42" ry="44" fill="#000000"/>
+
+    <!-- Right Eye (Solid round black disc) -->
+    <ellipse cx="895" cy="315" rx="38" ry="42" fill="#000000"/>
+
+    <!-- Mouth Opening (Pink interior + dark background + black outline) -->
+    <path d="M 520,490 C 540,645 730,690 865,495 C 820,635 670,670 535,515 Z"
+      fill="#1a0033" stroke="#000000" stroke-width="16" stroke-linejoin="round" stroke-linecap="round"/>
+    <!-- Pink mouth interior -->
+    <path d="M 530,505 C 550,625 715,665 850,510 C 800,620 660,645 545,525 Z"
+      fill="#fca5b8"/>
+
+    <!-- Left Snout Cheek (Large pastel yellow pill) -->
+    <ellipse cx="505" cy="430" rx="215" ry="85" transform="rotate(-3, 505, 430)"
+      fill="#fae896" stroke="#000000" stroke-width="16"/>
+
+    <!-- Right Snout Cheek (Smaller pastel yellow pill) -->
+    <ellipse cx="870" cy="450" rx="115" ry="46" transform="rotate(7, 870, 450)"
+      fill="#fae896" stroke="#000000" stroke-width="15"/>
+
+    <!-- Center Black Nose -->
+    <ellipse cx="760" cy="450" rx="46" ry="34" fill="#000000"/>
+  </g>
+</svg>

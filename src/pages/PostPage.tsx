@@ -35,12 +35,11 @@ export default function PostPage() {
         description: data.description || "",
         mediaUrl: data.media_url || undefined,
         mediaType: data.media_type || undefined,
-        media: Array.isArray(data.media) ? (data.media as { type: string; url: string }[]).filter(m => m && typeof m.url === "string") : [],
+        media: Array.isArray(data.media) ? (data.media as any[]).filter(m => m && typeof m.url === "string") : [],
         category: data.category || undefined,
         likes: data.likes || [],
         createdAt: data.created_at,
         isPinned: data.is_pinned || false,
-        site: data.site || undefined,
       });
     }
     setLoading(false);
@@ -70,13 +69,7 @@ export default function PostPage() {
         {loading && <p className="text-center text-muted-foreground py-16">Loading...</p>}
         {!loading && notFound && <p className="text-center text-muted-foreground py-16">Post not found.</p>}
         {!loading && post && (
-          <PostCard
-            post={post}
-            onNeedSetup={() => setShowSetup(true)}
-            onRefresh={load}
-            profiles={profiles}
-            variant={post.site === "polianigames" ? "rpg" : "default"}
-          />
+          <PostCard post={post} onNeedSetup={() => setShowSetup(true)} onRefresh={load} profiles={profiles} />
         )}
       </main>
       <UserSetupDialog open={showSetup} onComplete={() => { setShowSetup(false); load(); }} />

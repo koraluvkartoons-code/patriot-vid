@@ -19,7 +19,6 @@ export default function Watch() {
   const [profiles, setProfiles] = useState<Record<string, UserProfile>>({});
   const [layout, setLayout] = useState<Layout>("pip");
   const [hasScreen, setHasScreen] = useState(false);
-  const [hasCam, setHasCam] = useState(false);
   const [pipPos, setPipPos] = useState({ x: 16, y: 16 });
   const [pipSize, setPipSize] = useState(220);
   const [volume, setVolume] = useState(1);
@@ -57,11 +56,7 @@ export default function Watch() {
         roomRef.current = room;
 
         const attach = (track: RemoteTrack, pub: RemoteTrackPublication) => {
-          if (track.kind === Track.Kind.Audio && audioRef.current) {
-            track.attach(audioRef.current);
-            audioRef.current.play().catch(() => {});
-            return;
-          }
+          if (track.kind === Track.Kind.Audio && audioRef.current) { track.attach(audioRef.current); return; }
           if (track.kind !== Track.Kind.Video) return;
           const isScreen = pub.source === Track.Source.ScreenShare;
           if (isScreen) {
@@ -69,20 +64,15 @@ export default function Watch() {
             setHasScreen(true);
           } else {
             if (camVideoRef.current) track.attach(camVideoRef.current);
-            setHasCam(true);
           }
         };
         const detach = (track: RemoteTrack, pub: RemoteTrackPublication) => {
           track.detach();
           if (pub.source === Track.Source.ScreenShare) setHasScreen(false);
-          else setHasCam(false);
         };
         room.on(RoomEvent.TrackSubscribed, attach);
         room.on(RoomEvent.TrackUnsubscribed, detach);
-        room.on(RoomEvent.ParticipantDisconnected, (_p: RemoteParticipant) => {
-          setHasScreen(false);
-          setHasCam(false);
-        });
+        room.on(RoomEvent.ParticipantDisconnected, (_p: RemoteParticipant) => setHasScreen(false));
         await room.connect((tok as any).url, (tok as any).token);
       }
     })();
@@ -138,7 +128,7 @@ export default function Watch() {
           <div>
             {isLive ? (
               <>
-                {hasScreen && hasCam && (
+                {hasScreen && (
                   <div className="flex gap-1 mb-2">
                     <Button size="sm" variant={layout === "pip" ? "default" : "secondary"} onClick={() => setLayout("pip")}><PictureInPicture2 className="w-4 h-4 mr-1" />PiP</Button>
                     <Button size="sm" variant={layout === "side" ? "default" : "secondary"} onClick={() => setLayout("side")}><Columns2 className="w-4 h-4 mr-1" />Side</Button>
@@ -147,48 +137,25 @@ export default function Watch() {
                   </div>
                 )}
                 <div ref={stageRef} className="relative bg-black rounded-lg overflow-hidden border border-primary/30">
-                  {layout === "side" && hasScreen && hasCam ? (
+                  {layout === "side" && hasScreen ? (
                     <div className="grid grid-cols-2 aspect-video">
                       <video ref={screenVideoRef} autoPlay playsInline className="w-full h-full object-contain bg-black" />
                       <video ref={camVideoRef} autoPlay playsInline muted className="w-full h-full object-contain bg-black" />
                     </div>
                   ) : (
-                    <div className="aspect-video relative flex items-center justify-center bg-black">
-                      <video
-                        ref={screenVideoRef}
-                        autoPlay
-                        playsInline
-                        className={`w-full h-full object-contain ${hasScreen ? "" : "hidden"}`}
+                    <div className="aspect-video relative">
+                      <video ref={screenVideoRef} autoPlay playsInline className={`w-full h-full object-contain ${hasScreen ? "" : "hidden"}`} />
+                      <video ref={camVideoRef} autoPlay playsInline muted
+                        className={hasScreen
+                          ? "absolute object-cover rounded-md border-2 border-primary cursor-move shadow-2xl"
+                          : "w-full h-full object-contain"}
+                        id={hasScreen ? "pip-cam" : undefined}
+                        style={hasScreen ? { left: pipPos.x, top: pipPos.y, width: pipSize, height: pipSize * 0.5625 } : undefined}
                       />
-                      <video
-                        ref={camVideoRef}
-                        autoPlay
-                        playsInline
-                        muted
-                        className={
-                          hasScreen && hasCam
-                            ? "absolute object-cover rounded-md border-2 border-primary cursor-move shadow-2xl z-10"
-                            : hasCam
-                            ? "w-full h-full object-contain"
-                            : "hidden"
-                        }
-                        id={hasScreen && hasCam ? "pip-cam" : undefined}
-                        style={hasScreen && hasCam ? { left: pipPos.x, top: pipPos.y, width: pipSize, height: pipSize * 0.5625 } : undefined}
-                      />
-                      {hasScreen && hasCam && layout === "pip" && (
-                        <input
-                          type="range"
-                          min={140}
-                          max={420}
-                          value={pipSize}
+                      {hasScreen && layout === "pip" && (
+                        <input type="range" min={140} max={420} value={pipSize}
                           onChange={e => setPipSize(+e.target.value)}
-                          className="absolute bottom-2 right-2 w-32 accent-pink-500 z-20"
-                        />
-                      )}
-                      {!hasScreen && !hasCam && (
-                        <div className="text-center p-4">
-                          <p className="text-sm text-muted-foreground animate-pulse">Connecting to stream...</p>
-                        </div>
+                          className="absolute bottom-2 right-2 w-32 accent-pink-500" />
                       )}
                     </div>
                   )}

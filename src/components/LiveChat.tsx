@@ -119,54 +119,21 @@ export default function LiveChat({ streamId, guestName, guestSessionId, isModera
     if ((data as any)?.error) alert((data as any).error);
   };
 
-  const renderUserBadges = (name: string) => {
-    const isHost = name === hostUserId;
-    const prof = profiles[name];
-    const isAdminUser = name === "PatriotAdmin" || name === "admin" || prof?.isAdmin;
-    const isModUser = (!isAdminUser && (isModerator || prof?.isModerator));
-
-    return (
-      <span className="inline-flex items-center gap-1">
-        {isAdminUser && (
-          <span
-            className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded bg-gradient-to-r from-red-600 via-amber-500 to-yellow-400 text-black text-[9px] font-black tracking-wider uppercase shadow-[0_0_8px_rgba(234,179,8,0.7)] border border-yellow-200"
-            title="Verified Admin"
-          >
-            👑 ADMIN
-          </span>
-        )}
-        {isModUser && (
-          <span
-            className="inline-flex items-center gap-0.5 px-1 py-0.2 rounded bg-indigo-900/80 text-cyan-300 text-[9px] font-bold border border-cyan-400/60"
-            title="Moderator"
-          >
-            🛡️ MOD
-          </span>
-        )}
-        {isHost && (
-          <span
-            className="inline-flex items-center gap-0.5 px-1 py-0.2 rounded bg-pink-950/80 text-pink-300 text-[9px] font-bold border border-pink-500/50"
-            title="Stream Host"
-          >
-            🎙️ HOST
-          </span>
-        )}
-        {prof?.badges?.map(bid => {
-          const b = AVAILABLE_BADGES.find(x => x.id === bid);
-          return b ? <img key={bid} src={b.image} alt={b.name} title={b.name} className="w-4 h-4 inline-block object-contain" /> : null;
-        })}
-      </span>
-    );
+  const renderHostBadges = (name: string) => {
+    if (name !== hostUserId) return null;
+    const prof = profiles[hostUserId];
+    if (!prof?.badges?.length) return null;
+    return prof.badges.map(bid => {
+      const b = AVAILABLE_BADGES.find(x => x.id === bid);
+      return b ? <img key={bid} src={b.image} alt={b.name} title={b.name} className="w-4 h-4 inline-block" /> : null;
+    });
   };
 
   return (
     <div className="flex flex-col h-full bg-black rounded-lg border border-primary/30 overflow-hidden">
       <div className="px-3 py-2 border-b border-primary/30 flex items-center justify-between">
         <span className="text-pink-400 font-bold text-sm">LIVE CHAT</span>
-        <div className="flex items-center gap-1">
-          <span className="text-xs text-pink-200">{guestName}</span>
-          {renderUserBadges(guestName)}
-        </div>
+        <span className="text-xs text-pink-200">{guestName}</span>
       </div>
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-3 space-y-2">
@@ -181,18 +148,8 @@ export default function LiveChat({ streamId, guestName, guestSessionId, isModera
                 </div>
               )}
               <div className="flex items-center gap-1.5 flex-wrap">
-                <span
-                  className={`text-xs font-bold ${
-                    m.guest_name === "PatriotAdmin" || m.guest_name === "admin" || profiles[m.guest_name]?.isAdmin
-                      ? "text-yellow-300 drop-shadow-[0_0_6px_rgba(253,224,71,0.6)] font-black"
-                      : isHost
-                      ? "text-pink-400"
-                      : "text-pink-300"
-                  }`}
-                >
-                  {m.guest_name}
-                </span>
-                {renderUserBadges(m.guest_name)}
+                <span className={`text-xs font-bold ${isHost ? "text-pink-400" : "text-pink-300"}`}>{m.guest_name}{isHost && " 🎙️"}</span>
+                {renderHostBadges(m.guest_name)}
                 <span className="text-[10px] text-zinc-500">{new Date(m.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
                 <div className="flex-1" />
                 <button onClick={() => setReplyTo(m)} className="opacity-0 group-hover:opacity-100 text-pink-300/60 hover:text-pink-300"><Reply className="w-3 h-3" /></button>
