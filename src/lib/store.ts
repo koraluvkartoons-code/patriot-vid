@@ -173,6 +173,8 @@ import tyroneChadAsset from "@/assets/badges/tyrone-chad.jpg.asset.json";
 import dreadsHoodieAsset from "@/assets/badges/dreads-hoodie.jpg.asset.json";
 import presidentialSealAsset from "@/assets/badges/presidential-seal.png.asset.json";
 import rainbowSpurdoAsset from "@/assets/badges/rainbow-spurdo.png.asset.json";
+import goldenSpurdoAsset from "@/assets/badges/golden-spurdo.png.asset.json";
+import silverSpurdoAsset from "@/assets/badges/silver-spurdo.png.asset.json";
 const masterChief = masterChiefAsset.url;
 const basedtriotBear = basedtriotBearAsset.url;
 const cobsonSoyjak = cobsonSoyjakAsset.url;
@@ -180,6 +182,8 @@ const tyroneChad = tyroneChadAsset.url;
 const dreadsHoodie = dreadsHoodieAsset.url;
 const presidentialSeal = presidentialSealAsset.url;
 const rainbowSpurdo = rainbowSpurdoAsset.url;
+const goldenSpurdo = goldenSpurdoAsset.url;
+const silverSpurdo = silverSpurdoAsset.url;
 
 export interface Badge {
   id: string;
@@ -188,6 +192,8 @@ export interface Badge {
 }
 
 export const AVAILABLE_BADGES: Badge[] = [
+  { id: "golden-spurdo", name: "Golden Spurdo", image: goldenSpurdo },
+  { id: "silver-spurdo", name: "Silver Spurdo", image: silverSpurdo },
   { id: "thinking-pepe", name: "Thinking Pepe", image: thinkingPepe },
   { id: "spongebob-tongue", name: "Spongebob Tongue", image: spongebobTongue },
   { id: "smug-pepe-dark", name: "Smug Pepe", image: smugPepeDark },
@@ -398,6 +404,7 @@ export interface Repost {
   postId: string;
   userId: string;
   quoteText: string;
+  media?: PostMedia[];
   createdAt: string;
   post?: Post;
 }
@@ -410,6 +417,7 @@ export interface Comment {
   mediaUrl?: string;
   mediaType?: string;
   createdAt: string;
+  editedAt?: string;
 }
 
 // Current user ID is still stored locally (session identity)
