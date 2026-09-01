@@ -11,6 +11,7 @@ import ScheduledPosts from "@/components/ScheduledPosts";
 import AdminPanel from "@/components/AdminPanel";
 
 import { tagClass, tagLabel } from "@/lib/tags";
+import spankrCoin from "@/assets/spankr-coin.png";
 import { Shield, User, Radio, Film, Archive, X, Gamepad2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -225,6 +226,12 @@ export default function Index() {
 
       <main className="container max-w-3xl mx-auto px-3 py-3 space-y-2">
         <div className="crt-frame rounded-sm p-2 space-y-2">
+          <Link to="/project117" className="pag-spankr-launch" aria-label="Open PROJECT 117">
+            <span className="pag-spankr-label">$SPANKR</span>
+            <img src={spankrCoin} alt="$SPANKR" />
+            <span className="pag-spankr-hint">PROJECT 117 →</span>
+          </Link>
+
           <div className="flex items-center gap-1 flex-wrap text-[11px]">
             <button
               onClick={() => { setActiveCategory(null); setSearching(false); setSearchTerm(""); }}

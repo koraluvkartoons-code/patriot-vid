@@ -256,6 +256,12 @@ export async function fetchComments(postId: string): Promise<Comment[]> {
   }));
 }
 
+export async function fetchCommentCount(postId: string): Promise<number> {
+  const { count, error } = await supabase.from("comments").select("id", { count: "exact", head: true }).eq("post_id", postId);
+  if (error) throw error;
+  return count || 0;
+}
+
 export async function createComment(comment: { postId: string; userId: string; text: string; mediaUrl?: string; mediaType?: string }) {
   await supabase.from("comments").insert({
     post_id: comment.postId,

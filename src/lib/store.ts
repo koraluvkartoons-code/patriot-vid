@@ -192,8 +192,8 @@ export interface Badge {
 }
 
 export const AVAILABLE_BADGES: Badge[] = [
-  { id: "golden-spurdo", name: "Golden Spurdo", image: goldenSpurdo },
-  { id: "silver-spurdo", name: "Silver Spurdo", image: silverSpurdo },
+  { id: "golden-spurdo", name: "GOLDEN SPURDO", image: goldenSpurdo },
+  { id: "silver-spurdo", name: "SILVER SPURDO", image: silverSpurdo },
   { id: "thinking-pepe", name: "Thinking Pepe", image: thinkingPepe },
   { id: "spongebob-tongue", name: "Spongebob Tongue", image: spongebobTongue },
   { id: "smug-pepe-dark", name: "Smug Pepe", image: smugPepeDark },
