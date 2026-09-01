@@ -39,6 +39,12 @@ export default function RepostCard({ repost, profiles, onNeedSetup, onRefresh }:
         <p className="px-2 pb-1 text-[13px] text-foreground break-words">{repost.quoteText}</p>
       )}
 
+      {repost.media && repost.media.length > 0 && (
+        <div className={`px-2 pb-2 grid ${repost.media.length > 1 ? "grid-cols-2" : "grid-cols-1"} gap-1`}>
+          {repost.media.map((m, i) => m.type === "video" ? <video key={i} src={m.url} controls className="w-full max-h-64 object-contain bg-background rounded-sm" /> : <img key={i} src={m.url} alt="Repost attachment" loading="lazy" className="w-full max-h-64 object-contain bg-background rounded-sm" />)}
+        </div>
+      )}
+
       <div className="px-1 pb-1">
         <div className="text-[10px] text-muted-foreground px-1 pb-0.5">
           original by <Link to={`/post/${repost.post.id}`} className="text-accent hover:text-primary">@{repost.post.userId}</Link>

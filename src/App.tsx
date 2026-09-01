@@ -10,6 +10,7 @@ import Watch from "./pages/Watch.tsx";
 import PastStreams from "./pages/PastStreams.tsx";
 import PostPage from "./pages/PostPage.tsx";
 import PoliAniGames from "./pages/PoliAniGames.tsx";
+import Project117 from "./pages/Project117.tsx";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/streams" element={<PastStreams />} />
           <Route path="/post/:id" element={<PostPage />} />
           <Route path="/polianigames" element={<PoliAniGames />} />
+          <Route path="/project117" element={<Project117 />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

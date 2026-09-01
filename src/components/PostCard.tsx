@@ -1,17 +1,18 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { type Post, type UserProfile, getCurrentUserId } from "@/lib/store";
-import { fetchPostMedia, updatePost, togglePostLike, togglePinPost, deletePost, addRepost, removeRepost, fetchRepostsFor } from "@/lib/api";
+import { fetchPostMedia, updatePost, togglePostLike, togglePinPost, deletePost, addRepost, removeRepost, fetchRepostsFor, fetchCommentCount, uploadMedia } from "@/lib/api";
 import { tagClass, tagLabel, logTime } from "@/lib/tags";
 import UserBadge from "./UserBadge";
 import CommentSection from "./CommentSection";
 import Lightbox from "./Lightbox";
-import { Heart, MessageCircle, Edit, ExternalLink, Pin, Trash2, Link2, ChevronRight, ChevronDown, Repeat2, Quote } from "lucide-react";
+import { Heart, MessageCircle, Edit, ExternalLink, Pin, Trash2, Link2, ChevronRight, ChevronDown, Repeat2, Quote, ImagePlus, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
+import marioJump from "@/assets/pag/mario-jump-actual.png";
 
 interface Props {
   post: Post;
@@ -41,6 +42,12 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles, compa
   const [reposters, setReposters] = useState<string[]>([]);
   const [quoteOpen, setQuoteOpen] = useState(false);
   const [quoteText, setQuoteText] = useState("");
+  const [quoteFiles, setQuoteFiles] = useState<File[]>([]);
+  const [quotePreviews, setQuotePreviews] = useState<string[]>([]);
+  const [quoteUploading, setQuoteUploading] = useState(false);
+  const [likeFx, setLikeFx] = useState(false);
+  const [commentCount, setCommentCount] = useState<number | null>(null);
+  const quoteFileRef = useRef<HTMLInputElement>(null);
   const gallery = post.media && post.media.length > 1 ? post.media : (post.media?.length === 1 && !post.mediaUrl ? post.media : []);
   const currentUser = getCurrentUserId();
   const isAdmin = currentUser === "PatriotAdmin";
@@ -90,9 +97,18 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles, compa
 
   useEffect(() => { if (!hideActions) loadReposts(); /* eslint-disable-next-line */ }, [post.id, hideActions]);
 
+  useEffect(() => {
+    if (!expanded || hideActions) return;
+    let cancelled = false;
+    fetchCommentCount(post.id).then(n => { if (!cancelled) setCommentCount(n); }).catch(() => undefined);
+    return () => { cancelled = true; };
+  }, [post.id, expanded, hideActions, showComments]);
+
   const handleLike = async () => {
     if (!currentUser) { onNeedSetup(); return; }
     await togglePostLike(post.id, currentUser);
+    setLikeFx(true);
+    window.setTimeout(() => setLikeFx(false), 750);
     onRefresh();
   };
 
@@ -111,12 +127,26 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles, compa
 
   const submitQuote = async () => {
     if (!currentUser) { onNeedSetup(); return; }
-    await addRepost(post.id, currentUser, quoteText.trim());
-    setQuoteOpen(false);
-    setQuoteText("");
-    await loadReposts();
-    onRefresh();
-    toast({ title: "Quote posted" });
+    setQuoteUploading(true);
+    try {
+      const media = [] as { url: string; type: "image" }[];
+      for (const file of quoteFiles) media.push({ url: await uploadMedia(file), type: "image" });
+      await addRepost(post.id, currentUser, quoteText.trim(), media);
+      setQuoteOpen(false); setQuoteText(""); setQuoteFiles([]); setQuotePreviews([]);
+      await loadReposts(); onRefresh(); toast({ title: "Quote posted" });
+    } finally { setQuoteUploading(false); }
+  };
+
+  const addQuoteFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const picked = Array.from(e.target.files || []).filter(f => f.type.startsWith("image/")).slice(0, 10 - quoteFiles.length);
+    e.target.value = "";
+    if (!picked.length) return;
+    setQuoteFiles(prev => [...prev, ...picked]);
+    setQuotePreviews(prev => [...prev, ...picked.map(f => URL.createObjectURL(f))]);
+  };
+  const removeQuoteFile = (i: number) => {
+    setQuoteFiles(prev => prev.filter((_, idx) => idx !== i));
+    setQuotePreviews(prev => { if (prev[i]) URL.revokeObjectURL(prev[i]); return prev.filter((_, idx) => idx !== i); });
   };
 
   const handlePin = async () => {
@@ -257,10 +287,12 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles, compa
               )}
 
               {!hideActions && (
+                <>
+                <div className="pag-xp-bar" title={`XP ${post.likes.length * 3 + reposters.length * 5 + (commentCount || 0) * 2}`}>
+                  <span className="pag-xp-label">XP</span><div className="pag-xp-track"><span style={{ width: `${Math.min(100, 12 + post.likes.length * 3 + reposters.length * 6 + (commentCount || 0) * 2)}%` }} /></div><span className="pag-xp-number">{post.likes.length * 3 + reposters.length * 5 + (commentCount || 0) * 2}</span>
+                </div>
                 <div className="flex items-center gap-3 text-[11px]">
-                  <button onClick={handleLike} className={`flex items-center gap-1 transition-colors ${liked ? "text-primary" : "text-muted-foreground hover:text-primary"}`}>
-                    <Heart className={`w-3.5 h-3.5 ${liked ? "fill-primary" : ""}`} /> {post.likes.length}
-                  </button>
+                  <span className="relative"><button onClick={handleLike} className={`flex items-center gap-1 transition-colors ${liked ? "text-primary" : "text-muted-foreground hover:text-primary"}`}><Heart className={`w-3.5 h-3.5 ${liked ? "fill-primary" : ""}`} /> {post.likes.length}</button>{likeFx && <img src={marioJump} alt="" className="pag-mario-like" />}</span>
                   <button
                     onClick={handleRepost}
                     title={reposted ? "Undo repost" : "Repost"}
@@ -276,6 +308,7 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles, compa
                   </button>
                   <Link to={`/post/${post.id}`} className="text-muted-foreground ml-auto hover:text-primary">{new Date(post.createdAt).toLocaleString()}</Link>
                 </div>
+                </>
               )}
 
               {showComments && (
@@ -305,9 +338,12 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles, compa
           <div className="border border-border rounded-sm p-2 text-[11px] text-muted-foreground">
             <span className="text-accent">@{post.userId}</span> — {post.title}
           </div>
+          {quotePreviews.length > 0 && <div className="grid grid-cols-3 gap-2">{quotePreviews.map((src,i)=><div key={src} className="relative"><img src={src} alt="" className="h-20 w-full object-cover rounded" /><button type="button" onClick={()=>removeQuoteFile(i)} className="absolute top-1 right-1 bg-background/80 rounded-full p-1"><X className="w-3 h-3" /></button></div>)}</div>}
+          <input ref={quoteFileRef} type="file" accept="image/*" multiple className="hidden" onChange={addQuoteFiles} />
+          <Button size="sm" variant="ghost" onClick={()=>quoteFileRef.current?.click()} disabled={quoteUploading} className="text-primary"><ImagePlus className="w-4 h-4 mr-1" /> Photos</Button>
           <div className="flex justify-end gap-2">
             <Button size="sm" variant="ghost" onClick={() => setQuoteOpen(false)} className="text-muted-foreground">Cancel</Button>
-            <Button size="sm" onClick={submitQuote} disabled={!quoteText.trim()} className="gradient-btn">Post quote</Button>
+            <Button size="sm" onClick={submitQuote} disabled={(!quoteText.trim() && quoteFiles.length === 0) || quoteUploading} className="gradient-btn">{quoteUploading ? "Uploading..." : "Post quote"}</Button>
           </div>
         </DialogContent>
       </Dialog>
