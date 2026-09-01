@@ -201,7 +201,7 @@ export async function togglePostLike(postId: string, userId: string) {
 export async function fetchFeedReposts(limit = 30): Promise<Repost[]> {
   const { data, error } = await supabase
     .from("reposts")
-    .select(`id,post_id,user_id,quote_text,created_at, posts(${POST_COLS})`)
+    .select(`id,post_id,user_id,quote_text,media,created_at, posts(${POST_COLS})`)
     .order("created_at", { ascending: false })
     .limit(limit);
   if (error) throw error;
@@ -212,6 +212,7 @@ export async function fetchFeedReposts(limit = 30): Promise<Repost[]> {
       postId: r.post_id,
       userId: r.user_id,
       quoteText: r.quote_text || "",
+      media: parseMedia(r.media),
       createdAt: r.created_at,
       post: r.posts ? mapPost(r.posts) : undefined,
     }))
@@ -227,9 +228,9 @@ export async function fetchRepostsFor(postIds: string[]): Promise<Record<string,
   return map;
 }
 
-export async function addRepost(postId: string, userId: string, quoteText = "") {
+export async function addRepost(postId: string, userId: string, quoteText = "", media: PostMedia[] = []) {
   const { error } = await supabase.from("reposts").upsert(
-    { post_id: postId, user_id: userId, quote_text: quoteText },
+    { post_id: postId, user_id: userId, quote_text: quoteText, media: media as unknown as never },
     { onConflict: "post_id,user_id" }
   );
   if (error) throw error;
@@ -251,6 +252,7 @@ export async function fetchComments(postId: string): Promise<Comment[]> {
     mediaUrl: c.media_url || undefined,
     mediaType: c.media_type || undefined,
     createdAt: c.created_at,
+    editedAt: (c as { edited_at?: string }).edited_at || undefined,
   }));
 }
 
@@ -262,6 +264,10 @@ export async function createComment(comment: { postId: string; userId: string; t
     media_url: comment.mediaUrl || null,
     media_type: comment.mediaType || null,
   });
+}
+
+export async function updateComment(id: string, text: string) {
+  await supabase.from("comments").update({ text, edited_at: new Date().toISOString() }).eq("id", id);
 }
 
 export async function deleteComment(id: string) {
