@@ -58,14 +58,14 @@ export function applyThemeColor(hex: string | null) {
   set("--input", `${h} ${clamp(s - 8)}% ${clamp(l + step * 7)}%`);
   set("--border", `${h} ${clamp(s - 6)}% ${clamp(l + step * 16)}%`);
 
-  const ink = light ? `${h} 45% 12%` : `${h} 100% 88%`;
-  const dim = light ? `${h} 25% 32%` : `${h} 25% 65%`;
+  const ink = light ? `0 0% 100%` : `${h} 100% 88%`;
+  const dim = light ? `0 0% 92%` : `${h} 25% 65%`;
   set("--foreground", ink);
   set("--card-foreground", ink);
   set("--popover-foreground", ink);
   set("--secondary-foreground", ink);
   set("--muted-foreground", dim);
-  set("--pag-ink", light ? `${h} 60% 16%` : `0 0% 100%`);
+  set("--pag-ink", `0 0% 100%`);
   set("--pag-overlay", `${h} ${s}% ${l}%`);
 
   if (light) {
