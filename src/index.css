@@ -237,3 +237,11 @@
 @media (prefers-reduced-motion:reduce){.pag-spankr-launch img{animation:none}}
 .pag-xp-bar{display:flex;align-items:center;gap:5px;padding:2px 0;color:rgba(255,255,255,.55);font-size:8px}.pag-xp-label{color:#ffd45f;font-weight:900}.pag-xp-track{height:5px;flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);overflow:hidden}.pag-xp-track span{display:block;height:100%;background:linear-gradient(90deg,#ff2d95,#00e5ff,#ffe45c);box-shadow:0 0 8px rgba(0,229,255,.55);transition:width .35s ease}.pag-xp-number{min-width:24px;text-align:right;color:rgba(255,255,255,.45)}.pag-mario-like{position:absolute;left:50%;bottom:18px;width:44px;height:46px;object-fit:contain;image-rendering:pixelated;pointer-events:none;animation:pagMarioJump .72s steps(6,end) forwards;z-index:20;transform:translateX(-50%)}
 @keyframes pagMarioJump{0%{opacity:0;transform:translate(-50%,8px) scale(.8)}20%{opacity:1}55%{transform:translate(-50%,-28px) scale(1)}100%{opacity:0;transform:translate(-50%,-48px) scale(.9)}}
+
+/* Mario runs across the screen on like */
+.mario-run-layer{position:fixed;inset:0;z-index:9999;pointer-events:none;overflow:hidden}
+.mario-run-sprite{position:absolute;bottom:6vh;left:0;width:132px;height:180px;background-repeat:no-repeat;background-size:1452px 180px;image-rendering:pixelated;pointer-events:none;animation:marioRunFrames .7s steps(11) infinite,marioRunAcross 2.2s linear forwards}
+@keyframes marioRunFrames{from{background-position:0 0}to{background-position:-1452px 0}}
+@keyframes marioRunAcross{from{transform:translateX(-180px)}to{transform:translateX(calc(100vw + 180px))}}
+@media (max-width:640px){.mario-run-sprite{width:99px;height:135px;background-size:1089px 135px}@keyframes marioRunFrames{from{background-position:0 0}to{background-position:-1089px 0}}}
+@media (prefers-reduced-motion:reduce){.mario-run-layer{display:none}}
