@@ -11,6 +11,7 @@ import PastStreams from "./pages/PastStreams.tsx";
 import PostPage from "./pages/PostPage.tsx";
 import PoliAniGames from "./pages/PoliAniGames.tsx";
 import Project117 from "./pages/Project117.tsx";
+import MarioRunFx from "@/components/MarioRunFx";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +20,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <MarioRunFx />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
