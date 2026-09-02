@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "@/hooks/use-toast";
-import marioJump from "@/assets/pag/mario-jump-actual.png";
+import { triggerMarioRun } from "@/components/MarioRunFx";
 
 interface Props {
   post: Post;
@@ -108,6 +108,7 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles, compa
     if (!currentUser) { onNeedSetup(); return; }
     await togglePostLike(post.id, currentUser);
     setLikeFx(true);
+    triggerMarioRun();
     window.setTimeout(() => setLikeFx(false), 750);
     onRefresh();
   };
@@ -292,7 +293,7 @@ export default function PostCard({ post, onNeedSetup, onRefresh, profiles, compa
                   <span className="pag-xp-label">XP</span><div className="pag-xp-track"><span style={{ width: `${Math.min(100, 12 + post.likes.length * 3 + reposters.length * 6 + (commentCount || 0) * 2)}%` }} /></div><span className="pag-xp-number">{post.likes.length * 3 + reposters.length * 5 + (commentCount || 0) * 2}</span>
                 </div>
                 <div className="flex items-center gap-3 text-[11px]">
-                  <span className="relative"><button onClick={handleLike} className={`flex items-center gap-1 transition-colors ${liked ? "text-primary" : "text-muted-foreground hover:text-primary"}`}><Heart className={`w-3.5 h-3.5 ${liked ? "fill-primary" : ""}`} /> {post.likes.length}</button>{likeFx && <img src={marioJump} alt="" className="pag-mario-like" />}</span>
+                  <span className="relative"><button onClick={handleLike} className={`flex items-center gap-1 transition-colors ${liked ? "text-primary" : "text-muted-foreground hover:text-primary"}`}><Heart className={`w-3.5 h-3.5 ${liked ? "fill-primary" : ""}`} /> {post.likes.length}</button></span>
                   <button
                     onClick={handleRepost}
                     title={reposted ? "Undo repost" : "Repost"}
