@@ -323,13 +323,6 @@ footer.fixed { padding-bottom: env(safe-area-inset-bottom); }
   --border: 0 0% 100% / 0.25;
   --input: 0 0% 100% / 0.12;
 }
-.theme-rainbow .bg-background,
-.theme-rainbow .bg-card,
-.theme-rainbow .bg-popover,
-.theme-rainbow .bg-secondary,
-.theme-rainbow .bg-muted {
-  background-color: hsl(var(--tw-bg-opacity, 1) * 0 + 0 0% 0% / 0.55) !important;
-}
 .theme-rainbow,
 .theme-rainbow h1,
 .theme-rainbow h2,
