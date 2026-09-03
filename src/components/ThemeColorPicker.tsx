@@ -39,7 +39,7 @@ export default function ThemeColorPicker({ scope, className }: { scope: ThemeSco
         <label className="flex items-center gap-2 text-[11px]">
           <input
             type="color"
-            value={color ?? "#1a0b1f"}
+            value={color && color !== "rainbow" ? color : "#1a0b1f"}
             onChange={e => pick(e.target.value)}
             className="h-8 w-10 bg-transparent border border-border rounded-sm cursor-pointer"
             aria-label="Pick any color"
