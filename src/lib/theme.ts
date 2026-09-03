@@ -7,7 +7,10 @@ export const THEME_PRESETS: { label: string; hex: string | null }[] = [
   { label: "Mint", hex: "#bff0dc" },
   { label: "Amber", hex: "#f6d9a0" },
   { label: "Midnight", hex: "#0b0f1a" },
+  { label: "Rainbow", hex: "rainbow" },
 ];
+
+export const RAINBOW_VALUE = "rainbow";
 
 const KEY = (scope: ThemeScope) => `theme-color:${scope}`;
 
