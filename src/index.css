@@ -292,23 +292,83 @@ footer.fixed { padding-bottom: env(safe-area-inset-bottom); }
 
 /* Rainbow theme: animated rainbow background with neon color-cycling text */
 .theme-rainbow body {
-  background: linear-gradient(270deg, #2b0b3f, #0b1e3f, #0b3f2b, #3f2b0b, #3f0b1e, #2b0b3f);
-  background-size: 1200% 1200%;
-  animation: rainbow-bg 18s ease infinite;
+  background: linear-gradient(
+    270deg,
+    #ff0000,
+    #ff7f00,
+    #ffff00,
+    #00ff00,
+    #0000ff,
+    #4b0082,
+    #9400d3,
+    #ff0000
+  );
+  background-size: 1600% 1600%;
+  animation: rainbow-bg 12s ease infinite;
 }
 .theme-rainbow {
   --foreground: 0 0% 100%;
   --card-foreground: 0 0% 100%;
   --popover-foreground: 0 0% 100%;
   --secondary-foreground: 0 0% 100%;
-  --muted-foreground: 0 0% 88%;
+  --muted-foreground: 0 0% 90%;
+  --primary-foreground: 0 0% 100%;
+  --accent-foreground: 0 0% 100%;
   --pag-ink: 0 0% 100%;
+  --background: 0 0% 0% / 0;
+  --card: 0 0% 0% / 0.55;
+  --popover: 0 0% 0% / 0.7;
+  --secondary: 0 0% 0% / 0.45;
+  --muted: 0 0% 0% / 0.4;
+  --border: 0 0% 100% / 0.25;
+  --input: 0 0% 100% / 0.12;
 }
+.theme-rainbow .bg-background,
+.theme-rainbow .bg-card,
+.theme-rainbow .bg-popover,
+.theme-rainbow .bg-secondary,
+.theme-rainbow .bg-muted {
+  background-color: hsl(var(--tw-bg-opacity, 1) * 0 + 0 0% 0% / 0.55) !important;
+}
+.theme-rainbow,
+.theme-rainbow h1,
+.theme-rainbow h2,
+.theme-rainbow h3,
+.theme-rainbow h4,
+.theme-rainbow p,
+.theme-rainbow span:not(.pag-section-label span, .pag-xp-label, .pag-xp-number),
+.theme-rainbow a,
+.theme-rainbow button,
+.theme-rainbow label,
+.theme-rainbow li,
+.theme-rainbow time,
 .theme-rainbow .text-foreground,
 .theme-rainbow .text-primary,
+.theme-rainbow .text-secondary-foreground,
+.theme-rainbow .text-muted-foreground,
+.theme-rainbow .text-card-foreground,
 .theme-rainbow .crt-text {
-  animation: neon-text 6s linear infinite;
-  text-shadow: 0 0 6px currentColor, 0 0 14px currentColor;
+  animation: neon-text 5s linear infinite;
+  text-shadow: 0 0 5px currentColor, 0 0 12px currentColor, 0 0 22px currentColor;
+}
+.theme-rainbow .text-muted-foreground,
+.theme-rainbow .pag-xp-number {
+  animation: neon-text 5s linear infinite;
+  text-shadow: 0 0 4px currentColor, 0 0 10px currentColor;
+  opacity: 0.95;
+}
+.theme-rainbow .gold-badge,
+.theme-rainbow .gold-badge-lg,
+.theme-rainbow .pag-section-label,
+.theme-rainbow .pag-xp-label {
+  animation: neon-text 5s linear infinite;
+  text-shadow: 0 0 6px currentColor, 0 0 16px currentColor;
+}
+.theme-rainbow input,
+.theme-rainbow textarea,
+.theme-rainbow select {
+  color: #fff;
+  text-shadow: 0 0 6px #fff;
 }
 @keyframes rainbow-bg {
   0% { background-position: 0% 50%; }
@@ -317,10 +377,11 @@ footer.fixed { padding-bottom: env(safe-area-inset-bottom); }
 }
 @keyframes neon-text {
   0% { color: hsl(0 100% 70%); }
-  16% { color: hsl(45 100% 65%); }
-  33% { color: hsl(100 100% 65%); }
-  50% { color: hsl(180 100% 65%); }
-  66% { color: hsl(220 100% 70%); }
-  83% { color: hsl(280 100% 70%); }
+  14% { color: hsl(45 100% 65%); }
+  28% { color: hsl(90 100% 65%); }
+  42% { color: hsl(180 100% 65%); }
+  56% { color: hsl(220 100% 70%); }
+  70% { color: hsl(280 100% 70%); }
+  84% { color: hsl(320 100% 70%); }
   100% { color: hsl(0 100% 70%); }
 }
