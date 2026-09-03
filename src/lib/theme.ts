@@ -7,10 +7,7 @@ export const THEME_PRESETS: { label: string; hex: string | null }[] = [
   { label: "Mint", hex: "#bff0dc" },
   { label: "Amber", hex: "#f6d9a0" },
   { label: "Midnight", hex: "#0b0f1a" },
-  { label: "Rainbow", hex: "rainbow" },
 ];
-
-export const RAINBOW_VALUE = "rainbow";
 
 const KEY = (scope: ThemeScope) => `theme-color:${scope}`;
 
@@ -45,15 +42,8 @@ export function applyThemeColor(hex: string | null) {
   const root = document.documentElement;
   if (!hex) {
     VARS.forEach(v => root.style.removeProperty(v));
-    root.classList.remove("theme-rainbow");
     return;
   }
-  if (hex === RAINBOW_VALUE) {
-    VARS.forEach(v => root.style.removeProperty(v));
-    root.classList.add("theme-rainbow");
-    return;
-  }
-  root.classList.remove("theme-rainbow");
   const [h, s, l] = hexToHsl(hex);
   const clamp = (n: number) => Math.max(0, Math.min(100, n));
   const light = l > 55;
