@@ -45,8 +45,15 @@ export function applyThemeColor(hex: string | null) {
   const root = document.documentElement;
   if (!hex) {
     VARS.forEach(v => root.style.removeProperty(v));
+    root.classList.remove("theme-rainbow");
     return;
   }
+  if (hex === RAINBOW_VALUE) {
+    VARS.forEach(v => root.style.removeProperty(v));
+    root.classList.add("theme-rainbow");
+    return;
+  }
+  root.classList.remove("theme-rainbow");
   const [h, s, l] = hexToHsl(hex);
   const clamp = (n: number) => Math.max(0, Math.min(100, n));
   const light = l > 55;
