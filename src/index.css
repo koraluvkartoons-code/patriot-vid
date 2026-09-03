@@ -245,3 +245,47 @@
 @keyframes marioRunAcross{from{transform:translateX(-180px)}to{transform:translateX(calc(100vw + 180px))}}
 @media (max-width:640px){.mario-run-sprite{width:99px;height:135px;background-size:1089px 135px}@keyframes marioRunFrames{from{background-position:0 0}to{background-position:-1089px 0}}}
 @media (prefers-reduced-motion:reduce){.mario-run-layer{display:none}}
+
+/* ---- Cross-device smoothness (mobile / tablet / desktop) ---- */
+html { -webkit-text-size-adjust: 100%; }
+html, body, #root { max-width: 100%; overflow-x: hidden; }
+body {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  -webkit-tap-highlight-color: transparent;
+  text-rendering: optimizeSpeed;
+}
+img, video, canvas, svg { max-width: 100%; height: auto; }
+video { height: auto; }
+input, textarea, select { font-size: 16px; } /* stops iOS zoom-on-focus */
+@media (min-width: 640px) { input, textarea, select { font-size: inherit; } }
+
+/* comfortable tap targets on touch devices without changing the look */
+@media (hover: none) and (pointer: coarse) {
+  button, a[role="button"], [data-radix-collection-item] { touch-action: manipulation; }
+  button, a { -webkit-user-select: none; user-select: none; }
+}
+
+/* keep the fixed terminal footer clear of iOS/Android home indicators */
+footer.fixed { padding-bottom: env(safe-area-inset-bottom); }
+
+/* horizontal chip/nav rows scroll smoothly instead of jumping */
+.scrollbar-hide { -webkit-overflow-scrolling: touch; scroll-behavior: smooth; overscroll-behavior-x: contain; }
+
+/* long feeds: let the browser skip offscreen work */
+.crt-frame > div > article,
+.crt-frame > div > div { contain: layout style; }
+
+/* lighten the heaviest effects on phones/tablets so scrolling stays fluid */
+@media (max-width: 1024px) {
+  .scanlines::after { opacity: .35; }
+  .pag-globe, .pag-globe-halo { will-change: auto; }
+}
+@media (max-width: 640px) {
+  .pag-particle { display: none; }
+}
+
+/* tablets: give the reading column a bit more room */
+@media (min-width: 768px) and (max-width: 1279px) {
+  .container { padding-left: 1rem; padding-right: 1rem; }
+}
