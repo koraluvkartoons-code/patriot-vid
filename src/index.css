@@ -289,3 +289,38 @@ footer.fixed { padding-bottom: env(safe-area-inset-bottom); }
 @media (min-width: 768px) and (max-width: 1279px) {
   .container { padding-left: 1rem; padding-right: 1rem; }
 }
+
+/* Rainbow theme: animated rainbow background with neon color-cycling text */
+.theme-rainbow body {
+  background: linear-gradient(270deg, #2b0b3f, #0b1e3f, #0b3f2b, #3f2b0b, #3f0b1e, #2b0b3f);
+  background-size: 1200% 1200%;
+  animation: rainbow-bg 18s ease infinite;
+}
+.theme-rainbow {
+  --foreground: 0 0% 100%;
+  --card-foreground: 0 0% 100%;
+  --popover-foreground: 0 0% 100%;
+  --secondary-foreground: 0 0% 100%;
+  --muted-foreground: 0 0% 88%;
+  --pag-ink: 0 0% 100%;
+}
+.theme-rainbow .text-foreground,
+.theme-rainbow .text-primary,
+.theme-rainbow .crt-text {
+  animation: neon-text 6s linear infinite;
+  text-shadow: 0 0 6px currentColor, 0 0 14px currentColor;
+}
+@keyframes rainbow-bg {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes neon-text {
+  0% { color: hsl(0 100% 70%); }
+  16% { color: hsl(45 100% 65%); }
+  33% { color: hsl(100 100% 65%); }
+  50% { color: hsl(180 100% 65%); }
+  66% { color: hsl(220 100% 70%); }
+  83% { color: hsl(280 100% 70%); }
+  100% { color: hsl(0 100% 70%); }
+}

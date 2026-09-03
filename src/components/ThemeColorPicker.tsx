@@ -32,7 +32,7 @@ export default function ThemeColorPicker({ scope, className }: { scope: ThemeSco
               key={p.label}
               onClick={() => pick(p.hex)}
               className={`h-8 rounded-sm border text-[9px] leading-tight px-1 ${color === p.hex ? "border-primary" : "border-border"}`}
-              style={p.hex ? { background: p.hex, color: "#111" } : undefined}
+              style={p.hex === "rainbow" ? { background: "linear-gradient(90deg,#f00,#ff0,#0f0,#0ff,#00f,#f0f)", color: "#fff", textShadow: "0 0 4px #000" } : p.hex ? { background: p.hex, color: "#111" } : undefined}
             >{p.label}</button>
           ))}
         </div>
