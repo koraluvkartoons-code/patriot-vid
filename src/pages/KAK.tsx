@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft, Maximize2, Play, Pause, Image as ImageIcon, Palette } from "lucide-react";
+import { ArrowLeft, Maximize2, Play, Pause, Image as ImageIcon, Palette, Save, Trash2 } from "lucide-react";
+import { createPost, fetchPosts, fetchCategories, deletePost } from "@/lib/api";
+import { getCurrentUserId, type Post } from "@/lib/store";
 
 const GREEN = "#00FF00";
 
