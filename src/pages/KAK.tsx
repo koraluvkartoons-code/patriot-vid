@@ -88,6 +88,7 @@ export default function KAK() {
 
   // saved entries (stored in the shared posts table under site "kak")
   const [entryCat, setEntryCat] = useState("");
+  const [entryAuthor, setEntryAuthor] = useState("");
   const [entryText, setEntryText] = useState("");
   const [cats, setCats] = useState<string[]>([]);
   const [activeCat, setActiveCat] = useState<string>("");
