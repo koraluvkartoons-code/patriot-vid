@@ -78,6 +78,7 @@ export default function PoliAniGames() {
           <h1 className="text-base sm:text-xl font-extrabold tracking-tight truncate text-rainbow-neon">PoliAniGames</h1>
           <div className="flex items-center gap-1">
             <ThemeColorPicker scope="polianigames" className="h-7 px-2 text-[11px] text-rainbow-neon" />
+            <Link to="/kak"><Button size="sm" variant="ghost" className="h-7 px-2 text-[11px] text-rainbow-neon">KAK</Button></Link>
             <Link to="/"><Button size="sm" variant="ghost" className="h-7 px-2 text-[11px] text-rainbow-neon"><ArrowLeft className="w-3 h-3 mr-1" />BACK</Button></Link>
             <Button size="sm" variant="ghost" onClick={() => setShowSetup(true)} className="h-7 px-2 text-[11px] text-rainbow-neon"><User className="w-3 h-3 mr-1" /><span className="max-w-[70px] truncate">{userId || "LOGIN"}</span></Button>
           </div>
