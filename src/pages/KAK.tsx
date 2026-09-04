@@ -111,16 +111,18 @@ export default function KAK() {
   const saveEntry = async () => {
     const text = entryText.trim();
     if (!text || saving) return;
+    const author = entryAuthor.trim();
+    const body = author ? `<${author}> ${text}` : text;
     setSaving(true);
     try {
       await createPost({
         userId: getCurrentUserId() || "OPERATOR",
-        title: text.split("\n")[0].slice(0, 80),
-        description: text,
+        title: body.split("\n")[0].slice(0, 80),
+        description: body,
         category: entryCat.trim() || "UNFILED",
         site: "kak",
       });
-      setLines(prev => [...prev, `[KAK] entry saved -> [${(entryCat.trim() || "UNFILED").toUpperCase()}]`].slice(-500));
+      setLines(prev => [...prev, `[KAK] entry saved -> [${(entryCat.trim() || "UNFILED").toUpperCase()}]${author ? ` by ${author.toUpperCase()}` : ""}`].slice(-500));
       setEntryText("");
       await loadEntries(activeCat);
     } finally {
