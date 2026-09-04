@@ -84,6 +84,54 @@ export default function KAK() {
   const shellRef = useRef<HTMLDivElement>(null);
   const logRef = useRef<HTMLDivElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const mobileRef = useRef<HTMLTextAreaElement>(null);
+
+  // saved entries (stored in the shared posts table under site "kak")
+  const [entryCat, setEntryCat] = useState("");
+  const [entryText, setEntryText] = useState("");
+  const [cats, setCats] = useState<string[]>([]);
+  const [activeCat, setActiveCat] = useState<string>("");
+  const [entries, setEntries] = useState<Post[]>([]);
+  const [saving, setSaving] = useState(false);
+
+  const loadEntries = useCallback(async (cat?: string) => {
+    try {
+      const [p, c] = await Promise.all([
+        fetchPosts(50, 0, "newest", cat || undefined, "kak"),
+        fetchCategories("kak"),
+      ]);
+      setEntries(p);
+      setCats(c);
+    } catch { /* offline: keep terminal usable */ }
+  }, []);
+
+  useEffect(() => { loadEntries(activeCat); }, [activeCat, loadEntries]);
+
+  const saveEntry = async () => {
+    const text = entryText.trim();
+    if (!text || saving) return;
+    setSaving(true);
+    try {
+      await createPost({
+        userId: getCurrentUserId() || "OPERATOR",
+        title: text.split("\n")[0].slice(0, 80),
+        description: text,
+        category: entryCat.trim() || "UNFILED",
+        site: "kak",
+      });
+      setLines(prev => [...prev, `[KAK] entry saved -> [${(entryCat.trim() || "UNFILED").toUpperCase()}]`].slice(-500));
+      setEntryText("");
+      await loadEntries(activeCat);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const removeEntry = async (id: string) => {
+    await deletePost(id);
+    setEntries(prev => prev.filter(e => e.id !== id));
+  };
+
 
   const typeChunk = useCallback((chunk: number) => {
     setLines(prev => {
