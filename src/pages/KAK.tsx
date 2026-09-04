@@ -249,11 +249,76 @@ export default function KAK() {
           <button onClick={matrixDrop} className="border px-2 py-1" style={{ borderColor: GREEN }}>ASCII_DROP</button>
         </div>
 
-        <div ref={logRef} className="px-3 py-2 h-[calc(100vh-160px)] overflow-y-auto text-[10px] sm:text-[12px] leading-[1.25] whitespace-pre">
-          {lines.length === 0 && <div className="opacity-70">press any key to type the feed // type "help" below</div>}
+        <div
+          ref={logRef}
+          onClick={() => mobileRef.current?.focus()}
+          className="px-3 py-2 h-[46vh] sm:h-[calc(100vh-360px)] min-h-[180px] overflow-y-auto text-[10px] sm:text-[12px] leading-[1.25] whitespace-pre"
+        >
+          {lines.length === 0 && <div className="opacity-70">tap here / press any key to type the feed // type "help" below</div>}
           {lines.map((l, i) => <div key={i}>{l}</div>)}
           <div className="animate-pulse">_</div>
         </div>
+
+        {/* invisible capture field: makes hacker-typing work on mobile keyboards */}
+        <textarea
+          ref={mobileRef}
+          aria-label="KAK typing capture"
+          autoCapitalize="off"
+          autoCorrect="off"
+          spellCheck={false}
+          value=""
+          onChange={e => { const n = e.target.value.length; if (n) typeChunk(speed * Math.max(1, n)); }}
+          onKeyDown={e => { if (e.key === "Backspace" || e.key === "Enter") { e.preventDefault(); typeChunk(speed); } }}
+          className="absolute opacity-0 h-10 w-full left-0 bottom-0 pointer-events-none"
+        />
+
+        {/* saved entries by category */}
+        <div className="border-t px-3 py-2 text-[10px] sm:text-xs space-y-2" style={{ borderColor: GREEN }}>
+          <div className="flex items-center gap-2 flex-wrap">
+            <span>[KAK_ARCHIVE]</span>
+            <button onClick={() => setActiveCat("")} className="border px-2 py-0.5" style={{ borderColor: GREEN, opacity: activeCat ? 0.6 : 1 }}>ALL</button>
+            {cats.map(c => (
+              <button key={c} onClick={() => setActiveCat(c)} className="border px-2 py-0.5" style={{ borderColor: GREEN, opacity: activeCat === c ? 1 : 0.6 }}>{c.toUpperCase()}</button>
+            ))}
+          </div>
+          <div className="flex gap-2 flex-col sm:flex-row">
+            <input
+              value={entryCat}
+              onChange={e => setEntryCat(e.target.value)}
+              placeholder="category…"
+              aria-label="Entry category"
+              className="border bg-transparent px-2 py-1 outline-none sm:w-40"
+              style={{ borderColor: GREEN, color: GREEN, caretColor: GREEN }}
+            />
+            <textarea
+              value={entryText}
+              onChange={e => setEntryText(e.target.value)}
+              placeholder="type text to save…"
+              aria-label="Entry text"
+              rows={2}
+              className="border bg-transparent px-2 py-1 outline-none flex-1 resize-y"
+              style={{ borderColor: GREEN, color: GREEN, caretColor: GREEN }}
+            />
+            <button onClick={saveEntry} disabled={saving} className="border px-2 py-1 flex items-center justify-center gap-1 h-fit" style={{ borderColor: GREEN }}>
+              <Save className="w-3 h-3" />{saving ? "SAVING" : "SAVE"}
+            </button>
+          </div>
+          <div className="max-h-40 overflow-y-auto space-y-1">
+            {entries.length === 0 && <div className="opacity-60">no entries stored</div>}
+            {entries.map(e => (
+              <div key={e.id} className="flex items-start gap-2">
+                <button
+                  onClick={() => setLines(prev => [...prev, `[${(e.category || "UNFILED").toUpperCase()}] ${e.description || e.title}`].slice(-500))}
+                  className="flex-1 text-left break-words"
+                >
+                  [{(e.category || "UNFILED").toUpperCase()}] {e.description || e.title}
+                </button>
+                <button onClick={() => removeEntry(e.id)} aria-label="Delete entry" className="shrink-0 opacity-70"><Trash2 className="w-3 h-3" /></button>
+              </div>
+            ))}
+          </div>
+        </div>
+
 
         <div className="border-t px-3 py-2 flex items-center gap-2" style={{ borderColor: GREEN }}>
           <span className="text-[10px] sm:text-xs shrink-0">[KAK_QUERY]&gt;</span>
