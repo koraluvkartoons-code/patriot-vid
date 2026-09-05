@@ -310,99 +310,56 @@ button[class*="STATS"], button[class*="DATA"], button[class*="SYS"], button[clas
   box-shadow: 0 0 20px rgba(0, 255, 102, 0.25), inset 0 0 15px rgba(0, 255, 102, 0.15) !important;
   border-radius: 8px !important;
 }
-/* ==========================================================================
-   FULL PIP-BOY SCREEN PRESET (SYSTEM DESIGN)
+  /* ==========================================================================
+   FORCE PIP-BOY INTERFACE OVERLAY
    ========================================================================== */
 
-/* 1. PIP-BOY SCREEN CONTAINER & AMBIENT CRT GLOW */
-[class*="SYSTEM_DESIGN"], 
-[data-theme="pipboy"], 
-.theme-pipboy {
-  background-color: #050d08 !important;
-  color: #11ff66 !important;
+/* Force Root Container to render Pip-Boy Screen Frame */
+body, #root {
+  background-color: #030a05 !important;
+  color: #00ff66 !important;
   font-family: 'Courier New', Courier, monospace !important;
-  border: 3px solid #11ff66 !important;
-  box-shadow: 0 0 25px rgba(17, 255, 102, 0.3), inset 0 0 15px rgba(17, 255, 102, 0.2) !important;
-  padding: 20px !important;
-  position: relative !important;
 }
 
-/* 2. TOP NAV HEADER BAR (STAT | INV | DATA | MAP | RADIO) */
-[class*="SYSTEM_DESIGN"]::before,
-[data-theme="pipboy"]::before {
-  content: "[ STAT ]   INV   DATA   MAP   RADIO" !important;
-  display: block !important;
+/* Force Main App Window into Pip-Boy HUD Box */
+main, [role="main"], .container {
+  border: 3px solid #00ff66 !important;
+  box-shadow: 0 0 20px rgba(0, 255, 102, 0.4), inset 0 0 15px rgba(0, 255, 102, 0.2) !important;
+  background: rgba(5, 15, 8, 0.95) !important;
+  position: relative !important;
+  padding-top: 50px !important;
+}
+
+/* Inject [ STAT INV DATA MAP RADIO ] Header across top */
+main::before {
+  content: "  [ STAT ]    INV    DATA    MAP    RADIO" !important;
+  position: absolute !important;
+  top: 10px !important;
+  left: 20px !important;
+  right: 20px !important;
   font-weight: bold !important;
   font-size: 1.1rem !important;
-  letter-spacing: 2px !important;
-  color: #11ff66 !important;
-  border-bottom: 2px solid #11ff66 !important;
+  letter-spacing: 3px !important;
+  color: #00ff66 !important;
+  border-bottom: 2px solid #00ff66 !important;
   padding-bottom: 8px !important;
-  margin-bottom: 15px !important;
-  text-shadow: 0 0 8px #11ff66 !important;
+  text-shadow: 0 0 8px #00ff66 !important;
+  z-index: 999 !important;
 }
 
-/* 3. S.P.E.C.I.A.L. STATS LISTING OVERLAY */
-[class*="SYSTEM_DESIGN"] ul,
-[data-theme="pipboy"] ul {
-  list-style: none !important;
-  padding-left: 0 !important;
-  margin-top: 10px !important;
-  float: left !important;
-  width: 45% !important;
-}
-
-[class*="SYSTEM_DESIGN"] li::before,
-[data-theme="pipboy"] li::before {
-  content: "> " !important;
-  color: #11ff66 !important;
-}
-
-/* 4. VAULT BOY THUMBS-UP GRAPHIC (RIGHT SIDE) */
-[class*="SYSTEM_DESIGN"]::after,
-[data-theme="pipboy"]::after {
+/* Inject Glowing Vault Boy Graphic on the right side */
+main::after {
   content: "" !important;
-  display: block !important;
-  width: 140px !important;
-  height: 140px !important;
-  float: right !important;
+  position: fixed !important;
+  bottom: 40px !important;
+  right: 40px !important;
+  width: 160px !important;
+  height: 160px !important;
   background-image: url("https://upload.wikimedia.org/wikipedia/en/a/a7/Vault_Boy.png") !important;
   background-size: contain !important;
   background-repeat: no-repeat !important;
   background-position: center !important;
-  filter: drop-shadow(0 0 10px #11ff66) brightness(1.2) sepia(1) hue-rotate(70deg) saturate(5) !important;
-  margin-top: -10px !important;
-}
-
-/* 5. BOTTOM STATUS BARS (STIMPAK / RADAWAY / HEALTH / SPECIAL PERKS) */
-.pipboy-status-footer,
-[class*="SYSTEM_DESIGN"] .footer-status {
-  clear: both !important;
-  display: flex !important;
-  justify-content: space-between !important;
-  align-items: center !important;
-  border-top: 2px solid #11ff66 !important;
-  padding-top: 10px !important;
-  margin-top: 20px !important;
-  font-size: 0.85rem !important;
-  font-weight: bold !important;
-}
-
-/* Health HP Bar Simulation */
-.pipboy-health-bar {
-  width: 100% !important;
-  height: 12px !important;
-  background: #0d2b14 !important;
-  border: 1px solid #11ff66 !important;
-  margin-top: 6px !important;
-  position: relative !important;
-}
-
-.pipboy-health-bar::after {
-  content: "" !important;
-  display: block !important;
-  width: 91% !important;
-  height: 100% !important;
-  background: #11ff66 !important;
-  box-shadow: 0 0 8px #11ff66 !important;
+  filter: drop-shadow(0 0 12px #00ff66) brightness(1.2) sepia(1) hue-rotate(70deg) saturate(5) !important;
+  pointer-events: none !important;
+  z-index: 9999 !important;
 }
