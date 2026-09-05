@@ -299,7 +299,7 @@ export default function Index() {
             <p className="text-center py-10 text-muted-foreground text-sm">{searching ? "no matching logs." : "log empty. awaiting first entry."}</p>
           )}
 
-          <div className="space-y-2">
+          <div id="pipboy-data" className="space-y-2">
             {[
               ...posts.map(p => ({ kind: "post" as const, at: p.createdAt, key: `p-${p.id}`, post: p })),
               ...reposts.map(r => ({ kind: "repost" as const, at: r.createdAt, key: `r-${r.id}`, repost: r })),
