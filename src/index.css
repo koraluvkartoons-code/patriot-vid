@@ -354,3 +354,34 @@ div[class*="system-design"]::before,
   filter: drop-shadow(0 0 6px #00ff66) brightness(1.2) sepia(1) hue-rotate(70deg) saturate(5) !important;
   pointer-events: none !important;
 }
+/* Add this item alongside Y2K CYBER, PC-98 AMBER, and PASTEL POP */
+<button 
+  onClick={() => setSystemDesign('pipboy')} 
+  className="w-full text-left px-3 py-2 text-xs font-mono hover:bg-[#00ff66]/10 text-[#00ff66] border border-[#00ff66]/30 mb-1"
+>
+  PIP-BOY 3000
+</button>
+/* Inject Vault Boy at the bottom of the System Design Dropdown Menu */
+[class*="SYSTEM DESIGN"] menu,
+[class*="system-design"] .dropdown-content,
+div[role="menu"] {
+  position: relative !important;
+  padding-bottom: 95px !important;
+}
+
+div[role="menu"]::after,
+[class*="system-design"] .dropdown-content::after {
+  content: "" !important;
+  position: absolute !important;
+  bottom: 8px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 75px !important;
+  height: 75px !important;
+  background-image: url("https://upload.wikimedia.org/wikipedia/en/a/a7/Vault_Boy.png") !important;
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  filter: drop-shadow(0 0 6px #00ff66) brightness(1.2) sepia(1) hue-rotate(70deg) saturate(5) !important;
+  pointer-events: none !important;
+}
