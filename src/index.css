@@ -358,3 +358,52 @@ div[class*="absolute"][class*="border"]::after,
   filter: drop-shadow(0 0 8px #00ff66) brightness(1.2) sepia(1) hue-rotate(70deg) saturate(5) !important;
   pointer-events: none !important;
 }
+/* ==========================================================================
+   RADIX/SHADCN DROPDOWN INJECTION (SYSTEM DESIGN MENU)
+   ========================================================================== */
+
+/* 1. Target the floating Radix Dropdown Content Container */
+[data-radix-popper-content-wrapper] [role="menu"],
+[data-state="open"][role="menu"] {
+  position: relative !important;
+  padding-bottom: 100px !important; /* Reserve space for Vault Boy */
+  min-width: 180px !important;
+  background-color: #08120a !important;
+  border: 1px solid #00ff66 !important;
+}
+
+/* 2. Inject the PIP-BOY 3000 menu option item */
+[data-radix-popper-content-wrapper] [role="menu"]::before,
+[data-state="open"][role="menu"]::before {
+  content: "// PIP-BOY 3000" !important;
+  display: block !important;
+  margin: 4px 6px !important;
+  padding: 6px 10px !important;
+  background: #0d2212 !important;
+  color: #00ff66 !important;
+  border: 1px solid #00ff66 !important;
+  font-family: monospace !important;
+  font-size: 11px !important;
+  font-weight: bold !important;
+  text-shadow: 0 0 5px #00ff66 !important;
+  box-shadow: inset 0 0 4px rgba(0, 255, 102, 0.4) !important;
+  cursor: pointer !important;
+}
+
+/* 3. Inject the Glowing Vault Boy Thumbs-Up graphic at the bottom */
+[data-radix-popper-content-wrapper] [role="menu"]::after,
+[data-state="open"][role="menu"]::after {
+  content: "" !important;
+  position: absolute !important;
+  bottom: 6px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 80px !important;
+  height: 80px !important;
+  background-image: url("https://upload.wikimedia.org/wikipedia/en/a/a7/Vault_Boy.png") !important;
+  background-size: contain !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  filter: drop-shadow(0 0 6px #00ff66) brightness(1.2) sepia(1) hue-rotate(70deg) saturate(5) !important;
+  pointer-events: none !important;
+}
