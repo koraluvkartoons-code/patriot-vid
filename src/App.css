@@ -1,4 +1,3 @@
-/* PIP-BOY TERMINAL & CHUNKY TABS HARDWARE STYLES */
 .stats-tab, .data-tab, .sys-tab, .comms-tab, 
 button[class*="STATS"], button[class*="DATA"], button[class*="SYS"], button[class*="COMMS"] {
   background: #0d1a0e !important;
