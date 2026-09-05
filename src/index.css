@@ -310,38 +310,43 @@ button[class*="STATS"], button[class*="DATA"], button[class*="SYS"], button[clas
   box-shadow: 0 0 20px rgba(0, 255, 102, 0.25), inset 0 0 15px rgba(0, 255, 102, 0.15) !important;
   border-radius: 8px !important;
 }
-  /* ==========================================================================
-   SYSTEM DESIGN DROPDOWN: PIP-BOY 3000 OPTION & VAULT BOY EMBED
+/* ==========================================================================
+   FORCE PIP-BOY OPTION + VAULT BOY INTO SYSTEM DESIGN DROPDOWN
    ========================================================================== */
 
-/* 1. Injects a PIP-BOY option button into the System Design dropdown list */
-[class*="SYSTEM DESIGN"]::after,
-div[class*="dropdown"] ul::after,
-.system-design-menu::after {
-  content: "PIP-BOY 3000";
-  display: block;
-  padding: 8px 12px;
-  margin-top: 4px;
-  color: #00ff66;
-  font-family: monospace;
-  font-weight: bold;
-  border: 1px solid #00ff66;
-  background: #061409;
-  cursor: pointer;
-  text-shadow: 0 0 5px #00ff66;
-}
-/* 2. Displays Vault Boy Thumbs-Up graphic at the bottom of the dropdown box */
-div[class*="system-design"],
-[class*="SYSTEM DESIGN"] {
+/* 1. Target the dropdown menu panel */
+div[class*="absolute"][class*="border"], 
+[role="menu"], 
+.dropdown-menu {
   position: relative !important;
-  padding-bottom: 90px !important; /* Space for Vault Boy */
+  padding-bottom: 110px !important; /* Makes room for Vault Boy */
 }
 
-div[class*="system-design"]::before,
-[class*="SYSTEM DESIGN"]::before {
+/* 2. Force the PIP-BOY 3000 button to appear at the bottom of the options */
+div[class*="absolute"][class*="border"]::before,
+[role="menu"]::before {
+  content: "// PIP-BOY 3000" !important;
+  display: block !important;
+  width: 90% !important;
+  margin: 6px auto !important;
+  padding: 6px 10px !important;
+  background: #061409 !important;
+  color: #00ff66 !important;
+  border: 1px solid #00ff66 !important;
+  font-family: monospace !important;
+  font-size: 11px !important;
+  font-weight: bold !important;
+  text-shadow: 0 0 5px #00ff66 !important;
+  box-shadow: inset 0 0 5px rgba(0, 255, 102, 0.3) !important;
+  cursor: pointer !important;
+}
+
+/* 3. Inject glowing Vault Boy thumbs-up graphic inside the menu box */
+div[class*="absolute"][class*="border"]::after,
+[role="menu"]::after {
   content: "" !important;
   position: absolute !important;
-  bottom: 5px !important;
+  bottom: 8px !important;
   left: 50% !important;
   transform: translateX(-50%) !important;
   width: 80px !important;
@@ -350,37 +355,6 @@ div[class*="system-design"]::before,
   background-size: contain !important;
   background-repeat: no-repeat !important;
   background-position: center !important;
-  filter: drop-shadow(0 0 6px #00ff66) brightness(1.2) sepia(1) hue-rotate(70deg) saturate(5) !important;
-  pointer-events: none !important;
-}
-/* Add this item alongside Y2K CYBER, PC-98 AMBER, and PASTEL POP */
-<button 
-  onClick={() => setSystemDesign('pipboy')} 
-  className="w-full text-left px-3 py-2 text-xs font-mono hover:bg-[#00ff66]/10 text-[#00ff66] border border-[#00ff66]/30 mb-1"
->
-  PIP-BOY 3000
-</button>
-/* Inject Vault Boy at the bottom of the System Design Dropdown Menu */
-[class*="SYSTEM DESIGN"] menu,
-[class*="system-design"] .dropdown-content,
-div[role="menu"] {
-  position: relative !important;
-  padding-bottom: 95px !important;
-}
-
-div[role="menu"]::after,
-[class*="system-design"] .dropdown-content::after {
-  content: "" !important;
-  position: absolute !important;
-  bottom: 8px !important;
-  left: 50% !important;
-  transform: translateX(-50%) !important;
-  width: 75px !important;
-  height: 75px !important;
-  background-image: url("https://upload.wikimedia.org/wikipedia/en/a/a7/Vault_Boy.png") !important;
-  background-size: contain !important;
-  background-repeat: no-repeat !important;
-  background-position: center !important;
-  filter: drop-shadow(0 0 6px #00ff66) brightness(1.2) sepia(1) hue-rotate(70deg) saturate(5) !important;
+  filter: drop-shadow(0 0 8px #00ff66) brightness(1.2) sepia(1) hue-rotate(70deg) saturate(5) !important;
   pointer-events: none !important;
 }
