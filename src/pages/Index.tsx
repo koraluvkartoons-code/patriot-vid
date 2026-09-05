@@ -248,7 +248,7 @@ export default function Index() {
           <span className="pipboy-rivet" style={{ top: 6, right: 6 }} />
           <span className="pipboy-rivet" style={{ bottom: 6, left: 6 }} />
           <span className="pipboy-rivet" style={{ bottom: 6, right: 6 }} />
-        <div className="crt-frame jarvis-holo rounded-sm p-2 space-y-2">
+        <div className="crt-frame jarvis-holo jarvis-flat rounded-sm p-2 space-y-2">
           <span className="jarvis-tr" aria-hidden /><span className="jarvis-bl" aria-hidden />
 
           <Link to="/project117" className="pag-spankr-launch" aria-label="Open PROJECT 117">

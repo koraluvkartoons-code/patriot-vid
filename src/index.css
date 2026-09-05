@@ -262,7 +262,7 @@
 @keyframes halPulse{0%,100%{box-shadow:0 0 8px rgba(255,40,40,.6),inset 0 0 6px rgba(0,0,0,.9)}50%{box-shadow:0 0 18px rgba(255,40,40,1),inset 0 0 6px rgba(0,0,0,.9)}}
 
 /* ── JARVIS hologram cards ─────────────────────────────── */
-.jarvis-holo{position:relative;background:rgba(0,240,255,.05);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(0,240,255,.28);border-radius:4px;padding:2px;transform:perspective(1000px) rotateX(2deg);transition:transform .3s ease,box-shadow .3s ease,background .3s ease;box-shadow:0 0 18px rgba(0,240,255,.1)}
+.jarvis-holo{position:relative;transform-origin:top center;background:rgba(0,240,255,.05);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(0,240,255,.28);border-radius:4px;padding:2px;transform:perspective(1000px) rotateX(2deg);transition:transform .3s ease,box-shadow .3s ease,background .3s ease;box-shadow:0 0 18px rgba(0,240,255,.1)}
 .jarvis-holo:hover{transform:perspective(1000px) rotateX(0deg);background:rgba(0,240,255,.09);box-shadow:0 0 28px rgba(0,240,255,.3)}
 .jarvis-holo>*{text-shadow:0 0 5px rgba(0,240,255,.55)}
 .jarvis-holo::before,.jarvis-holo::after{content:"";position:absolute;width:12px;height:12px;border:1px solid rgba(0,240,255,.75);pointer-events:none}
@@ -271,6 +271,8 @@
 .jarvis-holo .jarvis-tr,.jarvis-holo .jarvis-bl{position:absolute;width:12px;height:12px;border:1px solid rgba(0,240,255,.75);pointer-events:none}
 .jarvis-holo .jarvis-tr{top:-1px;right:-1px;border-left:0;border-bottom:0}
 .jarvis-holo .jarvis-bl{bottom:-1px;left:-1px;border-right:0;border-top:0}
+.jarvis-holo.jarvis-flat{transform:none}
+.jarvis-holo.jarvis-flat:hover{transform:none}
 @media (prefers-reduced-motion:reduce){.jarvis-holo{transform:none}.hal-eye{animation:none}}
 
 /* ── Heisei SYSTEM DESIGN themes ───────────────────────── */
