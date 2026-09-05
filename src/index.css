@@ -245,3 +245,46 @@
 @keyframes marioRunAcross{from{transform:translateX(-180px)}to{transform:translateX(calc(100vw + 180px))}}
 @media (max-width:640px){.mario-run-sprite{width:99px;height:135px;background-size:1089px 135px}@keyframes marioRunFrames{from{background-position:0 0}to{background-position:-1089px 0}}}
 @media (prefers-reduced-motion:reduce){.mario-run-layer{display:none}}
+
+/* ── Pip-Boy console wrapper ───────────────────────────── */
+.pipboy-shell{display:flex;gap:8px;align-items:flex-start}
+.pipboy-frame{position:relative;flex:1;min-width:0;border:2px solid hsl(var(--accent)/.45);border-radius:10px;padding:6px;background:linear-gradient(180deg,hsl(var(--card)/.55),hsl(var(--background)/.65));box-shadow:inset 0 0 40px hsl(var(--accent)/.12),0 0 22px hsl(var(--accent)/.12)}
+.pipboy-frame::before{content:"";position:absolute;inset:4px;border:1px solid hsl(var(--accent)/.18);border-radius:7px;pointer-events:none}
+.pipboy-rivet{position:absolute;width:6px;height:6px;border-radius:50%;background:hsl(var(--accent)/.5);box-shadow:0 0 6px hsl(var(--accent)/.6)}
+.pipboy-nav{display:flex;flex-direction:column;gap:4px;position:sticky;top:96px;flex:0 0 auto}
+.pipboy-tab{writing-mode:vertical-rl;text-orientation:mixed;padding:10px 4px;font-size:10px;font-weight:800;letter-spacing:.18em;color:hsl(var(--accent));border:1px solid hsl(var(--accent)/.35);border-right:0;border-radius:6px 0 0 6px;background:hsl(var(--card)/.6);cursor:pointer;transition:all .15s ease}
+.pipboy-tab:hover{color:hsl(var(--primary));box-shadow:0 0 10px hsl(var(--primary)/.35)}
+.pipboy-tab[data-active="true"]{color:hsl(var(--primary));background:hsl(var(--primary)/.12);box-shadow:inset 0 0 14px hsl(var(--primary)/.25)}
+
+/* ── HAL 9000 eye ──────────────────────────────────────── */
+.hal-eye{position:relative;width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 50% 50%,#fff 0 8%,#ff3b3b 12%,#8b0000 46%,#1a0000 62%,#000 100%);box-shadow:0 0 10px rgba(255,40,40,.85),inset 0 0 6px rgba(0,0,0,.9);animation:halPulse 3s ease-in-out infinite;flex:0 0 auto}
+.hal-eye::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:1px solid rgba(255,60,60,.35)}
+@keyframes halPulse{0%,100%{box-shadow:0 0 8px rgba(255,40,40,.6),inset 0 0 6px rgba(0,0,0,.9)}50%{box-shadow:0 0 18px rgba(255,40,40,1),inset 0 0 6px rgba(0,0,0,.9)}}
+
+/* ── JARVIS hologram cards ─────────────────────────────── */
+.jarvis-holo{position:relative;background:rgba(0,240,255,.05);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(0,240,255,.28);border-radius:4px;padding:2px;transform:perspective(1000px) rotateX(2deg);transition:transform .3s ease,box-shadow .3s ease,background .3s ease;box-shadow:0 0 18px rgba(0,240,255,.1)}
+.jarvis-holo:hover{transform:perspective(1000px) rotateX(0deg);background:rgba(0,240,255,.09);box-shadow:0 0 28px rgba(0,240,255,.3)}
+.jarvis-holo>*{text-shadow:0 0 5px rgba(0,240,255,.55)}
+.jarvis-holo::before,.jarvis-holo::after{content:"";position:absolute;width:12px;height:12px;border:1px solid rgba(0,240,255,.75);pointer-events:none}
+.jarvis-holo::before{top:-1px;left:-1px;border-right:0;border-bottom:0}
+.jarvis-holo::after{bottom:-1px;right:-1px;border-left:0;border-top:0}
+.jarvis-holo .jarvis-tr,.jarvis-holo .jarvis-bl{position:absolute;width:12px;height:12px;border:1px solid rgba(0,240,255,.75);pointer-events:none}
+.jarvis-holo .jarvis-tr{top:-1px;right:-1px;border-left:0;border-bottom:0}
+.jarvis-holo .jarvis-bl{bottom:-1px;left:-1px;border-right:0;border-top:0}
+@media (prefers-reduced-motion:reduce){.jarvis-holo{transform:none}.hal-eye{animation:none}}
+
+/* ── Heisei SYSTEM DESIGN themes ───────────────────────── */
+html[data-design="y2k"]{--background:222 60% 8%;--card:220 55% 12%;--popover:220 55% 12%;--foreground:190 100% 88%;--primary:186 100% 55%;--accent:280 100% 72%;--border:200 70% 30%;--muted-foreground:200 30% 70%}
+html[data-design="pc98"]{--background:30 40% 6%;--card:32 45% 10%;--popover:32 45% 10%;--foreground:38 100% 66%;--primary:38 100% 60%;--accent:26 100% 58%;--border:34 60% 26%;--muted-foreground:36 40% 60%}
+html[data-design="pastel"]{--background:280 35% 92%;--card:0 0% 100%;--popover:0 0% 100%;--foreground:265 30% 28%;--primary:330 75% 60%;--primary-foreground:0 0% 100%;--accent:195 70% 55%;--border:280 25% 78%;--muted-foreground:270 12% 45%}
+html[data-design="pastel"] body{background-image:radial-gradient(circle at 15% 0%,hsl(330 100% 85% / .5),transparent 55%),radial-gradient(circle at 90% 10%,hsl(195 100% 85% / .55),transparent 55%)}
+html[data-design="pastel"] .jarvis-holo{background:rgba(255,255,255,.55);border-color:rgba(160,120,220,.4);box-shadow:0 0 18px rgba(180,140,230,.25)}
+html[data-design="pastel"] .jarvis-holo>*{text-shadow:none}
+html[data-design="pc98"] .jarvis-holo{background:rgba(255,170,40,.06);border-color:rgba(255,180,60,.35)}
+html[data-design="pc98"] .jarvis-holo>*{text-shadow:0 0 5px rgba(255,180,60,.5)}
+html[data-design="pc98"] .jarvis-holo::before,html[data-design="pc98"] .jarvis-holo::after,html[data-design="pc98"] .jarvis-tr,html[data-design="pc98"] .jarvis-bl{border-color:rgba(255,190,80,.8)}
+.design-overlay{position:fixed;inset:0;pointer-events:none;z-index:49}
+html[data-design="y2k"] .design-overlay{background:repeating-linear-gradient(to bottom,rgba(0,240,255,.05) 0 1px,transparent 1px 4px)}
+html[data-design="pc98"] .design-overlay{background:repeating-linear-gradient(to bottom,rgba(255,170,40,.06) 0 1px,transparent 1px 3px)}
+html[data-design="pastel"] .design-overlay{background:repeating-linear-gradient(to bottom,rgba(255,255,255,.25) 0 1px,transparent 1px 5px)}
+@media (max-width:640px){.pipboy-nav{top:88px}.pipboy-tab{padding:8px 3px;font-size:9px;letter-spacing:.1em}}
