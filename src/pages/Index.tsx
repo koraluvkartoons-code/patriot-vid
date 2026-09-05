@@ -334,7 +334,10 @@ export default function Index() {
             </div>
           )}
         </div>
+        </div>
+       </div>
       </main>
+
 
       <footer className="fixed bottom-0 inset-x-0 z-40 border-t border-border gradient-hero">
         <div className="container max-w-3xl mx-auto px-3 py-2 flex items-center gap-2 text-[12px]">
