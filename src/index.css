@@ -330,7 +330,6 @@ div[class*="dropdown"] ul::after,
   cursor: pointer;
   text-shadow: 0 0 5px #00ff66;
 }
-
 /* 2. Displays Vault Boy Thumbs-Up graphic at the bottom of the dropdown box */
 div[class*="system-design"],
 [class*="SYSTEM DESIGN"] {
