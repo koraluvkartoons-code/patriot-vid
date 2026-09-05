@@ -281,7 +281,7 @@ export default function Index() {
             <p className="text-center py-10 text-muted-foreground text-sm">{searching ? "no matching logs." : "log empty. awaiting first entry."}</p>
           )}
 
-          <div className="space-y-1">
+          <div className="space-y-2">
             {[
               ...posts.map(p => ({ kind: "post" as const, at: p.createdAt, key: `p-${p.id}`, post: p })),
               ...reposts.map(r => ({ kind: "repost" as const, at: r.createdAt, key: `r-${r.id}`, repost: r })),
@@ -294,11 +294,16 @@ export default function Index() {
                   ? new Date(a.at).getTime() - new Date(b.at).getTime()
                   : new Date(b.at).getTime() - new Date(a.at).getTime();
               })
-              .map(item => item.kind === "post"
-                ? <PostCard key={item.key} post={item.post} onNeedSetup={needSetup} onRefresh={loadData} profiles={profiles} />
-                : <RepostCard key={item.key} repost={item.repost} onNeedSetup={needSetup} onRefresh={loadData} profiles={profiles} />
-              )}
+              .map(item => (
+                <div key={item.key} className="jarvis-holo">
+                  <span className="jarvis-tr" aria-hidden /><span className="jarvis-bl" aria-hidden />
+                  {item.kind === "post"
+                    ? <PostCard post={item.post} onNeedSetup={needSetup} onRefresh={loadData} profiles={profiles} />
+                    : <RepostCard repost={item.repost} onNeedSetup={needSetup} onRefresh={loadData} profiles={profiles} />}
+                </div>
+              ))}
           </div>
+
 
 
           <div ref={sentinelRef} className="h-1" />
