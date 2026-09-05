@@ -15,6 +15,7 @@ import spankrCoin from "@/assets/spankr-coin.png";
 import { Shield, User, Radio, Film, Archive, X, Gamepad2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ThemeColorPicker from "@/components/ThemeColorPicker";
+import DesignSwitcher from "@/components/DesignSwitcher";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 export default function Index() {
@@ -173,15 +174,18 @@ export default function Index() {
     <div className={`min-h-screen bg-background pb-16 ${scanlines ? "scanlines" : ""}`}>
       <header className="gradient-hero sticky top-0 z-40 border-b border-border">
         <div className="container max-w-3xl mx-auto px-3 py-2 flex items-center justify-between gap-2">
-          <h1 className="text-sm sm:text-base font-extrabold tracking-tight truncate">
+          <h1 className="text-sm sm:text-base font-extrabold tracking-tight truncate flex items-center gap-2">
+            <span className="hal-eye" aria-label="HAL 9000 status lens" role="img" />
             <span className="animate-shimmer">ByteTicker</span>
-            <span className="text-muted-foreground"> // LIVE_FEED_v1.0</span>
+            <span className="text-muted-foreground hidden sm:inline"> // LIVE_FEED_v1.0</span>
           </h1>
+
           <div className="flex items-center gap-2 text-[11px] shrink-0">
             <span className="flex items-center gap-1 text-term-green">
               <span className="w-2 h-2 rounded-full bg-term-green animate-pulse" /> ONLINE
             </span>
             <span className="text-accent">{utc}Z</span>
+            <span className="text-term-red hidden sm:inline">HAL:OK</span>
             <span className="text-muted-foreground">{viewers}👁</span>
           </div>
         </div>
@@ -217,6 +221,7 @@ export default function Index() {
             <Button size="sm" variant="ghost" onClick={() => setShowAdmin(true)} className="h-7 px-2 text-[11px] text-gold hover:text-gold-shine"><Shield className="w-3 h-3 mr-1" />ADMIN</Button>
           )}
           <ThemeColorPicker scope="byteticker" />
+          <DesignSwitcher />
           <Button size="sm" variant="ghost" onClick={() => setScanlines(s => !s)} className="h-7 px-2 text-[11px] text-muted-foreground hover:text-primary">
             CRT:{scanlines ? "ON" : "OFF"}
           </Button>
@@ -226,8 +231,26 @@ export default function Index() {
         </div>
       </header>
 
-      <main className="container max-w-3xl mx-auto px-3 py-3 space-y-2">
-        <div className="crt-frame rounded-sm p-2 space-y-2">
+      <main id="pipboy-stats" className="container max-w-3xl mx-auto px-3 py-3 space-y-2">
+       <div className="pipboy-shell">
+        <nav className="pipboy-nav" aria-label="Pip-Boy navigation">
+          {[
+            { id: "STATS", go: () => window.scrollTo({ top: 0, behavior: "smooth" }) },
+            { id: "DATA", go: () => document.getElementById("pipboy-data")?.scrollIntoView({ behavior: "smooth", block: "start" }) },
+            { id: "SYS", go: () => setScanlines(s => !s) },
+            { id: "COMMS", go: () => cmdRef.current?.focus() },
+          ].map(t => (
+            <button key={t.id} type="button" onClick={t.go} className="pipboy-tab" data-active={t.id === "SYS" ? scanlines : undefined}>{t.id}</button>
+          ))}
+        </nav>
+        <div className="pipboy-frame">
+          <span className="pipboy-rivet" style={{ top: 6, left: 6 }} />
+          <span className="pipboy-rivet" style={{ top: 6, right: 6 }} />
+          <span className="pipboy-rivet" style={{ bottom: 6, left: 6 }} />
+          <span className="pipboy-rivet" style={{ bottom: 6, right: 6 }} />
+        <div className="crt-frame jarvis-holo jarvis-flat rounded-sm p-2 space-y-2">
+          <span className="jarvis-tr" aria-hidden /><span className="jarvis-bl" aria-hidden />
+
           <Link to="/project117" className="pag-spankr-launch" aria-label="Open PROJECT 117">
             <span className="pag-spankr-label">$SPANKR</span>
             <img src={spankrCoin} alt="$SPANKR" />
@@ -281,7 +304,7 @@ export default function Index() {
             <p className="text-center py-10 text-muted-foreground text-sm">{searching ? "no matching logs." : "log empty. awaiting first entry."}</p>
           )}
 
-          <div className="space-y-1">
+          <div id="pipboy-data" className="space-y-2">
             {[
               ...posts.map(p => ({ kind: "post" as const, at: p.createdAt, key: `p-${p.id}`, post: p })),
               ...reposts.map(r => ({ kind: "repost" as const, at: r.createdAt, key: `r-${r.id}`, repost: r })),
@@ -294,11 +317,16 @@ export default function Index() {
                   ? new Date(a.at).getTime() - new Date(b.at).getTime()
                   : new Date(b.at).getTime() - new Date(a.at).getTime();
               })
-              .map(item => item.kind === "post"
-                ? <PostCard key={item.key} post={item.post} onNeedSetup={needSetup} onRefresh={loadData} profiles={profiles} />
-                : <RepostCard key={item.key} repost={item.repost} onNeedSetup={needSetup} onRefresh={loadData} profiles={profiles} />
-              )}
+              .map(item => (
+                <div key={item.key} className="jarvis-holo">
+                  <span className="jarvis-tr" aria-hidden /><span className="jarvis-bl" aria-hidden />
+                  {item.kind === "post"
+                    ? <PostCard post={item.post} onNeedSetup={needSetup} onRefresh={loadData} profiles={profiles} />
+                    : <RepostCard repost={item.repost} onNeedSetup={needSetup} onRefresh={loadData} profiles={profiles} />}
+                </div>
+              ))}
           </div>
+
 
 
           <div ref={sentinelRef} className="h-1" />
@@ -311,7 +339,10 @@ export default function Index() {
             </div>
           )}
         </div>
+        </div>
+       </div>
       </main>
+
 
       <footer className="fixed bottom-0 inset-x-0 z-40 border-t border-border gradient-hero">
         <div className="container max-w-3xl mx-auto px-3 py-2 flex items-center gap-2 text-[12px]">
