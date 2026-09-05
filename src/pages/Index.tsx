@@ -15,6 +15,7 @@ import spankrCoin from "@/assets/spankr-coin.png";
 import { Shield, User, Radio, Film, Archive, X, Gamepad2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ThemeColorPicker from "@/components/ThemeColorPicker";
+import DesignSwitcher from "@/components/DesignSwitcher";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 export default function Index() {
@@ -184,6 +185,7 @@ export default function Index() {
               <span className="w-2 h-2 rounded-full bg-term-green animate-pulse" /> ONLINE
             </span>
             <span className="text-accent">{utc}Z</span>
+            <span className="text-term-red hidden sm:inline">HAL:OK</span>
             <span className="text-muted-foreground">{viewers}👁</span>
           </div>
         </div>
@@ -219,6 +221,7 @@ export default function Index() {
             <Button size="sm" variant="ghost" onClick={() => setShowAdmin(true)} className="h-7 px-2 text-[11px] text-gold hover:text-gold-shine"><Shield className="w-3 h-3 mr-1" />ADMIN</Button>
           )}
           <ThemeColorPicker scope="byteticker" />
+          <DesignSwitcher />
           <Button size="sm" variant="ghost" onClick={() => setScanlines(s => !s)} className="h-7 px-2 text-[11px] text-muted-foreground hover:text-primary">
             CRT:{scanlines ? "ON" : "OFF"}
           </Button>
