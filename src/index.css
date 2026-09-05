@@ -311,55 +311,46 @@ button[class*="STATS"], button[class*="DATA"], button[class*="SYS"], button[clas
   border-radius: 8px !important;
 }
   /* ==========================================================================
-   FORCE PIP-BOY INTERFACE OVERLAY
+   SYSTEM DESIGN DROPDOWN: PIP-BOY 3000 OPTION & VAULT BOY EMBED
    ========================================================================== */
 
-/* Force Root Container to render Pip-Boy Screen Frame */
-body, #root {
-  background-color: #030a05 !important;
-  color: #00ff66 !important;
-  font-family: 'Courier New', Courier, monospace !important;
+/* 1. Injects a PIP-BOY option button into the System Design dropdown list */
+[class*="SYSTEM DESIGN"]::after,
+div[class*="dropdown"] ul::after,
+.system-design-menu::after {
+  content: "PIP-BOY 3000";
+  display: block;
+  padding: 8px 12px;
+  margin-top: 4px;
+  color: #00ff66;
+  font-family: monospace;
+  font-weight: bold;
+  border: 1px solid #00ff66;
+  background: #061409;
+  cursor: pointer;
+  text-shadow: 0 0 5px #00ff66;
 }
 
-/* Force Main App Window into Pip-Boy HUD Box */
-main, [role="main"], .container {
-  border: 3px solid #00ff66 !important;
-  box-shadow: 0 0 20px rgba(0, 255, 102, 0.4), inset 0 0 15px rgba(0, 255, 102, 0.2) !important;
-  background: rgba(5, 15, 8, 0.95) !important;
+/* 2. Displays Vault Boy Thumbs-Up graphic at the bottom of the dropdown box */
+div[class*="system-design"],
+[class*="SYSTEM DESIGN"] {
   position: relative !important;
-  padding-top: 50px !important;
+  padding-bottom: 90px !important; /* Space for Vault Boy */
 }
 
-/* Inject [ STAT INV DATA MAP RADIO ] Header across top */
-main::before {
-  content: "  [ STAT ]    INV    DATA    MAP    RADIO" !important;
-  position: absolute !important;
-  top: 10px !important;
-  left: 20px !important;
-  right: 20px !important;
-  font-weight: bold !important;
-  font-size: 1.1rem !important;
-  letter-spacing: 3px !important;
-  color: #00ff66 !important;
-  border-bottom: 2px solid #00ff66 !important;
-  padding-bottom: 8px !important;
-  text-shadow: 0 0 8px #00ff66 !important;
-  z-index: 999 !important;
-}
-
-/* Inject Glowing Vault Boy Graphic on the right side */
-main::after {
+div[class*="system-design"]::before,
+[class*="SYSTEM DESIGN"]::before {
   content: "" !important;
-  position: fixed !important;
-  bottom: 40px !important;
-  right: 40px !important;
-  width: 160px !important;
-  height: 160px !important;
+  position: absolute !important;
+  bottom: 5px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 80px !important;
+  height: 80px !important;
   background-image: url("https://upload.wikimedia.org/wikipedia/en/a/a7/Vault_Boy.png") !important;
   background-size: contain !important;
   background-repeat: no-repeat !important;
   background-position: center !important;
-  filter: drop-shadow(0 0 12px #00ff66) brightness(1.2) sepia(1) hue-rotate(70deg) saturate(5) !important;
+  filter: drop-shadow(0 0 6px #00ff66) brightness(1.2) sepia(1) hue-rotate(70deg) saturate(5) !important;
   pointer-events: none !important;
-  z-index: 9999 !important;
 }
