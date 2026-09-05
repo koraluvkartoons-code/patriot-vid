@@ -226,8 +226,26 @@ export default function Index() {
         </div>
       </header>
 
-      <main className="container max-w-3xl mx-auto px-3 py-3 space-y-2">
-        <div className="crt-frame rounded-sm p-2 space-y-2">
+      <main id="pipboy-stats" className="container max-w-3xl mx-auto px-3 py-3 space-y-2">
+       <div className="pipboy-shell">
+        <nav className="pipboy-nav" aria-label="Pip-Boy navigation">
+          {[
+            { id: "STATS", go: () => window.scrollTo({ top: 0, behavior: "smooth" }) },
+            { id: "DATA", go: () => document.getElementById("pipboy-data")?.scrollIntoView({ behavior: "smooth", block: "start" }) },
+            { id: "SYS", go: () => setScanlines(s => !s) },
+            { id: "COMMS", go: () => cmdRef.current?.focus() },
+          ].map(t => (
+            <button key={t.id} type="button" onClick={t.go} className="pipboy-tab" data-active={t.id === "SYS" ? scanlines : undefined}>{t.id}</button>
+          ))}
+        </nav>
+        <div className="pipboy-frame">
+          <span className="pipboy-rivet" style={{ top: 6, left: 6 }} />
+          <span className="pipboy-rivet" style={{ top: 6, right: 6 }} />
+          <span className="pipboy-rivet" style={{ bottom: 6, left: 6 }} />
+          <span className="pipboy-rivet" style={{ bottom: 6, right: 6 }} />
+        <div className="crt-frame jarvis-holo rounded-sm p-2 space-y-2">
+          <span className="jarvis-tr" aria-hidden /><span className="jarvis-bl" aria-hidden />
+
           <Link to="/project117" className="pag-spankr-launch" aria-label="Open PROJECT 117">
             <span className="pag-spankr-label">$SPANKR</span>
             <img src={spankrCoin} alt="$SPANKR" />
