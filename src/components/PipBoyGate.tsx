@@ -1,37 +1,22 @@
-      import { useState } from "react";
+import { useState } from "react";
 import vaultBoy from "@/assets/140272-pip-boy-fallout-free-hd-image.png";
-
-type Pose = "arms" | "thumbs";
 
 interface PipBoyGateProps {
   onUnlock: () => void;
 }
 
-function VaultBoy({ pose }: { pose: Pose }) {
-  return (
-    <img
-      src={vaultBoy}
-      alt="Vault Boy"
-      className="pipboy-figure-image"
-      data-pose={pose}
-    />
-  );
-}
-
 export default function PipBoyGate({ onUnlock }: PipBoyGateProps) {
   const [code, setCode] = useState("");
-  const [pose, setPose] = useState<Pose>("thumbs");
   const [error, setError] = useState("");
 
   const submitCode = () => {
     if (code === "1984") {
       setError("");
       onUnlock();
-      return;
+    } else {
+      setError("ACCESS DENIED // INVALID VAULT CODE");
+      setCode("");
     }
-
-    setError("ACCESS DENIED // INVALID VAULT CODE");
-    setCode("");
   };
 
   return (
@@ -39,21 +24,32 @@ export default function PipBoyGate({ onUnlock }: PipBoyGateProps) {
       <section className="pipboy-terminal w-full max-w-2xl">
         <header className="pipboy-header">
           <div>
-            <div className="pipboy-label">VAULT-TEC PERSONNEL TERMINAL</div>
+            <div className="pipboy-label">
+              VAULT-TEC PERSONNEL TERMINAL
+            </div>
             <h1 className="pipboy-title">PIP-BOY // VAULT ACCESS</h1>
           </div>
+
           <div className="pipboy-status">SYSTEM ONLINE</div>
         </header>
 
         <div className="pipboy-screen">
           <div className="pipboy-figure">
-            <VaultBoy pose={pose} />
+            <img
+              src={vaultBoy}
+              alt="Vault Boy"
+              className="pipboy-glowing-image"
+            />
           </div>
 
           <div className="pipboy-copy">
             <div className="pipboy-label">SECURITY CHECKPOINT</div>
+
             <h2>ENTER VAULT CODE</h2>
-            <p>AUTHORIZED PERSONNEL ONLY // CODE REQUIRED TO VIEW POSTS</p>
+
+            <p>
+              AUTHORIZED PERSONNEL ONLY // CODE REQUIRED TO VIEW POSTS
+            </p>
 
             <div className="pipboy-code-row">
               <input
@@ -65,7 +61,9 @@ export default function PipBoyGate({ onUnlock }: PipBoyGateProps) {
                   setError("");
                 }}
                 onKeyDown={(event) => {
-                  if (event.key === "Enter") submitCode();
+                  if (event.key === "Enter") {
+                    submitCode();
+                  }
                 }}
                 inputMode="numeric"
                 maxLength={4}
@@ -83,32 +81,18 @@ export default function PipBoyGate({ onUnlock }: PipBoyGateProps) {
               </button>
             </div>
 
-            {error && <div className="pipboy-error">{error}</div>}
-
-            <div className="pipboy-controls">
-              <button
-                type="button"
-                onClick={() => setPose("thumbs")}
-                className={pose === "thumbs" ? "active" : ""}
-              >
-                THUMBS UP
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setPose("arms")}
-                className={pose === "arms" ? "active" : ""}
-              >
-                READY
-              </button>
-            </div>
+            {error && (
+              <div className="pipboy-error">
+                {error}
+              </div>
+            )}
           </div>
         </div>
 
         <footer className="pipboy-footer">
-          VAULT-TEC // PROPERTY OF VAULT-TEC INDUSTRIES // TERMINAL 1984
+          VAULT-TEC // TERMINAL 1984
         </footer>
       </section>
     </main>
   );
-}
+}                        
