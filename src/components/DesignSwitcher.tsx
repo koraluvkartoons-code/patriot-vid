@@ -8,6 +8,8 @@ export const DESIGNS = [
   { id: "y2k", label: "Y2K CYBER" },
   { id: "pc98", label: "PC-98 AMBER" },
   { id: "pastel", label: "PASTEL POP" },
+  { id: "pipboy", label: "PIP-BOY 3000" },
+  { id: "wopr", label: "WOPR" },
 ] as const;
 
 const KEY = "system-design";
