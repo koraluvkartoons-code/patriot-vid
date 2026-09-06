@@ -6,6 +6,7 @@ function useDesign() {
   );
   useEffect(() => {
     const root = document.documentElement;
+    setDesign(root.getAttribute("data-design") || "");
     const mo = new MutationObserver(() => setDesign(root.getAttribute("data-design") || ""));
     mo.observe(root, { attributes: true, attributeFilter: ["data-design"] });
     return () => mo.disconnect();
