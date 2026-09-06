@@ -16,6 +16,7 @@ import { Shield, User, Radio, Film, Archive, X, Gamepad2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ThemeColorPicker from "@/components/ThemeColorPicker";
 import DesignSwitcher from "@/components/DesignSwitcher";
+import PipBoyGate from "@/components/PipBoyGate";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 export default function Index() {
@@ -304,6 +305,7 @@ export default function Index() {
             <p className="text-center py-10 text-muted-foreground text-sm">{searching ? "no matching logs." : "log empty. awaiting first entry."}</p>
           )}
 
+          <PipBoyGate>
           <div id="pipboy-data" className="space-y-2">
             {[
               ...posts.map(p => ({ kind: "post" as const, at: p.createdAt, key: `p-${p.id}`, post: p })),
@@ -326,7 +328,7 @@ export default function Index() {
                 </div>
               ))}
           </div>
-
+          </PipBoyGate>
 
 
           <div ref={sentinelRef} className="h-1" />
