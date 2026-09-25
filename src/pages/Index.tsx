@@ -368,3 +368,37 @@ export default function Index() {
     </div>
   );
 }
+return (
+  /* Master Network Grid Module */
+  <div style={{ display: 'flex', width: '100vw', height: '100vh', background: '#121214', overflow: 'hidden', margin: 0, padding: 0 }}>
+    
+    {/* Left Column: Vertical Base44 Embed Stacks */}
+    <div style={{ flex: '1.2', display: 'flex', flexDirection: 'column', height: '100%', borderRight: '2px solid #ff4500' }}>
+      
+      {/* Upper Window: Your Main Base44 Guild Server */}
+      <div style={{ flex: '1', borderBottom: '2px solid #2c2c2e' }}>
+        <iframe 
+          src=”https://guildie-talk-live.base44.app/”
+          style={{ width: '100%', height: '100%', border: 'none' }} 
+        />
+      </div>
+
+      {/* Lower Window: Your Free Walkie-Talkie Recorder */}
+      <div style={{ height: '320px', background: '#1c1c1e' }}>
+        <iframe 
+          src="https://guild-web-nexus.base44.app/" 
+          style={{ width: '100%', height: '100%', border: 'none' }} 
+        />
+      </div>
+      
+    </div>
+
+    {/* Right Column: Your Original Lovable PatriotVid Content */}
+    <div style={{ flex: '1', height: '100%', overflowY: 'auto', padding: '20px' }}>
+      
+      {/* PLACE ALL OF YOUR ORIGINAL PATRIOTVID DISPLAY CODE OR COMPONENTS HERE */}
+
+    </div>
+
+  </div>
+);
