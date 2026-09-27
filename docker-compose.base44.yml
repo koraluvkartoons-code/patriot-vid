@@ -16,7 +16,7 @@ services:
     command: sh -c "bun install && bunx vite --host 0.0.0.0 --port 8080"
     restart: on-failure
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/ || exit 1"]
+      test: ["CMD-SHELL", "bun -e \"fetch('http://localhost:8080/').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))\""]
       interval: 15s
       timeout: 5s
       retries: 5
