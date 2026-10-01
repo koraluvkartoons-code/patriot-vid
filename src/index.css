@@ -320,6 +320,7 @@ html[data-design="pipboy"] .hal-eye{filter:hue-rotate(90deg)}
 .vb-gate{text-align:center;padding:18px 8px 26px;color:hsl(var(--primary));font-family:ui-monospace,monospace}
 .vb-head{font-size:11px;letter-spacing:.16em;opacity:.8;margin-bottom:10px}
 .vb-fig{width:150px;height:190px;color:hsl(var(--primary));filter:drop-shadow(0 0 8px hsl(var(--primary)/.7));margin:0 auto;animation:vbBob 2.4s ease-in-out infinite}
+.vb-img{display:block;object-fit:contain;filter:grayscale(1) sepia(1) saturate(8) hue-rotate(72deg) brightness(1.15) contrast(1.35) drop-shadow(0 0 8px hsl(var(--primary))) drop-shadow(0 0 18px hsl(var(--primary)/.7))}
 @keyframes vbBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 .vb-boy{display:block;margin:0 auto;background:none;border:0;cursor:pointer}
 .vb-caption{font-size:11px;letter-spacing:.14em;margin-top:6px;text-shadow:0 0 6px hsl(var(--primary)/.7)}
@@ -352,3 +353,14 @@ html[data-design="wopr"] .jarvis-holo>*{text-shadow:0 0 5px rgba(255,180,40,.5)}
 html[data-design="wopr"] .jarvis-holo::before,html[data-design="wopr"] .jarvis-holo::after,html[data-design="wopr"] .jarvis-tr,html[data-design="wopr"] .jarvis-bl{border-color:rgba(255,60,60,.8)}
 html[data-design="wopr"] .design-overlay{background:repeating-linear-gradient(to bottom,rgba(255,180,40,.05) 0 1px,transparent 1px 4px)}
 @media (max-width:640px){.vb-fig{width:120px;height:150px}.vb-pad{grid-template-columns:repeat(3,56px)}}
+
+/* BetterTTV comment emotes */
+.bttv-picker{border:1px solid hsl(var(--border));border-radius:6px;background:hsl(var(--popover));padding:8px;box-shadow:0 8px 24px hsl(var(--background)/.55)}
+.bttv-search{display:flex;align-items:center;gap:6px;margin:7px 0;padding:5px 7px;border:1px solid hsl(var(--border));border-radius:4px;color:hsl(var(--muted-foreground));background:hsl(var(--muted)/.45)}
+.bttv-search input{width:100%;min-width:0;background:transparent;color:hsl(var(--foreground));font-size:12px;outline:none}
+.bttv-search input::placeholder{color:hsl(var(--muted-foreground))}
+.bttv-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;max-height:240px;overflow-y:auto;overscroll-behavior:contain}
+.bttv-emote{height:64px!important;min-width:0!important;padding:3px!important;display:flex!important;flex-direction:column;gap:2px!important;overflow:hidden}
+.bttv-emote img{width:38px;height:38px;object-fit:contain;flex:0 0 auto}
+.bttv-emote span{display:block;width:100%;overflow:hidden;text-overflow:ellipsis;font-size:8px;line-height:1;color:hsl(var(--muted-foreground))}
+@media (min-width:640px){.bttv-grid{grid-template-columns:repeat(8,minmax(0,1fr))}}

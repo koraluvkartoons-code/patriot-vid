@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
+import vaultBoyAsset from "@/assets/vaultboy.png.asset.json";
 
 function useDesign() {
   const [design, setDesign] = useState<string>(() =>
@@ -16,29 +17,9 @@ function useDesign() {
 
 const CODE = "1984";
 
-function VaultBoy({ pose }: { pose: "arms" | "thumbs" }) {
+function VaultBoy() {
   return (
-    <svg viewBox="0 0 120 150" className="vb-fig" aria-hidden>
-      <g fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="60" cy="28" r="20" />
-        <path d="M50 24c3-3 7-3 9 0M61 24c3-3 7-3 9 0" />
-        <path d="M52 36c5 4 12 4 17 0" />
-        <path d="M60 48v52" />
-        {pose === "arms" ? (
-          <>
-            <path d="M60 60L26 40M60 60l34-20" />
-            <path d="M26 40l-8-4M94 40l8-4" />
-          </>
-        ) : (
-          <>
-            <path d="M60 60L30 74M60 60l30-24" />
-            <path d="M90 36l2-10M30 74l-9 3" />
-          </>
-        )}
-        <path d="M60 100l-18 34M60 100l18 34" />
-        <path d="M42 134h-9M78 134h9" />
-      </g>
-    </svg>
+    <img src={vaultBoyAsset.url} className="vb-fig vb-img" alt="Vault Boy giving a thumbs up" />
   );
 }
 
@@ -77,7 +58,7 @@ export default function PipBoyGate({ children }: { children: ReactNode }) {
       {!keypad ? (
         <>
           <button type="button" className="vb-boy" onClick={() => setKeypad(true)} aria-label="Enter access code">
-            <VaultBoy pose="arms" />
+            <VaultBoy />
             <span className="vb-caption">TAP VAULT BOY → ENTER CODE</span>
           </button>
           <div className="vb-buttons">
@@ -89,7 +70,7 @@ export default function PipBoyGate({ children }: { children: ReactNode }) {
         </>
       ) : (
         <div className="vb-keypad">
-          <VaultBoy pose="thumbs" />
+          <VaultBoy />
           <p className="vb-caption">ENTER ACCESS CODE</p>
           <p className="vb-code">{(entry + "____").slice(0, 4).split("").join(" ")}</p>
           {denied && <p className="vb-denied">ACCESS DENIED — RETRY</p>}

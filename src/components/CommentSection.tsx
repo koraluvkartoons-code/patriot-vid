@@ -5,6 +5,7 @@ import { getCurrentUserId, type UserProfile, type Comment as CommentType } from 
 import { fetchComments, createComment, deleteComment, updateComment } from "@/lib/api";
 import UserBadge from "./UserBadge";
 import GiphyPicker from "./GiphyPicker";
+import BetterTTVEmotePicker from "./BetterTTVEmotePicker";
 import { ImagePlus, Trash2, Edit, X } from "lucide-react";
 
 interface Props { postId: string; onNeedSetup: () => void; profiles: Record<string, UserProfile>; }
@@ -14,6 +15,7 @@ export default function CommentSection({ postId, onNeedSetup, profiles }: Props)
   const [mediaUrl, setMediaUrl] = useState("");
   const [mediaType, setMediaType] = useState<"image" | "gif" | undefined>();
   const [showGiphy, setShowGiphy] = useState(false);
+  const [showEmotes, setShowEmotes] = useState(false);
   const [comments, setComments] = useState<CommentType[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editText, setEditText] = useState("");
@@ -61,7 +63,8 @@ export default function CommentSection({ postId, onNeedSetup, profiles }: Props)
       <Textarea value={text} onChange={e => setText(e.target.value)} placeholder="Write a comment..." className="bg-muted border-border text-foreground min-h-[40px] text-sm" maxLength={1000} />
       {mediaUrl && <div className="relative inline-block"><img src={mediaUrl} alt="" className="max-h-24 rounded" /><button onClick={() => {setMediaUrl("");setMediaType(undefined)}} className="absolute -top-1 -right-1 bg-destructive rounded-full p-0.5"><X className="w-3 h-3" /></button></div>}
       {showGiphy && <GiphyPicker onSelect={(url) => {setMediaUrl(url);setMediaType("gif");setShowGiphy(false)}} onClose={() => setShowGiphy(false)} />}
-      <div className="flex items-center gap-2"><input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFile} /><Button size="sm" variant="ghost" onClick={() => fileRef.current?.click()} className="text-primary hover:text-accent h-7 px-2"><ImagePlus className="w-3.5 h-3.5" /></Button><Button size="sm" variant="ghost" onClick={() => setShowGiphy(!showGiphy)} className="text-primary hover:text-accent h-7 px-2 font-bold">GIF</Button><div className="flex-1" /><Button size="sm" onClick={submit} disabled={!text.trim() && !mediaUrl} className="gradient-btn text-foreground h-7 text-xs">Send</Button></div>
+      {showEmotes && <BetterTTVEmotePicker onSelect={(emote) => {setMediaUrl(emote.url);setMediaType("gif");setShowEmotes(false)}} onClose={() => setShowEmotes(false)} />}
+      <div className="flex items-center gap-2"><input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFile} /><Button size="sm" variant="ghost" onClick={() => fileRef.current?.click()} className="text-primary hover:text-accent h-7 px-2"><ImagePlus className="w-3.5 h-3.5" /></Button><Button size="sm" variant="ghost" onClick={() => {setShowGiphy(!showGiphy);setShowEmotes(false)}} className="text-primary hover:text-accent h-7 px-2 font-bold">GIF</Button><Button size="sm" variant="ghost" onClick={() => {setShowEmotes(!showEmotes);setShowGiphy(false)}} className="text-primary hover:text-accent h-7 px-2 font-bold">EMOTES</Button><div className="flex-1" /><Button size="sm" onClick={submit} disabled={!text.trim() && !mediaUrl} className="gradient-btn text-foreground h-7 text-xs">Send</Button></div>
     </div>
   </div>;
 }
