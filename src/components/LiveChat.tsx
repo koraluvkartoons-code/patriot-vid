@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ImagePlus, Reply, Trash2, Clock, Ban, Smile } from "lucide-react";
 import GiphyPicker from "./GiphyPicker";
+import BetterTTVEmotePicker from "./BetterTTVEmotePicker";
 
 const EMOJIS = ["🔥","😂","💀","🦅","🇺🇸","❤️","👀","🤣","🤯","😎","💯","🙏","👏","🎉","😭","🤡"];
 
@@ -46,6 +47,7 @@ export default function LiveChat({ streamId, guestName, guestSessionId, isModera
   const [showEmoji, setShowEmoji] = useState(false);
   const [replyTo, setReplyTo] = useState<ChatMsg | null>(null);
   const [showStickers, setShowStickers] = useState(false);
+  const [showBttv, setShowBttv] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -209,6 +211,16 @@ export default function LiveChat({ streamId, guestName, guestSessionId, isModera
           ))}
         </div>
       )}
+      {showBttv && (
+        <div className="p-2 border-t border-primary/30">
+          <BetterTTVEmotePicker onSelect={async (emote) => {
+            await supabase.functions.invoke("chat-action", {
+              body: { action: "send", stream_id: streamId, guest_name: guestName, guest_session_id: guestSessionId, text: "", media_url: emote.url, media_type: "gif" }
+            });
+            setShowBttv(false);
+          }} onClose={() => setShowBttv(false)} />
+        </div>
+      )}
       {showGif && (
         <div className="p-2 bg-zinc-900 border-t border-primary/30">
           <GiphyPicker onSelect={async (url) => {
@@ -224,6 +236,7 @@ export default function LiveChat({ streamId, guestName, guestSessionId, isModera
         <input ref={fileRef} type="file" accept="image/*,video/*" hidden onChange={onFile} />
         <Button size="sm" variant="ghost" onClick={() => fileRef.current?.click()} className="text-pink-400 h-8 px-2"><ImagePlus className="w-4 h-4" /></Button>
         <Button size="sm" variant="ghost" onClick={() => setShowGif(s => !s)} className="text-pink-400 h-8 px-2 font-bold text-xs">GIF</Button>
+        <Button size="sm" variant="ghost" onClick={() => setShowBttv(s => !s)} className="text-pink-400 h-8 px-2 font-bold text-[10px]">EMOTES</Button>
         <Button size="sm" variant="ghost" onClick={() => setShowEmoji(s => !s)} className="text-pink-400 h-8 px-2"><Smile className="w-4 h-4" /></Button>
         <Button size="sm" variant="ghost" onClick={() => setShowStickers(s => !s)} className="text-pink-400 h-8 px-2 text-xs">🎟️</Button>
         <Input
