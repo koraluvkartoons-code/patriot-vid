@@ -12,7 +12,7 @@ import AdminPanel from "@/components/AdminPanel";
 
 import { tagClass, tagLabel } from "@/lib/tags";
 import spankrCoin from "@/assets/spankr-coin.png";
-import { Shield, User, Radio, Film, Archive, X, Gamepad2 } from "lucide-react";
+import { Shield, User, Radio, Film, Archive, X, Gamepad2, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ThemeColorPicker from "@/components/ThemeColorPicker";
 import DesignSwitcher from "@/components/DesignSwitcher";
