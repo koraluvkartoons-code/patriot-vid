@@ -1,4 +1,4 @@
-export type ThemeScope = "byteticker" | "polianigames";
+export type ThemeScope = "byteticker" | "polianigames" | "docform";
 
 export const THEME_PRESETS: { label: string; hex: string | null }[] = [
   { label: "Dark Purple", hex: null },
