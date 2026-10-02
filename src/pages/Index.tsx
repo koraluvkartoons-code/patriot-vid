@@ -12,7 +12,7 @@ import AdminPanel from "@/components/AdminPanel";
 
 import { tagClass, tagLabel } from "@/lib/tags";
 import spankrCoin from "@/assets/spankr-coin.png";
-import { Shield, User, Radio, Film, Archive, X, Gamepad2 } from "lucide-react";
+import { Shield, User, Radio, Film, Archive, X, Gamepad2, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ThemeColorPicker from "@/components/ThemeColorPicker";
 import DesignSwitcher from "@/components/DesignSwitcher";
@@ -193,6 +193,7 @@ export default function Index() {
         <div className="container max-w-3xl mx-auto px-3 pb-2 flex items-center gap-1 overflow-x-auto scrollbar-hide">
           <Link to="/live"><Button size="sm" variant="ghost" className="h-7 px-2 text-[11px] text-term-red"><Radio className="w-3 h-3 mr-1" />GO_LIVE</Button></Link>
           <Link to="/polianigames"><Button size="sm" variant="ghost" className="h-7 px-2 text-[11px] text-term-purple hover:text-primary"><Gamepad2 className="w-3 h-3 mr-1" />POLIANIGAMES</Button></Link>
+          <Link to="/docform"><Button size="sm" variant="ghost" className="h-7 px-2 text-[11px] text-foreground hover:text-primary"><FileText className="w-3 h-3 mr-1" />DOCFORM</Button></Link>
           <Link to="/streams"><Button size="sm" variant="ghost" className="h-7 px-2 text-[11px] text-foreground hover:text-primary"><Film className="w-3 h-3 mr-1" />STREAMS</Button></Link>
           <Sheet>
             <SheetTrigger asChild>
