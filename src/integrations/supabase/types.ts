@@ -156,113 +156,10 @@ export type Database = {
           },
         ]
       }
-      guild_members: {
-        Row: {
-          created_at: string
-          id: string
-          quiz_answer: string | null
-          title: string
-          updated_at: string
-          username: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          quiz_answer?: string | null
-          title?: string
-          updated_at?: string
-          username: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          quiz_answer?: string | null
-          title?: string
-          updated_at?: string
-          username?: string
-        }
-        Relationships: []
-      }
-      guild_messages: {
-        Row: {
-          author_name: string
-          created_at: string
-          edited_at: string | null
-          guild_id: string
-          id: string
-          media_type: string | null
-          media_url: string | null
-          text: string
-        }
-        Insert: {
-          author_name: string
-          created_at?: string
-          edited_at?: string | null
-          guild_id: string
-          id?: string
-          media_type?: string | null
-          media_url?: string | null
-          text?: string
-        }
-        Update: {
-          author_name?: string
-          created_at?: string
-          edited_at?: string | null
-          guild_id?: string
-          id?: string
-          media_type?: string | null
-          media_url?: string | null
-          text?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "guild_messages_guild_id_fkey"
-            columns: ["guild_id"]
-            isOneToOne: false
-            referencedRelation: "guilds"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      guilds: {
-        Row: {
-          background_color: string
-          background_type: string | null
-          background_url: string | null
-          created_at: string
-          description: string
-          id: string
-          name: string
-          owner_name: string
-        }
-        Insert: {
-          background_color?: string
-          background_type?: string | null
-          background_url?: string | null
-          created_at?: string
-          description?: string
-          id?: string
-          name: string
-          owner_name: string
-        }
-        Update: {
-          background_color?: string
-          background_type?: string | null
-          background_url?: string | null
-          created_at?: string
-          description?: string
-          id?: string
-          name?: string
-          owner_name?: string
-        }
-        Relationships: []
-      }
       posts: {
         Row: {
           category: string | null
           created_at: string
-          deleted_at: string | null
-          deleted_by: string | null
           description: string | null
           id: string
           is_archived: boolean
@@ -280,8 +177,6 @@ export type Database = {
         Insert: {
           category?: string | null
           created_at?: string
-          deleted_at?: string | null
-          deleted_by?: string | null
           description?: string | null
           id?: string
           is_archived?: boolean
@@ -299,8 +194,6 @@ export type Database = {
         Update: {
           category?: string | null
           created_at?: string
-          deleted_at?: string | null
-          deleted_by?: string | null
           description?: string | null
           id?: string
           is_archived?: boolean
@@ -430,36 +323,6 @@ export type Database = {
           thumbnail_url?: string | null
           title?: string
           viewer_count?: number | null
-        }
-        Relationships: []
-      }
-      watchman_streams: {
-        Row: {
-          ended_at: string | null
-          host_name: string
-          id: string
-          room_name: string
-          started_at: string
-          status: string
-          title: string
-        }
-        Insert: {
-          ended_at?: string | null
-          host_name: string
-          id?: string
-          room_name: string
-          started_at?: string
-          status?: string
-          title?: string
-        }
-        Update: {
-          ended_at?: string | null
-          host_name?: string
-          id?: string
-          room_name?: string
-          started_at?: string
-          status?: string
-          title?: string
         }
         Relationships: []
       }
