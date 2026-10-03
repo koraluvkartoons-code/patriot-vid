@@ -69,10 +69,10 @@ export default function TheGuild() {
   };
   const createGuild = async () => {
     const parsed = guildSchema.safeParse({ name: newName, description: newDescription }); if (!parsed.success) return;
-    await supabase.from("guilds").insert({ ...parsed.data, owner_name: username }); setNewName(""); setNewDescription(""); setShowCreate(false); load();
+    await supabase.from("guilds").insert({ name: parsed.data.name, description: parsed.data.description, owner_name: username }); setNewName(""); setNewDescription(""); setShowCreate(false); load();
   };
   const setGuildBackground = async (guild: Guild, file?: File, color?: string) => {
-    const patch: Record<string, string | null> = {};
+    const patch: { background_url?: string; background_type?: string; background_color?: string } = {};
     if (file) { patch.background_url = await uploadMedia(file); patch.background_type = file.type.startsWith("video/") ? "video" : "image"; }
     if (color && /^#[0-9a-f]{6}$/i.test(color)) patch.background_color = color;
     await supabase.from("guilds").update(patch).eq("id", guild.id); load(); setSelected({ ...guild, ...patch } as Guild);
@@ -102,7 +102,7 @@ export default function TheGuild() {
 }
 
 function PageTitle({ icon: Icon, title, subtitle, action }: { icon: typeof Users; title: string; subtitle: string; action?: React.ReactNode }) { return <div className="guild-page-title"><Icon/><div><h1>{title}</h1><p>{subtitle}</p></div>{action && <div className="ml-auto">{action}</div>}</div>; }
-function InfoSection({ icon, title, accent, body }: { icon: typeof Shield; title: string; accent: string; body: string }) { return <><PageTitle icon={icon} title={title} subtitle={body}/><div className="guild-panel guild-feature"><icon.type/><h2>{accent}</h2><p>{body}</p></div></>; }
+function InfoSection({ icon: Icon, title, accent, body }: { icon: typeof Shield; title: string; accent: string; body: string }) { return <><PageTitle icon={Icon} title={title} subtitle={body}/><div className="guild-panel guild-feature"><Icon/><h2>{accent}</h2><p>{body}</p></div></>; }
 function GuildRoom({ guild, username, isWarden, onBack, onBackground }: { guild: Guild; username: string; isWarden: boolean; onBack: () => void; onBackground: (guild: Guild, file?: File, color?: string) => void }) {
   const bgRef = useRef<HTMLInputElement>(null); const canStyle = guild.owner_name === username || isWarden;
   return <div className="guild-room" style={{ backgroundColor: guild.background_color }}>
@@ -117,6 +117,6 @@ function Watchman({ username, isWarden }: { username: string; isWarden: boolean 
   const start=async()=>{const room_name=`watchman-${crypto.randomUUID()}`;const {data}=await supabase.from("watchman_streams").insert({host_name:username,room_name,title:"Watchman's Detector Stream"}).select().single();if(data)connect(data,true);};
   const join=async()=>{const {data}=await supabase.from("watchman_streams").select("*").eq("status","live").order("started_at",{ascending:false}).limit(1).maybeSingle();if(data)connect(data,false);};
   const stop=async()=>{tracks.current.cam?.stop();tracks.current.mic?.stop();roomRef.current?.disconnect();if(stream)await supabase.from("watchman_streams").update({status:"ended",ended_at:new Date().toISOString()}).eq("id",stream.id);setStream(null);setLive(false);};
-  useEffect(()=>()=>roomRef.current?.disconnect(),[]);
+  useEffect(() => () => { void roomRef.current?.disconnect(); }, []);
   return <><PageTitle icon={Radio} title="Watchman's Detector Stream" subtitle="A separate Guild camera and microphone broadcast."/><div className="guild-panel space-y-3"><div className="guild-video"><video ref={videoRef} autoPlay playsInline muted={live}/>{!stream&&<Radio/>}</div><div className="flex gap-2"><Button onClick={start} disabled={!!stream}><Video/>GO LIVE</Button><Button variant="secondary" onClick={join} disabled={!!stream}><Radio/>WATCH LIVE</Button>{stream&&<Button variant="destructive" onClick={stop}>END</Button>}</div></div><GuildChat guildId={WATCHMAN_CHAT_ID} username={username} isWarden={isWarden} /> </>;
 }
