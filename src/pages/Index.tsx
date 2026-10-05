@@ -12,7 +12,7 @@ import AdminPanel from "@/components/AdminPanel";
 
 import { tagClass, tagLabel } from "@/lib/tags";
 import spankrCoin from "@/assets/spankr-coin.png";
-import { Shield, User, Radio, Film, Archive, X, Gamepad2, FileText } from "lucide-react";
+import { Shield, User, Radio, Film, Archive, X, Gamepad2, FileText, Home, Search, Bell, Mail, Bookmark, Users, MoreHorizontal, Feather, Hash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ThemeColorPicker from "@/components/ThemeColorPicker";
 import DesignSwitcher from "@/components/DesignSwitcher";
@@ -233,7 +233,28 @@ export default function Index() {
         </div>
       </header>
 
-      <main id="pipboy-stats" className="container max-w-3xl mx-auto px-3 py-3 space-y-2">
+      <main id="pipboy-stats" className="x-layout container max-w-3xl mx-auto px-3 py-3 space-y-2">
+       <aside className="x-left" aria-label="X navigation">
+        <Link to="/index" className="x-logo" aria-label="X home">X</Link>
+        <nav className="x-nav">
+          <Link to="/index" className="x-nav-item is-active"><Home /> <span>Home</span></Link>
+          <button type="button" className="x-nav-item" onClick={() => cmdRef.current?.focus()}><Search /> <span>Explore</span></button>
+          <button type="button" className="x-nav-item"><Bell /> <span>Notifications</span></button>
+          <button type="button" className="x-nav-item"><Mail /> <span>Messages</span></button>
+          <button type="button" className="x-nav-item" onClick={() => document.getElementById("pipboy-data")?.scrollIntoView({ behavior: "smooth" })}><Bookmark /> <span>Bookmarks</span></button>
+          <Link to="/polianigames" className="x-nav-item"><Users /> <span>Communities</span></Link>
+          <button type="button" className="x-nav-item" onClick={() => setShowSetup(true)}><User /> <span>Profile</span></button>
+          <button type="button" className="x-nav-item"><MoreHorizontal /> <span>More</span></button>
+        </nav>
+        <Button className="x-post-button" onClick={() => document.querySelector<HTMLElement>(".x-center textarea")?.focus()}><Feather className="x-post-icon" /><span>Post</span></Button>
+        <button type="button" className="x-profile-chip" onClick={() => setShowSetup(true)}>
+          <span className="x-avatar">{currentUser?.avatar ? <img src={currentUser.avatar} alt="" /> : <User />}</span>
+          <span className="x-profile-copy"><strong>{userId || "Create profile"}</strong><small>{userId ? `@${userId.replace(/\s+/g, "").toLowerCase()}` : "No email needed"}</small></span>
+          <MoreHorizontal />
+        </button>
+       </aside>
+       <section className="x-center">
+        <div className="x-mobile-title"><strong>Home</strong><button type="button" onClick={() => setShowSetup(true)} aria-label="Open profile"><User /></button></div>
        <div className="pipboy-shell">
         <nav className="pipboy-nav" aria-label="Pip-Boy navigation">
           {[
@@ -344,7 +365,32 @@ export default function Index() {
         </div>
         </div>
        </div>
+       </section>
+       <aside className="x-right">
+        <label className="x-search"><Search /><input value={cmd} onChange={e => setCmd(e.target.value)} onKeyDown={e => { if (e.key === "Enter") runCommand(); }} placeholder="Search" aria-label="Search posts" /></label>
+        <section className="x-side-panel">
+          <h2>What’s happening</h2>
+          {liveStreams.length > 0 ? liveStreams.slice(0, 3).map(stream => (
+            <Link to={`/watch/${stream.id}`} key={stream.id} className="x-trend"><small>Live now</small><strong>{stream.title}</strong><span>Watch stream</span></Link>
+          )) : (
+            <div className="x-trend"><small>Live on Patriot.Vid</small><strong>Join the conversation</strong><span>{viewers} online</span></div>
+          )}
+          {categories.slice(0, 4).map(category => <button type="button" key={category} className="x-trend" onClick={() => { setActiveCategory(category); setSearching(false); setSearchTerm(""); }}><small>Trending</small><strong>#{category.replace(/\s+/g, "")}</strong><span>View posts</span></button>)}
+        </section>
+        <section className="x-side-panel">
+          <h2>Your profile</h2>
+          <button type="button" className="x-who" onClick={() => setShowSetup(true)}><span className="x-avatar">{currentUser?.avatar ? <img src={currentUser.avatar} alt="" /> : <User />}</span><span><strong>{userId || "Create a profile"}</strong><small>{userId ? "Edit name or photo" : "Display name and photo only"}</small></span><b>{userId ? "Edit" : "Create"}</b></button>
+        </section>
+       </aside>
       </main>
+
+      <nav className="x-bottom-nav" aria-label="Mobile navigation">
+        <Link to="/index" aria-label="Home"><Home /></Link>
+        <button type="button" onClick={() => cmdRef.current?.focus()} aria-label="Search"><Search /></button>
+        <button type="button" aria-label="Notifications"><Bell /></button>
+        <Link to="/polianigames" aria-label="Communities"><Users /></Link>
+        <button type="button" onClick={() => setShowSetup(true)} aria-label="Profile"><User /></button>
+      </nav>
 
 
       <footer className="fixed bottom-0 inset-x-0 z-40 border-t border-border gradient-hero">
