@@ -100,7 +100,7 @@ export default function CreatePost({ onNeedSetup, onCreated, categories = [], si
 
       await createPost({
         userId: uid,
-        title: title.trim(),
+        title: title.trim() || desc.trim().slice(0, 120) || "Post",
         description: desc.trim(),
         // first item stays in the legacy fields for backwards compatibility
         mediaUrl: media[0]?.url,
