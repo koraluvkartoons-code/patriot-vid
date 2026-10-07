@@ -191,7 +191,7 @@ export default function CreatePost({ onNeedSetup, onCreated, categories = [], si
           <CalendarClock className="w-4 h-4 mr-1" /> Schedule
         </Button>
         <div className="flex-1" />
-        <Button onClick={submit} disabled={!title.trim() || uploading} className="gradient-btn text-foreground font-semibold">
+        <Button onClick={submit} disabled={(!title.trim() && !desc.trim() && files.length === 0 && !linkUrl.trim()) || uploading} className="gradient-btn text-foreground font-semibold">
           {uploading ? <><Loader2 className="w-4 h-4 mr-1 animate-spin" /> {files.length ? `Uploading ${progress}/${files.length}` : "Posting..."}</> : (showSchedule && scheduleAt ? "Schedule" : "Post")}
         </Button>
       </div>
