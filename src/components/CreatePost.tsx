@@ -76,7 +76,7 @@ export default function CreatePost({ onNeedSetup, onCreated, categories = [], si
   const submit = async () => {
     const uid = getCurrentUserId();
     if (!uid) { onNeedSetup(); return; }
-    if (!title.trim()) return;
+    if (!title.trim() && !desc.trim() && files.length === 0 && !linkUrl.trim()) return;
 
     const scheduledIso = showSchedule && scheduleAt ? new Date(scheduleAt).toISOString() : undefined;
     if (scheduledIso && new Date(scheduledIso).getTime() <= Date.now()) {
