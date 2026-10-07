@@ -126,7 +126,7 @@ export default function CreatePost({ onNeedSetup, onCreated, categories = [], si
   return (
     <div className="gradient-card border border-border rounded-xl p-4 glow-purple">
       <h3 className="text-foreground font-semibold mb-3">Create Post</h3>
-      <Input placeholder="Title..." value={title} onChange={(e) => setTitle(e.target.value)} className="bg-muted border-border text-foreground mb-2" maxLength={120} />
+      <Input placeholder="Title (optional)..." value={title} onChange={(e) => setTitle(e.target.value)} className="bg-muted border-border text-foreground mb-2" maxLength={120} />
       <Textarea placeholder="What's on your mind?" value={desc} onChange={(e) => setDesc(e.target.value)} className="bg-muted border-border text-foreground mb-2 min-h-[60px]" maxLength={2000} />
       <Input
         placeholder="Category (optional)"
