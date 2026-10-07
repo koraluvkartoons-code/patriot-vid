@@ -76,7 +76,7 @@ export default function CreatePost({ onNeedSetup, onCreated, categories = [], si
   const submit = async () => {
     const uid = getCurrentUserId();
     if (!uid) { onNeedSetup(); return; }
-    if (!title.trim()) return;
+    if (!title.trim() && !desc.trim() && files.length === 0 && !linkUrl.trim()) return;
 
     const scheduledIso = showSchedule && scheduleAt ? new Date(scheduleAt).toISOString() : undefined;
     if (scheduledIso && new Date(scheduledIso).getTime() <= Date.now()) {
@@ -100,7 +100,7 @@ export default function CreatePost({ onNeedSetup, onCreated, categories = [], si
 
       await createPost({
         userId: uid,
-        title: title.trim(),
+        title: title.trim() || desc.trim().slice(0, 120) || "Post",
         description: desc.trim(),
         // first item stays in the legacy fields for backwards compatibility
         mediaUrl: media[0]?.url,
@@ -126,7 +126,7 @@ export default function CreatePost({ onNeedSetup, onCreated, categories = [], si
   return (
     <div className="gradient-card border border-border rounded-xl p-4 glow-purple">
       <h3 className="text-foreground font-semibold mb-3">Create Post</h3>
-      <Input placeholder="Title..." value={title} onChange={(e) => setTitle(e.target.value)} className="bg-muted border-border text-foreground mb-2" maxLength={120} />
+      <Input placeholder="Title (optional)..." value={title} onChange={(e) => setTitle(e.target.value)} className="bg-muted border-border text-foreground mb-2" maxLength={120} />
       <Textarea placeholder="What's on your mind?" value={desc} onChange={(e) => setDesc(e.target.value)} className="bg-muted border-border text-foreground mb-2 min-h-[60px]" maxLength={2000} />
       <Input
         placeholder="Category (optional)"
@@ -191,7 +191,7 @@ export default function CreatePost({ onNeedSetup, onCreated, categories = [], si
           <CalendarClock className="w-4 h-4 mr-1" /> Schedule
         </Button>
         <div className="flex-1" />
-        <Button onClick={submit} disabled={!title.trim() || uploading} className="gradient-btn text-foreground font-semibold">
+        <Button onClick={submit} disabled={(!title.trim() && !desc.trim() && files.length === 0 && !linkUrl.trim()) || uploading} className="gradient-btn text-foreground font-semibold">
           {uploading ? <><Loader2 className="w-4 h-4 mr-1 animate-spin" /> {files.length ? `Uploading ${progress}/${files.length}` : "Posting..."}</> : (showSchedule && scheduleAt ? "Schedule" : "Post")}
         </Button>
       </div>
