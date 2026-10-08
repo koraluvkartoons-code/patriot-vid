@@ -118,6 +118,7 @@ export type Database = {
           edited_at: string | null
           id: string
           is_archived: boolean
+          media: Json
           media_type: string | null
           media_url: string | null
           post_id: string
@@ -129,6 +130,7 @@ export type Database = {
           edited_at?: string | null
           id?: string
           is_archived?: boolean
+          media?: Json
           media_type?: string | null
           media_url?: string | null
           post_id: string
@@ -140,6 +142,7 @@ export type Database = {
           edited_at?: string | null
           id?: string
           is_archived?: boolean
+          media?: Json
           media_type?: string | null
           media_url?: string | null
           post_id?: string
