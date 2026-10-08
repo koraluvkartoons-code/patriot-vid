@@ -254,7 +254,8 @@ export default function Index() {
         </button>
        </aside>
        <section className="x-center">
-        <div className="x-mobile-title"><strong>Home</strong><button type="button" onClick={() => setShowSetup(true)} aria-label="Open profile"><User /></button></div>
+         <div className="x-mobile-title"><strong>Home</strong><button type="button" onClick={() => setShowSetup(true)} aria-label="Open profile"><User /></button></div>
+         <label className="x-search x-search-mobile"><Search /><input value={cmd} onChange={e => setCmd(e.target.value)} onKeyDown={e => { if (e.key === "Enter") runCommand(); }} placeholder="Search" aria-label="Search posts" /></label>
        <div className="pipboy-shell">
         <nav className="pipboy-nav" aria-label="Pip-Boy navigation">
           {[

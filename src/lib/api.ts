@@ -251,6 +251,7 @@ export async function fetchComments(postId: string): Promise<Comment[]> {
     text: c.text || "",
     mediaUrl: c.media_url || undefined,
     mediaType: c.media_type || undefined,
+    media: parseMedia((c as { media?: unknown }).media),
     createdAt: c.created_at,
     editedAt: (c as { edited_at?: string }).edited_at || undefined,
   }));
@@ -262,13 +263,14 @@ export async function fetchCommentCount(postId: string): Promise<number> {
   return count || 0;
 }
 
-export async function createComment(comment: { postId: string; userId: string; text: string; mediaUrl?: string; mediaType?: string }) {
+export async function createComment(comment: { postId: string; userId: string; text: string; mediaUrl?: string; mediaType?: string; media?: PostMedia[] }) {
   await supabase.from("comments").insert({
     post_id: comment.postId,
     user_id: comment.userId,
     text: comment.text,
     media_url: comment.mediaUrl || null,
     media_type: comment.mediaType || null,
+    media: (comment.media || []) as unknown as never,
   });
 }
 

@@ -434,3 +434,6 @@ html[data-design="x"] .x-who b{color:hsl(var(--primary));font-size:13px}
 .docform-body ul { list-style: disc; padding-left: 1.4em; }
 .docform-body ol { list-style: decimal; padding-left: 1.4em; }
 .docform-body img, .docform-body video { max-width: 100%; max-height: 420px; border-radius: .375rem; margin: .4em 0; }
+
+.x-search-mobile{display:none}
+@media(max-width:1020px){html[data-design="x"] .x-search-mobile{display:flex;margin:10px 12px 0}}
