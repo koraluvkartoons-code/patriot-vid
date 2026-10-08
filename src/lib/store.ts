@@ -416,6 +416,7 @@ export interface Comment {
   text: string;
   mediaUrl?: string;
   mediaType?: string;
+  media?: PostMedia[];
   createdAt: string;
   editedAt?: string;
 }
