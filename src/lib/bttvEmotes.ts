@@ -1,6 +1,6 @@
-export type BetterTTVGroup = "popular" | "mario" | "luigi" | "spongebob" | "spurdo" | "minecraft" | "7tv-top" | "7tv-trending" | "7tv-new" | "7tv-spurdo" | "7tv-holidays" | "7tv-mario" | "7tv-dbz" | "7tv-bluehair" | "7tv-mariocoin";
+export type BetterTTVGroup = "popular" | "mario" | "luigi" | "spongebob" | "spurdo" | "minecraft" | "7tv-top" | "7tv-trending" | "7tv-new" | "7tv-spurdo" | "7tv-holidays" | "7tv-mario" | "7tv-dbz" | "7tv-bluehair" | "7tv-mariocoin" | "7tv-sonicring" | "7tv-sonic" | "7tv-chibi";
 
-export const BETTER_TTV_GROUPS: BetterTTVGroup[] = ["popular", "mario", "luigi", "spongebob", "spurdo", "minecraft", "7tv-top", "7tv-trending", "7tv-new", "7tv-spurdo", "7tv-holidays", "7tv-mario", "7tv-dbz", "7tv-bluehair", "7tv-mariocoin"];
+export const BETTER_TTV_GROUPS: BetterTTVGroup[] = ["popular", "mario", "luigi", "spongebob", "spurdo", "minecraft", "7tv-top", "7tv-trending", "7tv-new", "7tv-spurdo", "7tv-holidays", "7tv-mario", "7tv-dbz", "7tv-bluehair", "7tv-mariocoin", "7tv-sonicring", "7tv-sonic", "7tv-chibi"];
 
 export interface BetterTTVEmote {
   id: string;
