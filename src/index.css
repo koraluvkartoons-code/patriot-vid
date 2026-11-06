@@ -400,8 +400,9 @@ html[data-design="x"] .pipboy-shell{display:block}
 html[data-design="x"] .pipboy-frame{padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
 html[data-design="x"] .pipboy-frame::before{display:none}
 html[data-design="x"] .crt-frame{padding:0;border:0;border-radius:0;box-shadow:none}
-html[data-design="x"] .jarvis-holo{padding:0;border:0;border-bottom:1px solid hsl(var(--border));border-radius:0;background:hsl(var(--background));box-shadow:none;backdrop-filter:none;transform:none;transition:background .15s ease}
-html[data-design="x"] .jarvis-holo:hover{background:hsl(var(--foreground)/.03);box-shadow:none;transform:none}
+html[data-design="x"] .jarvis-holo{padding:0;border:0;border-bottom:1px solid hsl(var(--border));border-radius:0;background:hsl(var(--x-post-background,var(--background)));box-shadow:none;backdrop-filter:none;transform:none;transition:background .15s ease}
+html[data-design="x"] .jarvis-holo:hover{background:hsl(var(--x-post-background,var(--background)));box-shadow:none;transform:none}
+html[data-design="x"] .jarvis-holo article.gradient-card{background:hsl(var(--x-post-background,var(--background)))}
 html[data-design="x"] .jarvis-holo>*{text-shadow:none}
 html[data-design="x"] .jarvis-holo::before,html[data-design="x"] .jarvis-holo::after,html[data-design="x"] .jarvis-holo .jarvis-tr,html[data-design="x"] .jarvis-holo .jarvis-bl{display:none}
 html[data-design="x"] .x-center>.pipboy-shell>.pipboy-frame>.crt-frame>div:first-of-type{padding:10px 14px;border-bottom:1px solid hsl(var(--border))}

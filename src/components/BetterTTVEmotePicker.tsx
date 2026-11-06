@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Search, X } from "lucide-react";
 import { BETTER_TTV_EMOTES, BETTER_TTV_GROUPS, type BetterTTVEmote, type BetterTTVGroup } from "@/lib/bttvEmotes";
 import { Button } from "@/components/ui/button";
@@ -8,20 +8,40 @@ interface Props {
   onClose: () => void;
 }
 
-const STEP = 120;
+const ROW_HEIGHT = 68;
+const GROUP_EMOTES = new Map<BetterTTVGroup, BetterTTVEmote[]>();
+for (const emote of BETTER_TTV_EMOTES) {
+  const entries = GROUP_EMOTES.get(emote.group) ?? [];
+  entries.push(emote);
+  GROUP_EMOTES.set(emote.group, entries);
+}
 
 export default function BetterTTVEmotePicker({ onSelect, onClose }: Props) {
   const [group, setGroup] = useState<BetterTTVGroup | "all">("popular");
   const [query, setQuery] = useState("");
-  const [limit, setLimit] = useState(STEP);
+  const gridRef = useRef<HTMLDivElement>(null);
+  const [scrollTop, setScrollTop] = useState(0);
+  const [columns, setColumns] = useState(5);
+  useLayoutEffect(() => {
+    const grid = gridRef.current;
+    if (!grid) return;
+    const measure = () => setColumns(getComputedStyle(grid).gridTemplateColumns.split(" ").length);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(grid);
+    return () => observer.disconnect();
+  }, []);
   const emotes = useMemo(() => {
     const normalized = query.trim().toLowerCase();
-    return BETTER_TTV_EMOTES.filter(emote =>
-      (group === "all" || emote.group === group) && (!normalized || emote.code.toLowerCase().includes(normalized))
-    );
+    const entries = group === "all" ? BETTER_TTV_EMOTES : GROUP_EMOTES.get(group) ?? [];
+    return normalized ? entries.filter(emote => emote.code.toLowerCase().includes(normalized)) : entries;
   }, [group, query]);
 
-  const pick = (g: BetterTTVGroup | "all") => { setGroup(g); setLimit(STEP); };
+  const resetScroll = () => { setScrollTop(0); gridRef.current?.scrollTo(0, 0); };
+  const pick = (g: BetterTTVGroup | "all") => { setGroup(g); resetScroll(); };
+  const rows = Math.ceil(emotes.length / columns);
+  const startRow = Math.max(0, Math.floor(scrollTop / ROW_HEIGHT) - 2);
+  const endRow = Math.min(rows, startRow + 9);
 
   return (
     <div className="bttv-picker" role="dialog" aria-label="BetterTTV emote picker">
@@ -34,10 +54,11 @@ export default function BetterTTVEmotePicker({ onSelect, onClose }: Props) {
       </div>
       <label className="bttv-search">
         <Search className="h-3.5 w-3.5" aria-hidden />
-        <input value={query} onChange={event => { setQuery(event.target.value); setLimit(STEP); }} placeholder={`Search ${emotes.length} emotes`} aria-label="Search BetterTTV emotes" />
+        <input value={query} onChange={event => { setQuery(event.target.value); resetScroll(); }} placeholder={`Search ${emotes.length} emotes`} aria-label="Search BetterTTV emotes" />
       </label>
-      <div className="bttv-grid">
-        {emotes.slice(0, limit).map(emote => (
+      <div className="bttv-grid" ref={gridRef} onScroll={event => setScrollTop(event.currentTarget.scrollTop)}>
+        {startRow > 0 && <div aria-hidden className="col-span-full" style={{ height: startRow * ROW_HEIGHT - 4 }} />}
+        {emotes.slice(startRow * columns, endRow * columns).map(emote => (
           <Button
             key={emote.id}
             type="button"
@@ -47,13 +68,11 @@ export default function BetterTTVEmotePicker({ onSelect, onClose }: Props) {
             aria-label={`Add ${emote.code} emote`}
             onClick={() => onSelect(emote)}
           >
-            <img src={emote.url} alt={emote.code} loading="lazy" decoding="async" />
+            <img src={emote.url} alt={emote.code} width={38} height={38} loading="eager" decoding="async" />
             <span>{emote.code}</span>
           </Button>
         ))}
-        {emotes.length > limit && (
-          <Button type="button" variant="ghost" className="col-span-full h-8 text-[10px]" onClick={() => setLimit(l => l + STEP)}>SHOW MORE ({emotes.length - limit})</Button>
-        )}
+        {endRow < rows && <div aria-hidden className="col-span-full" style={{ height: (rows - endRow) * ROW_HEIGHT - 4 }} />}
       </div>
     </div>
   );
