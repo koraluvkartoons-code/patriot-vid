@@ -10,6 +10,27 @@ export const THEME_PRESETS: { label: string; hex: string | null }[] = [
 ];
 
 const KEY = (scope: ThemeScope) => `theme-color:${scope}`;
+const X_POST_KEY = "theme-color:x-posts";
+
+export function getStoredXPostColor(): string | null {
+  try { return localStorage.getItem(X_POST_KEY); } catch { return null; }
+}
+
+export function storeXPostColor(hex: string | null) {
+  try {
+    if (hex) localStorage.setItem(X_POST_KEY, hex);
+    else localStorage.removeItem(X_POST_KEY);
+  } catch { /* ignore */ }
+}
+
+export function applyXPostColor(hex: string | null) {
+  if (!hex) {
+    document.documentElement.style.removeProperty("--x-post-background");
+    return;
+  }
+  const [h, s, l] = hexToHsl(hex);
+  document.documentElement.style.setProperty("--x-post-background", `${h} ${s}% ${l}%`);
+}
 
 function hexToHsl(hex: string): [number, number, number] {
   const h = hex.replace("#", "");
