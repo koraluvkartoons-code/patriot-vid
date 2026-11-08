@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1794126425463,
+      "tag": "0000_kek_post_scoreboard_flags",
+      "breakpoints": true
+    }
+  ]
+}

@@ -438,3 +438,9 @@ html[data-design="x"] .x-who b{color:hsl(var(--primary));font-size:13px}
 
 .x-search-mobile{display:none}
 @media(max-width:1020px){html[data-design="x"] .x-search-mobile{display:flex;margin:10px 12px 0}}
+
+.kek-scoreboard { --kek-ink: 120 100% 50%; color: hsl(var(--kek-ink)); border-color: hsl(var(--kek-ink)); }
+.kek-scoreboard h2 { font: inherit; font-weight: 700; letter-spacing: 0; }
+.kek-scoreboard .kek-control { color: hsl(var(--kek-ink)); border-color: hsl(var(--kek-ink)); background: transparent; text-shadow: none; }
+.kek-scoreboard .kek-control:hover { background: hsl(var(--kek-ink) / .12); }
+.kek-flag { text-shadow: none; font-size: 16px; }
