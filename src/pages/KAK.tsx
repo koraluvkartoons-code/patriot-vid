@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowLeft, Maximize2, Play, Pause, Image as ImageIcon, Palette, Save, Trash2 } from "lucide-react";
 import { createPost, fetchPosts, fetchCategories, deletePost } from "@/lib/api";
 import { getCurrentUserId, type Post } from "@/lib/store";
+import KekScoreboard from "@/components/KekScoreboard";
 
 const GREEN = "#00FF00";
 
@@ -274,6 +275,8 @@ export default function KAK() {
           onKeyDown={e => { if (e.key === "Backspace" || e.key === "Enter") { e.preventDefault(); typeChunk(speed); } }}
           className="absolute opacity-0 h-10 w-full left-0 bottom-0 pointer-events-none"
         />
+
+        <KekScoreboard refreshKey={entries} />
 
         {/* saved entries by category */}
         <div className="border-t px-3 py-2 text-[10px] sm:text-xs space-y-2" style={{ borderColor: GREEN }}>
