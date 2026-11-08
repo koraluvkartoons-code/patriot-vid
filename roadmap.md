@@ -8,3 +8,5 @@
 - [ ] Make the shared emote keyboard fast and automatically scroll through every result.
 - [ ] Add independent background and post color choices for X, preserving other designs.
 - [ ] Verify emote selection and X colors on mobile and desktop.
+- [ ] Add KEK scoreboard ranked by published post count, with usernames and saved selectable country flags.
+- [ ] Verify the KEK scoreboard and country selection on mobile and desktop.
