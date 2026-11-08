@@ -329,6 +329,7 @@ export type Database = {
           id: string
           is_admin: boolean | null
           is_moderator: boolean | null
+          kek_country_code: string | null
         }
         Insert: {
           avatar?: string | null
@@ -338,6 +339,7 @@ export type Database = {
           id?: string
           is_admin?: boolean | null
           is_moderator?: boolean | null
+          kek_country_code?: string | null
         }
         Update: {
           avatar?: string | null
@@ -347,6 +349,7 @@ export type Database = {
           id?: string
           is_admin?: boolean | null
           is_moderator?: boolean | null
+          kek_country_code?: string | null
         }
         Relationships: []
       }
@@ -471,7 +474,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      kek_post_scoreboard: {
+        Args: never
+        Returns: {
+          country_code: string
+          posts: number
+          username: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
