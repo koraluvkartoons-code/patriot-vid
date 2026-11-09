@@ -12,6 +12,7 @@ import PostPage from "./pages/PostPage.tsx";
 import PoliAniGames from "./pages/PoliAniGames.tsx";
 import Project117 from "./pages/Project117.tsx";
 import KAK from "./pages/KAK.tsx";
+import Yfere from "./pages/Yfere";
 import DocForm from "./pages/DocForm.tsx";
 import MarioRunFx from "@/components/MarioRunFx";
 
@@ -33,6 +34,7 @@ const App = () => (
           <Route path="/polianigames" element={<PoliAniGames />} />
           <Route path="/project117" element={<Project117 />} />
           <Route path="/kak" element={<KAK />} />
+          <Route path="/yfere" element={<Yfere />} />
           <Route path="/docform" element={<DocForm />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
