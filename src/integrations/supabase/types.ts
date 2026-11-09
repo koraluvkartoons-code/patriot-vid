@@ -482,6 +482,14 @@ export type Database = {
           username: string
         }[]
       }
+      yfere_post_scoreboard: {
+        Args: never
+        Returns: {
+          country_code: string
+          posts: number
+          username: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
