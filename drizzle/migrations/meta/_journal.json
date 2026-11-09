@@ -8,6 +8,13 @@
       "when": 1794126425463,
       "tag": "0000_kek_post_scoreboard_flags",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1794189065866,
+      "tag": "0001_yfere_scoreboard",
+      "breakpoints": true
     }
   ]
 }
