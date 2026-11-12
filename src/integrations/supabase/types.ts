@@ -260,6 +260,24 @@ export type Database = {
         }
         Relationships: []
       }
+      lexiflux_sentences: {
+        Row: {
+          created_at: string
+          id: string
+          text: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          text: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          text?: string
+        }
+        Relationships: []
+      }
       posts: {
         Row: {
           category: string | null
@@ -387,6 +405,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      site_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          value?: string
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          value?: string
+        }
+        Relationships: []
       }
       streams: {
         Row: {

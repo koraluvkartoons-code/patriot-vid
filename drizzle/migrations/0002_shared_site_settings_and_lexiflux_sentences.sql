@@ -1,0 +1,15 @@
+CREATE TABLE public.site_settings (key text PRIMARY KEY, value text NOT NULL DEFAULT '', updated_at timestamptz NOT NULL DEFAULT now());
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.site_settings TO anon, authenticated;
+GRANT ALL ON public.site_settings TO service_role;
+ALTER TABLE public.site_settings ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Site settings public read" ON public.site_settings FOR SELECT TO anon, authenticated USING (true);
+CREATE POLICY "Site settings public insert" ON public.site_settings FOR INSERT TO anon, authenticated WITH CHECK (true);
+CREATE POLICY "Site settings public update" ON public.site_settings FOR UPDATE TO anon, authenticated USING (true) WITH CHECK (true);
+CREATE POLICY "Site settings public delete" ON public.site_settings FOR DELETE TO anon, authenticated USING (true);
+CREATE TABLE public.lexiflux_sentences (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), text text NOT NULL, created_at timestamptz NOT NULL DEFAULT now());
+GRANT SELECT, INSERT, DELETE ON public.lexiflux_sentences TO anon, authenticated;
+GRANT ALL ON public.lexiflux_sentences TO service_role;
+ALTER TABLE public.lexiflux_sentences ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Lexi sentences public read" ON public.lexiflux_sentences FOR SELECT TO anon, authenticated USING (true);
+CREATE POLICY "Lexi sentences public insert" ON public.lexiflux_sentences FOR INSERT TO anon, authenticated WITH CHECK (true);
+CREATE POLICY "Lexi sentences public delete" ON public.lexiflux_sentences FOR DELETE TO anon, authenticated USING (true);

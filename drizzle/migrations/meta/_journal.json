@@ -15,6 +15,13 @@
       "when": 1794189065866,
       "tag": "0001_yfere_scoreboard",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794490516180,
+      "tag": "0002_shared_site_settings_and_lexiflux_sentences",
+      "breakpoints": true
     }
   ]
 }
