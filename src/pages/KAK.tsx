@@ -231,6 +231,10 @@ export default function KAK() {
           <h1 className="text-[10px] sm:text-xs tracking-tight">
             KAK/KAG/KEK/QAQ NETWORK // OPERATOR: KAKKERS/KAGGERS/KEKKERS // SYSTEM: ACTIVE
           </h1>
+          <div className="flex items-center gap-2">
+          <Link to="/yfere" className="text-[10px] border px-2 py-1" style={{ borderColor: GREEN }}>YFERE →</Link>
+          <Link to="/lexi-flux" className="text-[10px] border px-2 py-1" style={{ borderColor: GREEN }}>LEXI-FLUX →</Link>
+          </div>
           <Link to="/polianigames" className="text-[10px] flex items-center gap-1 border px-2 py-1" style={{ borderColor: GREEN }}>
             <ArrowLeft className="w-3 h-3" />PAG
           </Link>
