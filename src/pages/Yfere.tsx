@@ -21,6 +21,10 @@ export default function Yfere() {
   const [setup, setSetup] = useState(false);
   const [selected, setSelected] = useState<Post | null>(null);
   const [refresh, setRefresh] = useState(0);
+  const [postBg, setPostBg] = useState(() => localStorage.getItem("yfere-post-bg") || "");
+  const [postText, setPostText] = useState(() => localStorage.getItem("yfere-post-text") || "");
+  useEffect(() => { postBg ? localStorage.setItem("yfere-post-bg", postBg) : localStorage.removeItem("yfere-post-bg"); postText ? localStorage.setItem("yfere-post-text", postText) : localStorage.removeItem("yfere-post-text"); }, [postBg, postText]);
+  const postStyle = { ...(postBg ? { background: postBg } : {}), ...(postText ? { color: postText } : {}) };
   const [position, setPosition] = useState(0);
   const rail = useRef<HTMLDivElement>(null);
   const sentinel = useRef<HTMLDivElement>(null);
@@ -70,11 +74,11 @@ export default function Yfere() {
     </section>
     <div className="yfere-toolbar">
       <div className="yfere-category-list"><span className="text-muted-foreground text-xs">CATEGORIES</span>{categories.map(c => <Button key={c} variant="ghost" size="sm" className="yfere-category" data-tone={categoryTone(c)} onClick={() => { const index = items.findIndex(p => (p.category || "Unfiled") === c); rail.current?.children[index]?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "start" }); }}>{c}</Button>)}</div>
-      <div className="flex gap-2 shrink-0"><Button variant="outline" size="icon" aria-label="Previous item" disabled={!position} onClick={() => move(-1)}><ArrowLeft className="w-4 h-4" /></Button><Button variant="outline" size="icon" aria-label="Next item" disabled={items.length === 0} onClick={() => move(1)}><ArrowRight className="w-4 h-4" /></Button></div>
+      <div className="flex gap-2 shrink-0 items-center"><label className="text-xs flex items-center gap-1">POST <input type="color" aria-label="Post color" value={postBg || "#1a0b2e"} onChange={e => setPostBg(e.target.value)} /></label><label className="text-xs flex items-center gap-1">TEXT <input type="color" aria-label="Post text color" value={postText || "#ffffff"} onChange={e => setPostText(e.target.value)} /></label>{(postBg || postText) && <Button variant="ghost" size="sm" onClick={() => { setPostBg(""); setPostText(""); }}>Reset</Button>}<Button variant="outline" size="icon" aria-label="Previous item" disabled={!position} onClick={() => move(-1)}><ArrowLeft className="w-4 h-4" /></Button><Button variant="outline" size="icon" aria-label="Next item" disabled={items.length === 0} onClick={() => move(1)}><ArrowRight className="w-4 h-4" /></Button></div>
     </div>
     {error && <div role="alert" className="yfere-error">{error}<Button variant="ghost" size="sm" onClick={() => void load()}><RefreshCw className="w-4 h-4 mr-2" />Retry</Button></div>}
     <div className="yfere-rail" ref={rail} tabIndex={0} role="region" aria-label="YFERE horizontal chain" onScroll={e => setPosition(e.currentTarget.scrollLeft)} onKeyDown={e => { if (e.target !== e.currentTarget) return; if (e.key === "ArrowRight" || e.key === "ArrowLeft") { e.preventDefault(); move(e.key === "ArrowRight" ? 1 : -1); } }}>
-      {items.map((item, index) => <article key={item.id} className="yfere-block" data-tone={categoryTone(item.category || "Unfiled")}>
+      {items.map((item, index) => <article key={item.id} className="yfere-block" data-tone={categoryTone(item.category || "Unfiled")} style={postStyle}>
         <div className="yfere-block-top"><span>{item.category || "Unfiled"}</span><span className="tabular-nums">{String(index + 1).padStart(3, "0")}</span></div>
         <div className="yfere-block-content"><Link to={`/post/${item.id}`} className="yfere-author">{item.userId}</Link>
           {item.description ? <p className="yfere-text">{item.description}</p> : item.title !== "Post" && <p className="yfere-text">{item.title}</p>}
