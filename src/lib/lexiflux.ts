@@ -1,0 +1,8 @@
+const WORDS = "a i am an and are as at be big but by can cat come day do dog eat for fun get go good got had has have he her him his how if in is it its just know let like look love make man me my new no not now of oh ok on one or our out play put red run said say see she so sun the then they this to too two up us was we what who why will win with yes you your all any ask bad bed best blue boy call car cold cool cut did dark down end eye far fast feel find fire fly free game girl give god gold great green hand happy hat help here hey hit hot idea into joy keep kek kid king kind last left life light live long lost lot made many more most much must name need never next nice night old open over own pepe pink rain read real rest ride right road rock room sad same sea set ship shop show side sing sit sky slow small some song soon star stay stop sure take talk tell than that them there these thing think time top tree true try very wait walk want war way well went were when where white wide wild wind wish word work world year yet zoom able after again also always away back been before being both bring could does done each even every first from going hard head home house keep laugh learn little money mother night only other people place should start still their those three under until water which while would write young".split(" ");
+export const LEXI_WORDS = new Set(WORDS);
+export const isWord = (w: string) => LEXI_WORDS.has(w.toLowerCase());
+export const buildSentence = (words: string[]) => {
+  if (!words.length) return "";
+  const s = words.join(" ");
+  return s.charAt(0).toUpperCase() + s.slice(1) + (/[.!?]$/.test(s) ? "" : ".");
+};

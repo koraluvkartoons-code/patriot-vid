@@ -278,7 +278,7 @@ export default function KAK() {
         />
 
         <KekScoreboard refreshKey={entries} />
-        <div className="px-3 py-3"><Button asChild variant="outline" className="kak-yfere-link"><Link to="/yfere">YFERE →</Link></Button></div>
+        <div className="px-3 py-3"><Button asChild variant="outline" className="kak-yfere-link"><Link to="/yfere">YFERE →</Link></Button> <Button asChild variant="outline" className="kak-yfere-link ml-2"><Link to="/lexi-flux">LEXI-FLUX →</Link></Button></div>
 
         {/* saved entries by category */}
         <div className="border-t px-3 py-2 text-[10px] sm:text-xs space-y-2" style={{ borderColor: GREEN }}>
